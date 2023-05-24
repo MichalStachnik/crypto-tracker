@@ -21,15 +21,15 @@ function App() {
     fetchCoinAPI('BTC');
   }, []);
 
-  const fetchCoins = () => {
-    fetch('/api/coins')
-      .then((res) => res.json())
-      .then((res) => {
-        console.log('res', res);
-        console.log(res[0][0]);
-      })
-      .catch((err) => console.log('our err', err));
-  };
+  // const fetchCoins = () => {
+  //   fetch('/api/coins')
+  //     .then((res) => res.json())
+  //     .then((res) => {
+  //       console.log('res', res);
+  //       console.log(res[0][0]);
+  //     })
+  //     .catch((err) => console.log('our err', err));
+  // };
 
   const fetchCMC = () => {
     fetch('/api/cmc')
