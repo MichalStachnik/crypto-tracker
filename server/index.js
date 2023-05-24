@@ -1,9 +1,9 @@
 import express from 'express';
 import fetch from 'node-fetch';
-
+import dotenv from 'dotenv';
 const app = express();
 
-require('dotenv').config();
+dotenv.config();
 
 const PAPRIKA_BASE_URL = 'https://api.coinpaprika.com/v1/';
 const CMC_BASE_URL = 'https://pro-api.coinmarketcap.com';
