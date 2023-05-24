@@ -23,7 +23,7 @@ app.get('/coins', async (req, res) => {
 
 app.get('/cmc', async (req, res) => {
   const data = await fetch(
-    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?${process.env.CMC_API_KEY}`
+    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
   );
   const json = await data.json();
   res.json(json);
