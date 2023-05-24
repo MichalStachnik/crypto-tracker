@@ -22,7 +22,7 @@ app.get('/coins', async (req, res) => {
   res.json(json);
 });
 
-app.get('/cmc', async (req, res) => {
+app.get('/api/cmc', async (req, res) => {
   const data = await fetch(
     `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
   );
@@ -30,7 +30,7 @@ app.get('/cmc', async (req, res) => {
   res.json(json);
 });
 
-app.get('/coin/:symbol', async (req, res) => {
+app.get('/api/coin/:symbol', async (req, res) => {
   const now = new Date();
   const yesterday = new Date(now.setDate(now.getDate() - 1));
   const data = await fetch(
