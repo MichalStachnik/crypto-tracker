@@ -22,9 +22,6 @@ const styleCell = (percentChange: number) => {
 
 const StyledTableCell = styled(TableCell)(() => ({
   cursor: 'pointer',
-  display: 'flex',
-  flexDirection: 'row',
-  justifyContent: 'flex-end',
 }));
 
 interface CoinTableProps {
@@ -32,12 +29,20 @@ interface CoinTableProps {
   onCoinClick: (coin: Coin) => void;
 }
 
-export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
-  const [sort, setSort] = useState<string>('');
+interface Sort {
+  sortKey: string;
+  sortDirection: string;
+}
 
-  const toggleSort = () => {
-    if (sort === 'desc') setSort('asc');
-    else setSort('desc');
+export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
+  const [sort, setSort] = useState<Sort>({
+    sortKey: '',
+    sortDirection: 'asc',
+  });
+
+  const toggleSort = (sortKey: string) => {
+    const newDirection = sort.sortDirection === 'asc' ? 'desc' : 'asc';
+    setSort({ sortKey, sortDirection: newDirection });
   };
 
   if (!coins.length) return null;
@@ -50,25 +55,80 @@ export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
             <TableCell>Name</TableCell>
             <TableCell>Symbol</TableCell>
             <TableCell align="right">Price</TableCell>
-            <StyledTableCell align="right" onClick={toggleSort}>
-              Percent Change 24Hr
-              {sort === 'asc' && <ArrowUp />}
-              {sort == 'desc' && <ArrowDown />}
+            <StyledTableCell align="right" onClick={() => toggleSort('24hr')}>
+              % Change 24Hr
+              {sort.sortKey === '24hr' && sort.sortDirection === 'asc' && (
+                <ArrowUp />
+              )}
+              {sort.sortKey === '24hr' && sort.sortDirection == 'desc' && (
+                <ArrowDown />
+              )}
+            </StyledTableCell>
+            <StyledTableCell align="right" onClick={() => toggleSort('7d')}>
+              % Change 7d
+              {sort.sortKey === '7d' && sort.sortDirection === 'asc' && (
+                <ArrowUp />
+              )}
+              {sort.sortKey === '7d' && sort.sortDirection == 'desc' && (
+                <ArrowDown />
+              )}
+            </StyledTableCell>
+            <StyledTableCell align="right" onClick={() => toggleSort('30d')}>
+              % Change 30d
+              {sort.sortKey === '30d' && sort.sortDirection === 'asc' && (
+                <ArrowUp />
+              )}
+              {sort.sortKey === '30d' && sort.sortDirection == 'desc' && (
+                <ArrowDown />
+              )}
             </StyledTableCell>
           </TableRow>
         </TableHead>
         <TableBody>
           {coins
             .sort((a, b) => {
-              if (sort === 'asc') {
+              if (sort.sortKey === '24hr' && sort.sortDirection === 'asc') {
                 return (
                   a.quote.USD.percent_change_24h -
                   b.quote.USD.percent_change_24h
                 );
-              } else if (sort === 'desc') {
+              } else if (
+                sort.sortKey === '24hr' &&
+                sort.sortDirection === 'desc'
+              ) {
                 return (
                   b.quote.USD.percent_change_24h -
                   a.quote.USD.percent_change_24h
+                );
+              } else if (
+                sort.sortKey === '7d' &&
+                sort.sortDirection === 'asc'
+              ) {
+                return (
+                  a.quote.USD.percent_change_7d - b.quote.USD.percent_change_7d
+                );
+              } else if (
+                sort.sortKey === '7d' &&
+                sort.sortDirection === 'desc'
+              ) {
+                return (
+                  b.quote.USD.percent_change_7d - a.quote.USD.percent_change_7d
+                );
+              } else if (
+                sort.sortKey === '30d' &&
+                sort.sortDirection === 'asc'
+              ) {
+                return (
+                  a.quote.USD.percent_change_30d -
+                  b.quote.USD.percent_change_30d
+                );
+              } else if (
+                sort.sortKey === '30d' &&
+                sort.sortDirection === 'desc'
+              ) {
+                return (
+                  b.quote.USD.percent_change_30d -
+                  a.quote.USD.percent_change_30d
                 );
               } else {
                 return 0;
@@ -94,6 +154,18 @@ export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
                   style={styleCell(coin.quote.USD.percent_change_24h)}
                 >
                   {coin.quote.USD.percent_change_24h.toFixed(2)}%
+                </TableCell>
+                <TableCell
+                  align="right"
+                  style={styleCell(coin.quote.USD.percent_change_7d)}
+                >
+                  {coin.quote.USD.percent_change_7d.toFixed(2)}%
+                </TableCell>
+                <TableCell
+                  align="right"
+                  style={styleCell(coin.quote.USD.percent_change_30d)}
+                >
+                  {coin.quote.USD.percent_change_30d.toFixed(2)}%
                 </TableCell>
               </TableRow>
             ))}

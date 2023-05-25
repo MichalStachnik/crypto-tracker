@@ -16,7 +16,10 @@ export default function CoinChart({ liveCoinWatchData }: CoinChartProps) {
   const data = liveCoinWatchData.history.map((data) => {
     const time = new Date(data.date);
     const hours = time.getHours();
-    const minutes = time.getMinutes();
+    let minutes = time.getMinutes();
+    if (minutes < 10) {
+      minutes = Number(`0${minutes}`);
+    }
     return {
       time: `${hours}:${minutes}`,
       price: data.rate.toFixed(4),
