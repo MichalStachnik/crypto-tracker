@@ -9,8 +9,10 @@ dotenv.config();
 const PAPRIKA_BASE_URL = 'https://api.coinpaprika.com/v1/';
 const CMC_BASE_URL = 'https://pro-api.coinmarketcap.com';
 const COIN_API_BASE_URL = 'https://rest.coinapi.io';
+const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
+//api.livecoinwatch.com/coins/single/history
 
-app.get('/global', async (req, res) => {
+https: app.get('/global', async (req, res) => {
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
   res.json(json);
@@ -44,6 +46,27 @@ app.get('/api/coin/:symbol', async (req, res) => {
       },
     }
   );
+  const json = await data.json();
+  res.json(json);
+});
+
+app.get('/api/livecoinwatch/:symbol', async (req, res) => {
+  const now = new Date();
+  const yesterday = new Date(now.setDate(now.getDate() - 1));
+  const data = await fetch(`${LIVE_COIN_WATCH_BASE_URL}/coins/single/history`, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+      'x-api-key': process.env.LIVE_COIN_WATCH_API_KEY,
+    },
+    body: JSON.stringify({
+      currency: 'USD',
+      code: req.params.symbol,
+      start: yesterday.getTime(),
+      end: new Date().getTime(),
+      meta: true,
+    }),
+  });
   const json = await data.json();
   res.json(json);
 });

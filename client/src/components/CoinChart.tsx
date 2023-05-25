@@ -6,17 +6,20 @@ import {
   XAxis,
   YAxis,
 } from 'recharts';
-import { CoinMarketData } from '../types/CoinMarketData';
+import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 
 interface CoinChartProps {
-  selectedCoinData: CoinMarketData[];
+  liveCoinWatchData: LiveCoinWatchData;
 }
 
-export default function CoinChart({ selectedCoinData }: CoinChartProps) {
-  const data = selectedCoinData.map((data) => {
+export default function CoinChart({ liveCoinWatchData }: CoinChartProps) {
+  const data = liveCoinWatchData.history.map((data) => {
+    const time = new Date(data.date);
+    const hours = time.getHours();
+    const minutes = time.getMinutes();
     return {
-      time: new Date(Date.parse(data.time_close)).getHours(),
-      price: data.price_close,
+      time: `${hours}:${minutes}`,
+      price: data.rate.toFixed(4),
     };
   });
   return (
