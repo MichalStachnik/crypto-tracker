@@ -21,16 +21,6 @@ function App() {
     fetchCoinAPI('BTC');
   }, []);
 
-  // const fetchCoins = () => {
-  //   fetch('/api/coins')
-  //     .then((res) => res.json())
-  //     .then((res) => {
-  //       console.log('res', res);
-  //       console.log(res[0][0]);
-  //     })
-  //     .catch((err) => console.log('our err', err));
-  // };
-
   const fetchCMC = () => {
     fetch('/api/cmc')
       .then((res) => res.json())
@@ -41,7 +31,13 @@ function App() {
   const fetchCoinAPI = (symbol: string) => {
     fetch(`/api/coin/${symbol}`)
       .then((res) => res.json())
-      .then((res) => setSelectedCoinData(res))
+      .then((res) => {
+        if (res.error) {
+          setSelectedCoinData(null);
+          return;
+        }
+        setSelectedCoinData(res);
+      })
       .catch((err) => console.error('Error', err));
   };
 
@@ -49,15 +45,17 @@ function App() {
     setSelectedCoin(coin);
     fetchCoinAPI(coin.symbol);
   };
-  if (!coins.length || !selectedCoinData) return <CircularProgress />;
+  if (!coins.length) return <CircularProgress />;
   return (
     <div>
       <h1>Crypto Tracker</h1>
-      <Typography>
-        24 hour price data for {selectedCoin?.name || 'Bitcoin'}
-      </Typography>
       {selectedCoinData ? (
-        <CoinChart selectedCoinData={selectedCoinData} />
+        <>
+          <Typography>
+            24 hour price data for {selectedCoin?.name || 'Bitcoin'}
+          </Typography>
+          <CoinChart selectedCoinData={selectedCoinData} />
+        </>
       ) : null}
       <CoinTable coins={coins} onCoinClick={handleCoinClick} />
     </div>
