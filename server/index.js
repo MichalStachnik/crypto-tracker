@@ -12,7 +12,7 @@ const COIN_API_BASE_URL = 'https://rest.coinapi.io';
 const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
 //api.livecoinwatch.com/coins/single/history
 
-https: app.get('/global', async (req, res) => {
+app.get('/api/global', async (req, res) => {
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
   res.json(json);
