@@ -402,7 +402,13 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
             ) : null}
           </Box>
           {!userContext.user ? (
-            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+            <Box
+              sx={{
+                display: { xs: 'none', md: 'flex' },
+                justifyContent: 'flex-end',
+                flex: 1,
+              }}
+            >
               <Button
                 variant="outlined"
                 style={{ marginRight: 10 }}
@@ -418,9 +424,11 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
               </Button>
             </Box>
           ) : (
-            <Button variant="outlined" onClick={handleLogout}>
-              Logout
-            </Button>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}>
+              <Button variant="outlined" onClick={handleLogout}>
+                Logout
+              </Button>
+            </Box>
           )}
         </Toolbar>
       </AppBar>
