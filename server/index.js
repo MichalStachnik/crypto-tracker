@@ -88,17 +88,38 @@ app.post('/api/signup', async (req, res) => {
 });
 
 app.post('/api/login', async (req, res) => {
-  const { data, error } = await supabase.auth.signInWithPassword({
+  const signInQuery = await supabase.auth.signInWithPassword({
     email: req.body.email,
     password: req.body.password,
   });
-  if (!error) {
-    res.setHeader(
-      'Set-Cookie',
-      `cookie=${data.session.access_token}; HttpOnly`
-    );
+  if (signInQuery.error) {
+    res.json({ message: 'error', error: signInQuery.error });
   }
-  res.json({ data, error });
+  res.setHeader(
+    'Set-Cookie',
+    `cookie=${signInQuery.data.session.access_token}; HttpOnly`
+  );
+  let data = { user: signInQuery.data };
+  // Get favorites
+  const coinQuery = await supabase
+    .from('coin')
+    .select('name')
+    .eq('email', req.body.email);
+
+  if (!coinQuery.error) {
+    data['favorites'] = coinQuery.data;
+  }
+  res.json({ message: 'success', data });
+});
+
+app.get('/api/logout', async (req, res) => {
+  const { error } = await supabase.auth.signOut();
+  if (error) {
+    console.error('error');
+    res.json({ message: 'error', error });
+  } else {
+    res.status(202).json({ message: 'success' });
+  }
 });
 
 app.post('/api/get-favorites', async (req, res) => {
@@ -107,6 +128,7 @@ app.post('/api/get-favorites', async (req, res) => {
   const user = await supabase.auth.getUser(jwt);
   const userError = user.error;
   if (userError) {
+    console.error('user error', userError);
     res.status(500).json({ message: 'error', error: userError });
   }
   const email = user.data.user.email;

@@ -307,6 +307,10 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     setIsSignupDialogOpen(false);
   };
 
+  interface Coin {
+    name: string;
+  }
+
   const handleLogin = async ({
     email,
     password,
@@ -323,8 +327,10 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     });
 
     const data = await res.json();
-    localStorage.setItem('user', data.data.session.access_token);
-    userContext.setUser(data.data.session.access_token);
+    localStorage.setItem('user', data.data.user.session.access_token);
+    userContext.setUser(data.data.user.session.access_token);
+    const newFavorites = data.data.favorites.map((c: Coin) => c.name);
+    userContext.setFavoriteCoins(newFavorites);
   };
 
   const handleLoginDialogSubmit = ({
@@ -338,9 +344,10 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     setIsLoginDialogOpen(false);
   };
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
     localStorage.clear();
     userContext.setUser(null);
+    await fetch('/api/logout');
   };
 
   return (

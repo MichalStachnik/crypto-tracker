@@ -7,6 +7,7 @@ import { Coin } from './types/Coin';
 import { LiveCoinWatchData } from './types/LiveCoinWatchData';
 import Header from './components/Header';
 import { UserProvider } from './contexts/UserContext';
+import { Timeline } from 'react-twitter-widgets';
 
 function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
@@ -71,14 +72,39 @@ function App() {
                   p={2}
                   flex={1}
                   borderRadius={2}
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
                 >
-                  <Link
-                    href={liveCoinWatchData.links.whitepaper}
-                    target="_blank"
-                    rel="noreferrer noopener"
-                  >
-                    whitepaper
-                  </Link>
+                  <Box display="flex" flexDirection="column">
+                    <Link
+                      href={liveCoinWatchData.links.website}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {liveCoinWatchData.name} website
+                    </Link>
+                    <Link
+                      href={liveCoinWatchData.links.whitepaper}
+                      target="_blank"
+                      rel="noreferrer noopener"
+                    >
+                      {liveCoinWatchData.name} whitepaper
+                    </Link>
+                  </Box>
+                  {liveCoinWatchData.links.twitter && (
+                    <Timeline
+                      dataSource={{
+                        sourceType: 'profile',
+                        screenName: `${
+                          liveCoinWatchData.links.twitter.split('.com/')[1]
+                        }`,
+                      }}
+                      options={{
+                        height: '400',
+                      }}
+                    />
+                  )}
                 </Box>
               </Box>
             </>
