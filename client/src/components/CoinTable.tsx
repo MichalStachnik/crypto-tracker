@@ -200,7 +200,12 @@ export default function CoinTable({
                 </TableCell>
                 {user && (
                   <TableCell>
-                    <IconButton onClick={() => handleHeartClick(coin)}>
+                    <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleHeartClick(coin);
+                      }}
+                    >
                       <FavoriteIcon
                         color={
                           favoriteCoins.includes(coin.name) ? 'error' : 'action'

@@ -27,7 +27,7 @@ export default function CoinChart({ liveCoinWatchData }: CoinChartProps) {
   });
   return (
     <AreaChart
-      width={1000}
+      width={800}
       height={600}
       data={data}
       margin={{

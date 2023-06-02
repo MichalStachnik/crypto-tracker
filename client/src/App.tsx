@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress, Link, Typography } from '@mui/material';
 import CoinTable from './components/CoinTable';
 import CoinChart from './components/CoinChart';
 import { Coin } from './types/Coin';
@@ -64,9 +64,27 @@ function App() {
                   {liveCoinWatchData.name}
                 </Typography>
               </Box>
-              <CoinChart liveCoinWatchData={liveCoinWatchData} />
+              <Box display="flex" p={2}>
+                <CoinChart liveCoinWatchData={liveCoinWatchData} />
+                <Box
+                  boxShadow="inset 0 0 10px rgba(0,0,0,0.5)"
+                  p={2}
+                  flex={1}
+                  borderRadius={2}
+                >
+                  <Link
+                    href={liveCoinWatchData.links.whitepaper}
+                    target="_blank"
+                    rel="noreferrer noopener"
+                  >
+                    whitepaper
+                  </Link>
+                </Box>
+              </Box>
             </>
-          ) : null}
+          ) : (
+            <CircularProgress />
+          )}
           <CoinTable
             coins={coins}
             onCoinClick={handleCoinClick}
