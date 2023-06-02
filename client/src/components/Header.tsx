@@ -286,13 +286,14 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     email: string;
     password: string;
   }) => {
-    const res = await fetch('/api/signup', {
+    await fetch('/api/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({ email, password }),
     });
+    // TODO: check res and tell user to check email or login
   };
 
   const handleSignupDialogSubmit = ({
