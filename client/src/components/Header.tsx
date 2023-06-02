@@ -1,4 +1,4 @@
-import { ChangeEvent, useState } from 'react';
+import { ChangeEvent, useState, MouseEvent, useContext } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -15,7 +15,18 @@ import AccountCircle from '@mui/icons-material/AccountCircle';
 import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 // import MoreIcon from '@mui/icons-material/MoreVert';
-// import { Button } from '@mui/material';
+import {
+  Button,
+  Dialog,
+  DialogTitle,
+  FormControl,
+  FormHelperText,
+  InputAdornment,
+  InputLabel,
+  OutlinedInput,
+} from '@mui/material';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { UserContext } from '../contexts/UserContext';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -72,8 +83,99 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
   },
 }));
 
+export interface AuthDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: ({ email, password }: { email: string; password: string }) => void;
+  mode: 'login' | 'signup';
+}
+
+function AuthDialog(props: AuthDialogProps) {
+  const { onClose, open, onSubmit, mode } = props;
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setEmail(e.target.value);
+  };
+
+  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPassword(e.target.value);
+  };
+
+  const handleSubmit = () => {
+    onSubmit({ email, password });
+  };
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const handleClickShowPassword = () => setShowPassword((show) => !show);
+
+  const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle display="flex" flexDirection="column">
+        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+          <InputLabel htmlFor="email">Email</InputLabel>
+          <OutlinedInput
+            id="email"
+            label="Email"
+            aria-describedby="my-helper-text"
+            value={email}
+            onChange={handleEmailChange}
+          />
+        </FormControl>
+        <FormHelperText sx={{ m: 1 }} id="my-helper-text">
+          We'll never share your email.
+        </FormHelperText>
+        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+          <InputLabel htmlFor="outlined-adornment-password">
+            Password
+          </InputLabel>
+          <OutlinedInput
+            id="outlined-adornment-password"
+            type={showPassword ? 'text' : 'password'}
+            endAdornment={
+              <InputAdornment position="end">
+                <IconButton
+                  aria-label="toggle password visibility"
+                  onClick={handleClickShowPassword}
+                  onMouseDown={handleMouseDownPassword}
+                  edge="end"
+                >
+                  {showPassword ? <VisibilityOff /> : <Visibility />}
+                </IconButton>
+              </InputAdornment>
+            }
+            label="Password"
+            value={password}
+            onChange={handlePasswordChange}
+          />
+        </FormControl>
+        <Button
+          variant="contained"
+          onClick={handleSubmit}
+          style={{ marginTop: 15 }}
+        >
+          {mode === 'signup' ? 'Sign Up' : 'Login'}
+        </Button>
+      </DialogTitle>
+    </Dialog>
+  );
+}
+
 export default function Header({ globalData, searchText, setSearchText }: any) {
+  const userContext = useContext(UserContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
+  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     useState<null | HTMLElement>(null);
 
@@ -177,6 +279,69 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     setSearchText(event.target.value);
   };
 
+  const handleSignup = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    const res = await fetch('/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+  };
+
+  const handleSignupDialogSubmit = ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    handleSignup({ email, password });
+    setIsSignupDialogOpen(false);
+  };
+
+  const handleLogin = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    const res = await fetch('/api/login', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+
+    const data = await res.json();
+    localStorage.setItem('user', data.data.session.access_token);
+    userContext.setUser(data.data.session.access_token);
+  };
+
+  const handleLoginDialogSubmit = ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    handleLogin({ email, password });
+    setIsLoginDialogOpen(false);
+  };
+
+  const handleLogout = () => {
+    localStorage.clear();
+    userContext.setUser(null);
+  };
+
   return (
     <Box sx={{ flexGrow: 1 }} mb={4}>
       <AppBar position="static" sx={{ bgcolor: 'black' }}>
@@ -210,7 +375,7 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
             />
           </Search>
           <Box>
-            {Object.keys(globalData).length ? (
+            {Object.keys(globalData).length && !globalData['error'] ? (
               <Box display="flex">
                 <Box display="flex" flexDirection="column">
                   <Typography>Bitcoin dominance</Typography>
@@ -221,7 +386,6 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
                 <Box display="flex" flexDirection="column">
                   <Typography>Market cap</Typography>
                   <Typography>
-                    {/* {globalData.market_cap_usd.toFixed(2)} */}
                     {USDollar.format(globalData.market_cap_usd)}
                   </Typography>
                 </Box>
@@ -236,16 +400,43 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
               </Box>
             ) : null}
           </Box>
-          <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
-            {/* <Button variant="outlined" style={{ marginRight: 10 }}>
-              Login
+          {!userContext.user ? (
+            <Box sx={{ display: { xs: 'none', md: 'flex' } }}>
+              <Button
+                variant="outlined"
+                style={{ marginRight: 10 }}
+                onClick={() => setIsLoginDialogOpen(true)}
+              >
+                Login
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => setIsSignupDialogOpen(true)}
+              >
+                Signup
+              </Button>
+            </Box>
+          ) : (
+            <Button variant="outlined" onClick={handleLogout}>
+              Logout
             </Button>
-            <Button variant="outlined">Signup</Button> */}
-          </Box>
+          )}
         </Toolbar>
       </AppBar>
       {renderMobileMenu}
       {renderMenu}
+      <AuthDialog
+        open={isSignupDialogOpen}
+        onClose={() => setIsSignupDialogOpen(false)}
+        onSubmit={handleSignupDialogSubmit}
+        mode="signup"
+      />
+      <AuthDialog
+        open={isLoginDialogOpen}
+        onClose={() => setIsLoginDialogOpen(false)}
+        onSubmit={handleLoginDialogSubmit}
+        mode="login"
+      />
     </Box>
   );
 }

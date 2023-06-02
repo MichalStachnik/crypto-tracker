@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell from '@mui/material/TableCell';
@@ -7,8 +7,10 @@ import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import { ArrowDown, ArrowUp } from 'react-feather';
-import { styled } from '@mui/material';
+import { IconButton, styled } from '@mui/material';
 import { Coin } from '../types/Coin';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import { UserContext } from '../contexts/UserContext';
 
 const styleCell = (percentChange: number) => {
   if (percentChange > 0) {
@@ -40,6 +42,7 @@ export default function CoinTable({
   onCoinClick,
   searchText,
 }: CoinTableProps) {
+  const { user, favoriteCoins, setFavoriteCoins } = useContext(UserContext);
   const [sort, setSort] = useState<Sort>({
     sortKey: '',
     sortDirection: 'asc',
@@ -50,7 +53,38 @@ export default function CoinTable({
     setSort({ sortKey, sortDirection: newDirection });
   };
 
-  console.log(searchText);
+  const handleHeartClick = (coin: Coin) => {
+    if (favoriteCoins.includes(coin.name)) {
+      handleDeleteFavoriteClick(coin);
+    } else {
+      handleFavoriteClick(coin);
+    }
+  };
+
+  const handleFavoriteClick = async (coin: Coin) => {
+    const res = await fetch('/api/add-favorite', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: user, favorite: coin.name }),
+    });
+
+    setFavoriteCoins([...favoriteCoins, coin.name]);
+  };
+
+  const handleDeleteFavoriteClick = async (coin: Coin) => {
+    const res = await fetch('/api/delete-favorite', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: user, favorite: coin.name }),
+    });
+
+    const newFavorites = favoriteCoins.filter((c) => c !== coin.name);
+    setFavoriteCoins(newFavorites);
+  };
 
   if (!coins.length) return null;
   return (
@@ -59,6 +93,7 @@ export default function CoinTable({
         <TableHead>
           <TableRow>
             <TableCell>Rank</TableCell>
+            {user && <TableCell>Favorite</TableCell>}
             <TableCell>Name</TableCell>
             <TableCell>Symbol</TableCell>
             <TableCell align="right">Price</TableCell>
@@ -159,6 +194,17 @@ export default function CoinTable({
                 <TableCell component="th" scope="row">
                   {coin.cmc_rank}
                 </TableCell>
+                {user && (
+                  <TableCell>
+                    <IconButton onClick={() => handleHeartClick(coin)}>
+                      <FavoriteIcon
+                        color={
+                          favoriteCoins.includes(coin.name) ? 'error' : 'action'
+                        }
+                      />
+                    </IconButton>
+                  </TableCell>
+                )}
                 <TableCell>{coin.name}</TableCell>
                 <TableCell>{coin.symbol}</TableCell>
                 <TableCell align="right">

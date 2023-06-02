@@ -10,7 +10,8 @@ const PAPRIKA_BASE_URL = 'https://api.coinpaprika.com/v1/';
 const CMC_BASE_URL = 'https://pro-api.coinmarketcap.com';
 const COIN_API_BASE_URL = 'https://rest.coinapi.io';
 const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
-//api.livecoinwatch.com/coins/single/history
+
+app.use(express.json());
 
 app.get('/api/global', async (req, res) => {
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
@@ -69,6 +70,101 @@ app.get('/api/livecoinwatch/:symbol', async (req, res) => {
   });
   const json = await data.json();
   res.json(json);
+});
+
+import { createClient } from '@supabase/supabase-js';
+
+const supabase = createClient(
+  process.env.SUPABASE_PROJECT_URL,
+  process.env.SUPABASE_API_KEY
+);
+
+app.post('/api/signup', async (req, res) => {
+  const { data, error } = await supabase.auth.signUp({
+    email: req.body.email,
+    password: req.body.password,
+  });
+  res.json({ data, error });
+});
+
+app.post('/api/login', async (req, res) => {
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: req.body.email,
+    password: req.body.password,
+  });
+  if (!error) {
+    res.setHeader(
+      'Set-Cookie',
+      `cookie=${data.session.access_token}; HttpOnly`
+    );
+  }
+  res.json({ data, error });
+});
+
+app.post('/api/get-favorites', async (req, res) => {
+  const jwt = req.body.user;
+
+  const user = await supabase.auth.getUser(jwt);
+  const userError = user.error;
+  if (userError) {
+    res.status(500).json({ message: 'error', error: userError });
+  }
+  const email = user.data.user.email;
+
+  const { data, error } = await supabase
+    .from('coin')
+    .select('name')
+    .eq('email', email);
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success', data });
+  }
+});
+
+app.post('/api/add-favorite', async (req, res) => {
+  const { jwt, favorite } = req.body;
+
+  const user = await supabase.auth.getUser(jwt);
+  const email = user.data.user.email;
+
+  // Check if favorite already exists on user
+  const userData = await supabase
+    .from('coin')
+    .select('name')
+    .eq('name', favorite)
+    .eq('email', email);
+
+  if (userData.data.length) {
+    const hasFavorite = userData.data.find((coin) => coin.name === favorite);
+    if (hasFavorite) return;
+  }
+
+  const { error } = await supabase
+    .from('coin')
+    .insert({ email, name: favorite });
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
+});
+
+app.post('/api/delete-favorite', async (req, res) => {
+  const { jwt, favorite } = req.body;
+  const user = await supabase.auth.getUser(jwt);
+  const email = user.data.user.email;
+
+  const { error } = await supabase
+    .from('coin')
+    .delete()
+    .eq('email', email)
+    .eq('name', favorite);
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
 });
 
 // Serve for production
