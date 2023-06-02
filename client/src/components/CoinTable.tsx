@@ -70,7 +70,9 @@ export default function CoinTable({
       body: JSON.stringify({ jwt: user, favorite: coin.name }),
     });
 
-    setFavoriteCoins([...favoriteCoins, coin.name]);
+    if (res.status === 200) {
+      setFavoriteCoins([...favoriteCoins, coin.name]);
+    }
   };
 
   const handleDeleteFavoriteClick = async (coin: Coin) => {
@@ -82,8 +84,10 @@ export default function CoinTable({
       body: JSON.stringify({ jwt: user, favorite: coin.name }),
     });
 
-    const newFavorites = favoriteCoins.filter((c) => c !== coin.name);
-    setFavoriteCoins(newFavorites);
+    if (res.status === 200) {
+      const newFavorites = favoriteCoins.filter((c) => c !== coin.name);
+      setFavoriteCoins(newFavorites);
+    }
   };
 
   if (!coins.length) return null;
