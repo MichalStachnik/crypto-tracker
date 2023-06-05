@@ -8,6 +8,9 @@ import { LiveCoinWatchData } from './types/LiveCoinWatchData';
 import Header from './components/Header';
 import { UserProvider } from './contexts/UserContext';
 import { Timeline } from 'react-twitter-widgets';
+import BTCWrapper from './components/BTCBlockWrapper';
+import BTCBlockWrapper from './components/BTCBlockWrapper';
+import BTCTransactionWrapper from './components/BTCTransactionWrapper';
 
 function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
@@ -74,7 +77,6 @@ function App() {
                   borderRadius={2}
                   display="flex"
                   flexDirection="column"
-                  justifyContent="space-between"
                 >
                   <Box display="flex" flexDirection="column">
                     <Link
@@ -92,6 +94,8 @@ function App() {
                       {liveCoinWatchData.name} whitepaper
                     </Link>
                   </Box>
+                  <BTCBlockWrapper />
+                  <BTCTransactionWrapper />
                   {liveCoinWatchData.links.twitter && (
                     <Timeline
                       dataSource={{

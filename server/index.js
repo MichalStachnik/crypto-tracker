@@ -22,7 +22,7 @@ app.get('/api/global', async (req, res) => {
     res.json(globalData);
     return;
   }
-  console.log('not found');
+
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
   globalData = json;
