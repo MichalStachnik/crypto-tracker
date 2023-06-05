@@ -13,9 +13,19 @@ const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
 
 app.use(express.json());
 
+// TODO implement an actual cache
+let globalData;
+let cmcData;
+
 app.get('/api/global', async (req, res) => {
+  if (globalData) {
+    res.json(globalData);
+    return;
+  }
+  console.log('not found');
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
+  globalData = json;
   res.json(json);
 });
 
@@ -26,10 +36,15 @@ app.get('/coins', async (req, res) => {
 });
 
 app.get('/api/cmc', async (req, res) => {
+  if (cmcData) {
+    res.json(cmcData);
+    return;
+  }
   const data = await fetch(
     `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
   );
   const json = await data.json();
+  cmcData = json;
   res.json(json);
 });
 
@@ -130,6 +145,7 @@ app.post('/api/get-favorites', async (req, res) => {
   if (userError) {
     console.error('user error', userError);
     res.status(500).json({ message: 'error', error: userError });
+    return;
   }
   const email = user.data.user.email;
 
