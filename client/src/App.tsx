@@ -8,7 +8,6 @@ import { LiveCoinWatchData } from './types/LiveCoinWatchData';
 import Header from './components/Header';
 import { UserProvider } from './contexts/UserContext';
 import { Timeline } from 'react-twitter-widgets';
-import BTCWrapper from './components/BTCBlockWrapper';
 import BTCBlockWrapper from './components/BTCBlockWrapper';
 import BTCTransactionWrapper from './components/BTCTransactionWrapper';
 
@@ -63,12 +62,17 @@ function App() {
             <>
               <Typography display="inline">24 hour price data for</Typography>
               &nbsp;
-              <Box bgcolor="white" display="inline" p="4px" border="8px">
-                <Typography display="inline" color={liveCoinWatchData.color}>
+              <Box bgcolor="white" display="inline" p="8px" borderRadius="4px">
+                <Typography
+                  display="inline"
+                  fontWeight="bold"
+                  fontSize="1.2rem"
+                  color={liveCoinWatchData.color}
+                >
                   {liveCoinWatchData.name}
                 </Typography>
               </Box>
-              <Box display="flex" p={2}>
+              <Box display="flex" m={2}>
                 <CoinChart liveCoinWatchData={liveCoinWatchData} />
                 <Box
                   boxShadow="inset 0 0 10px rgba(0,0,0,0.5)"

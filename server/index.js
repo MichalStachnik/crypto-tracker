@@ -16,6 +16,7 @@ app.use(express.json());
 // TODO implement an actual cache
 let globalData;
 let cmcData;
+let latestBlock;
 
 app.get('/api/global', async (req, res) => {
   if (globalData) {
@@ -85,6 +86,20 @@ app.get('/api/livecoinwatch/:symbol', async (req, res) => {
   });
   const json = await data.json();
   res.json(json);
+});
+
+app.get('/api/btc/latest-block', async (req, res) => {
+  if (latestBlock) {
+    res.json(latestBlock);
+    return;
+  }
+  const data = await fetch(`https://blockchain.info/latestblock`);
+  const json = await data.json();
+  const { hash } = json;
+  const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
+  const blockData = await rawBlockData.json();
+  latestBlock = blockData;
+  res.json(blockData);
 });
 
 import { createClient } from '@supabase/supabase-js';
