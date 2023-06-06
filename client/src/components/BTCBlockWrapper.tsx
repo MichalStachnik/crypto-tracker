@@ -44,12 +44,12 @@ const formatDate = (date: Date) =>
 
 const BTCBlockWrapper = () => {
   const ws = useRef<WebSocket | null>(null);
-  const [block, setBlock] = useState<Block | null>(null);
+  const [blocks, setBlocks] = useState<Block[]>([]);
 
   const fetchLatestBlock = async () => {
     const res = await fetch('/api/btc/latest-block');
     const data = await res.json();
-    setBlock(data);
+    setBlocks([data]);
   };
 
   const handleSockOpen = () => {
@@ -64,12 +64,15 @@ const BTCBlockWrapper = () => {
     ws.current.onopen = () => handleSockOpen();
     ws.current.onclose = () => console.log('ws closed');
 
-    // TODO: add new blocks
-    // ws.current.onmessage = (e) => {
-    // console.log('e', e);
-    // console.log('e', e.data);
-    // const message = JSON.parse(e.data);
-    // };
+    // TODO: fix
+    ws.current.onmessage = (e) => {
+      // console.log('new block', e);
+      // console.log('e.data', e.data);
+      const message = JSON.parse(e.data);
+      console.log('message', message);
+
+      // setBlocks([...blocks, message.x]);
+    };
 
     const wsCurrent = ws.current;
 
@@ -82,22 +85,24 @@ const BTCBlockWrapper = () => {
   return (
     <Box>
       <Typography>BTC Latest Block</Typography>
-      {block && (
-        <StyledBlock>
-          <Typography>Hash: </Typography>
-          <Typography fontSize="10px">{block.hash}</Typography>
-          <Typography>Height: {block.height}</Typography>
-          <Typography>
-            Time: {formatDate(new Date(block.time * 1000))}
-          </Typography>
-          <Typography>Size: {block.size}</Typography>
-          <Typography>Weight: {block.weight}</Typography>
-          <Typography>Transactions: {block.n_tx}</Typography>
-          <Typography>Previous Block:</Typography>
-          {/* TODO: fetch prev block */}
-          <Typography fontSize="10px">{block.prev_block}</Typography>
-        </StyledBlock>
-      )}
+      {blocks.map((block: Block) => {
+        return (
+          <StyledBlock key={block.bits}>
+            <Typography>Hash: </Typography>
+            <Typography fontSize="10px">{block.hash}</Typography>
+            <Typography>Height: {block.height}</Typography>
+            <Typography>
+              Time: {formatDate(new Date(block.time * 1000))}
+            </Typography>
+            <Typography>Size: {block.size}</Typography>
+            <Typography>Weight: {block.weight}</Typography>
+            <Typography>Transactions: {block.n_tx}</Typography>
+            <Typography>Previous Block:</Typography>
+            {/* TODO: fetch prev block */}
+            <Typography fontSize="10px">{block.prev_block}</Typography>
+          </StyledBlock>
+        );
+      })}
     </Box>
   );
 };

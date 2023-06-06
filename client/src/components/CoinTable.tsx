@@ -18,12 +18,13 @@ const styleCell = (percentChange: number) => {
   } else if (percentChange < 0) {
     return { color: 'red' };
   } else {
-    return { color: 'black' };
+    return { color: 'white' };
   }
 };
 
 const StyledTableCell = styled(TableCell)(() => ({
   cursor: 'pointer',
+  color: 'white',
 }));
 
 interface CoinTableProps {
@@ -93,14 +94,19 @@ export default function CoinTable({
   if (!coins.length) return null;
   return (
     <TableContainer component={Paper}>
-      <Table sx={{ minWidth: 650 }} aria-label="simple table">
+      <Table
+        sx={{ minWidth: 650, background: '#2d2d2d' }}
+        aria-label="simple table"
+      >
         <TableHead>
           <TableRow>
-            <TableCell>Rank</TableCell>
-            {user && <TableCell>Favorite</TableCell>}
-            <TableCell>Name</TableCell>
-            <TableCell>Symbol</TableCell>
-            <TableCell align="right">Price</TableCell>
+            <TableCell sx={{ color: 'white' }}>Rank</TableCell>
+            {user && <TableCell sx={{ color: 'white' }}>Favorite</TableCell>}
+            <TableCell sx={{ color: 'white' }}>Name</TableCell>
+            <TableCell sx={{ color: 'white' }}>Symbol</TableCell>
+            <TableCell align="right" sx={{ color: 'white' }}>
+              Price
+            </TableCell>
             <StyledTableCell align="right" onClick={() => toggleSort('24hr')}>
               % Change 24Hr
               {sort.sortKey === '24hr' && sort.sortDirection === 'asc' && (
@@ -194,12 +200,13 @@ export default function CoinTable({
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
                 onClick={() => onCoinClick(coin)}
                 style={{ cursor: 'pointer' }}
+                hover={true}
               >
-                <TableCell component="th" scope="row">
+                <TableCell component="th" scope="row" sx={{ color: 'white' }}>
                   {coin.cmc_rank}
                 </TableCell>
                 {user && (
-                  <TableCell>
+                  <TableCell sx={{ color: 'white' }}>
                     <IconButton
                       onClick={(e) => {
                         e.stopPropagation();
@@ -214,9 +221,9 @@ export default function CoinTable({
                     </IconButton>
                   </TableCell>
                 )}
-                <TableCell>{coin.name}</TableCell>
-                <TableCell>{coin.symbol}</TableCell>
-                <TableCell align="right">
+                <TableCell sx={{ color: 'white' }}>{coin.name}</TableCell>
+                <TableCell sx={{ color: 'white' }}>{coin.symbol}</TableCell>
+                <TableCell align="right" sx={{ color: 'white' }}>
                   {coin.quote.USD.price.toFixed(4)}
                 </TableCell>
                 <TableCell

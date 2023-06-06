@@ -43,6 +43,19 @@ const styleCell = (percentChange: number) => {
   }
 };
 
+const StyledLogo = styled(Typography)(({ theme }) => ({
+  backgroundImage:
+    'linear-gradient(90deg, rgb(255,255,255) 0%, rgba(136,132,216,1) 99%)',
+  backgroundClip: 'text',
+  WebkitTextFillColor: 'transparent',
+  [theme.breakpoints.down('sm')]: {
+    display: 'block',
+  },
+  [theme.breakpoints.down('xs')]: {
+    display: 'none',
+  },
+}));
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -363,14 +376,9 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
           >
             <MenuIcon />
           </IconButton> */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ display: { xs: 'none', sm: 'block' } }}
-          >
+          <StyledLogo variant="h6" noWrap component="div">
             Crypto Tracker
-          </Typography>
+          </StyledLogo>
           <Search>
             <SearchIconWrapper>
               <SearchIcon />
