@@ -1,22 +1,23 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { Box, CircularProgress, Link, Typography } from '@mui/material';
+import { Box, CircularProgress, Typography } from '@mui/material';
 import CoinTable from './components/CoinTable';
 import CoinChart from './components/CoinChart';
 import { Coin } from './types/Coin';
 import { LiveCoinWatchData } from './types/LiveCoinWatchData';
 import Header from './components/Header';
 import { UserProvider } from './contexts/UserContext';
-import { Timeline } from 'react-twitter-widgets';
-import BTCBlockWrapper from './components/BTCBlockWrapper';
-import BTCTransactionWrapper from './components/BTCTransactionWrapper';
+import CoinInfoBox from './components/CoinInfoBox';
+import CoinHeader from './components/CoinHeader';
 
 function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
   const [liveCoinWatchData, setLiveCoinWatchData] =
     useState<LiveCoinWatchData | null>(null);
-  const [searchText, setSearchText] = useState('');
+  const [searchText, setSearchText] = useState<string>('');
+  const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
+  const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchGlobal();
@@ -42,10 +43,13 @@ function App() {
     fetch(`/api/livecoinwatch/${symbol}`)
       .then((res) => res.json())
       .then((res) => setLiveCoinWatchData(res))
-      .catch((err) => console.error('Error', err));
+      .catch((err) => console.error('Error', err))
+      .finally(() => setIsLoading(false));
   };
 
   const handleCoinClick = (coin: Coin) => {
+    setIsLoading(true);
+    setSelectedCoin(coin);
     fetchLiveCoinWatch(coin.symbol);
   };
   if (!coins.length) return <CircularProgress />;
@@ -57,74 +61,30 @@ function App() {
           searchText={searchText}
           setSearchText={setSearchText}
         />
-        <div>
-          {liveCoinWatchData ? (
-            <>
-              <Typography display="inline">24 hour price data for</Typography>
-              &nbsp;
-              <Box bgcolor="white" display="inline" p="8px" borderRadius="4px">
-                <Typography
-                  display="inline"
-                  fontWeight="bold"
-                  fontSize="1.2rem"
-                  color={liveCoinWatchData.color}
-                >
-                  {liveCoinWatchData.name}
-                </Typography>
-              </Box>
-              <Box display="flex" m={2}>
-                <CoinChart liveCoinWatchData={liveCoinWatchData} />
-                <Box
-                  boxShadow="inset 0 0 10px rgba(0,0,0,0.5)"
-                  p={2}
-                  flex={1}
-                  borderRadius={2}
-                  display="flex"
-                  flexDirection="column"
-                >
-                  <Box display="flex" flexDirection="column">
-                    <Link
-                      href={liveCoinWatchData.links.website}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {liveCoinWatchData.name} website
-                    </Link>
-                    <Link
-                      href={liveCoinWatchData.links.whitepaper}
-                      target="_blank"
-                      rel="noreferrer noopener"
-                    >
-                      {liveCoinWatchData.name} whitepaper
-                    </Link>
-                  </Box>
-                  <BTCBlockWrapper />
-                  <BTCTransactionWrapper />
-                  {liveCoinWatchData.links.twitter && (
-                    <Timeline
-                      dataSource={{
-                        sourceType: 'profile',
-                        screenName: `${
-                          liveCoinWatchData.links.twitter.split('.com/')[1]
-                        }`,
-                      }}
-                      options={{
-                        height: '400',
-                      }}
-                    />
-                  )}
+        <Box display="flex" flexDirection="column">
+          <Box>
+            <CoinHeader
+              selectedCoin={selectedCoin}
+              liveCoinWatchData={liveCoinWatchData}
+              isLoading={isLoading}
+            />
+            {liveCoinWatchData ? (
+              <>
+                <Box display="flex" m={2}>
+                  <CoinChart liveCoinWatchData={liveCoinWatchData} />
+                  <CoinInfoBox liveCoinWatchData={liveCoinWatchData} />
                 </Box>
-              </Box>
-            </>
-          ) : (
-            <CircularProgress />
-          )}
+              </>
+            ) : (
+              <CircularProgress />
+            )}
+          </Box>
           <CoinTable
             coins={coins}
             onCoinClick={handleCoinClick}
             searchText={searchText}
           />
-        </div>
+        </Box>
       </UserProvider>
     </>
   );

@@ -1,13 +1,12 @@
 import { useContext, useState } from 'react';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell from '@mui/material/TableCell';
+import TableCell, { SortDirection } from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { ArrowDown, ArrowUp } from 'react-feather';
-import { IconButton, styled } from '@mui/material';
+import { IconButton, TableSortLabel, styled } from '@mui/material';
 import { Coin } from '../types/Coin';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { UserContext } from '../contexts/UserContext';
@@ -35,7 +34,7 @@ interface CoinTableProps {
 
 interface Sort {
   sortKey: string;
-  sortDirection: string;
+  sortDirection: SortDirection;
 }
 
 export default function CoinTable({
@@ -48,10 +47,16 @@ export default function CoinTable({
     sortKey: '',
     sortDirection: 'asc',
   });
+  const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
 
   const toggleSort = (sortKey: string) => {
     const newDirection = sort.sortDirection === 'asc' ? 'desc' : 'asc';
     setSort({ sortKey, sortDirection: newDirection });
+  };
+
+  const handleCoinClick = (coin: Coin) => {
+    setSelectedCoin(coin);
+    onCoinClick(coin);
   };
 
   const handleHeartClick = (coin: Coin) => {
@@ -107,32 +112,45 @@ export default function CoinTable({
             <TableCell align="right" sx={{ color: 'white' }}>
               Price
             </TableCell>
-            <StyledTableCell align="right" onClick={() => toggleSort('24hr')}>
-              % Change 24Hr
-              {sort.sortKey === '24hr' && sort.sortDirection === 'asc' && (
-                <ArrowUp />
-              )}
-              {sort.sortKey === '24hr' && sort.sortDirection == 'desc' && (
-                <ArrowDown />
-              )}
+            <StyledTableCell
+              align="right"
+              onClick={() => toggleSort('24hr')}
+              sortDirection={
+                sort.sortKey === '24hr' ? sort.sortDirection : false
+              }
+            >
+              <TableSortLabel
+                active={sort.sortKey === '24hr'}
+                direction={sort.sortDirection === 'asc' ? 'asc' : 'desc'}
+              >
+                % Change 24hr
+              </TableSortLabel>
             </StyledTableCell>
-            <StyledTableCell align="right" onClick={() => toggleSort('7d')}>
-              % Change 7d
-              {sort.sortKey === '7d' && sort.sortDirection === 'asc' && (
-                <ArrowUp />
-              )}
-              {sort.sortKey === '7d' && sort.sortDirection == 'desc' && (
-                <ArrowDown />
-              )}
+            <StyledTableCell
+              align="right"
+              onClick={() => toggleSort('7d')}
+              sortDirection={sort.sortKey === '7d' ? sort.sortDirection : false}
+            >
+              <TableSortLabel
+                active={sort.sortKey === '7d'}
+                direction={sort.sortDirection === 'asc' ? 'asc' : 'desc'}
+              >
+                % Change 7d
+              </TableSortLabel>
             </StyledTableCell>
-            <StyledTableCell align="right" onClick={() => toggleSort('30d')}>
-              % Change 30d
-              {sort.sortKey === '30d' && sort.sortDirection === 'asc' && (
-                <ArrowUp />
-              )}
-              {sort.sortKey === '30d' && sort.sortDirection == 'desc' && (
-                <ArrowDown />
-              )}
+            <StyledTableCell
+              align="right"
+              onClick={() => toggleSort('30d')}
+              sortDirection={
+                sort.sortKey === '30d' ? sort.sortDirection : false
+              }
+            >
+              <TableSortLabel
+                active={sort.sortKey === '30d'}
+                direction={sort.sortDirection === 'asc' ? 'asc' : 'desc'}
+              >
+                % Change 30d
+              </TableSortLabel>
             </StyledTableCell>
           </TableRow>
         </TableHead>
@@ -198,9 +216,10 @@ export default function CoinTable({
               <TableRow
                 key={coin.cmc_rank}
                 sx={{ '&:last-child td, &:last-child th': { border: 0 } }}
-                onClick={() => onCoinClick(coin)}
+                onClick={() => handleCoinClick(coin)}
                 style={{ cursor: 'pointer' }}
                 hover={true}
+                selected={coin.name === selectedCoin?.name}
               >
                 <TableCell component="th" scope="row" sx={{ color: 'white' }}>
                   {coin.cmc_rank}
