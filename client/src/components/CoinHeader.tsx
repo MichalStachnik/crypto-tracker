@@ -17,7 +17,7 @@ const CoinHeader = ({
     <Box display="flex" justifyContent="center" alignItems="center">
       {isLoading && <CircularProgress />}
       <Typography ml={2} display="inline">
-        {isLoading ? 'fetching' : ''} 24 hour price data for
+        {selectedCoin && isLoading ? 'fetching' : ''} 24 hour price data for
       </Typography>
       &nbsp;
       <Box bgcolor="white" display="inline" p="8px" borderRadius="4px">
@@ -27,7 +27,7 @@ const CoinHeader = ({
           fontSize="1.2rem"
           color={liveCoinWatchData ? liveCoinWatchData.color : 'black'}
         >
-          {liveCoinWatchData?.name || selectedCoin?.name}
+          {selectedCoin?.name || liveCoinWatchData?.name}
         </Typography>
       </Box>
     </Box>

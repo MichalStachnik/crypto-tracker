@@ -3,6 +3,7 @@ import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
 import BTCTransactionWrapper from './BTCTransactionWrapper';
 import { Timeline } from 'react-twitter-widgets';
+import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
   liveCoinWatchData: LiveCoinWatchData;
@@ -17,6 +18,7 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       borderRadius={2}
       display="flex"
       flexDirection="column"
+      minWidth={400}
     >
       <Box display="flex" flexDirection="column" alignItems="center">
         <Link
@@ -36,6 +38,7 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       </Box>
       <BTCBlockWrapper />
       <BTCTransactionWrapper />
+      <BTCMempoolWrapper />
       {liveCoinWatchData.links.twitter && (
         <Timeline
           dataSource={{

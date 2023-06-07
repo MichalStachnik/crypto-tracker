@@ -16,6 +16,7 @@ app.use(express.json());
 // TODO implement an actual cache
 let globalData;
 let cmcData;
+let mempool;
 
 app.get('/api/global', async (req, res) => {
   if (globalData) {
@@ -32,6 +33,28 @@ app.get('/api/global', async (req, res) => {
 app.get('/coins', async (req, res) => {
   const data = await fetch(`${PAPRIKA_BASE_URL}/coins`);
   const json = await data.json();
+  res.json(json);
+});
+
+app.get('/api/mempool', async (req, res) => {
+  if (mempool) {
+    res.json(mempool);
+    return;
+  }
+  const data = await fetch(process.env.QUICK_NODE_URL, {
+    method: 'POST',
+    headers: {
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      jsonrpc: '1.0',
+      id: 'curltest',
+      method: 'getrawmempool',
+      params: [true],
+    }),
+  });
+  const json = await data.json();
+  mempool = json;
   res.json(json);
 });
 

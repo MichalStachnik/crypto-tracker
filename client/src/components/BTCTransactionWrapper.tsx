@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Box, LinearProgress, Typography } from '@mui/material';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
+import TransactionChart from './TransactionChart';
 
 interface Transaction {
   value: {
@@ -23,7 +24,8 @@ interface Transaction {
 
 const BTCTransactionWrapper = () => {
   const ws = useRef<WebSocket | null>(null);
-  const [transactions, setTranactions] = useState<Set<Transaction>>(new Set());
+  const [transactions, setTransactions] = useState<Set<Transaction>>(new Set());
+  const [sizes, setSizes] = useState<number[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
   const handleSockOpen = () => {
@@ -40,8 +42,11 @@ const BTCTransactionWrapper = () => {
     ws.current.onclose = () => setIsConnected(false);
 
     const data = new Set<Transaction>();
+    const graphData: number[] = [];
     const flush = () => {
-      setTranactions(new Set(data));
+      setTransactions(new Set(data));
+      graphData.push(data.size);
+      setSizes(graphData);
       data.clear();
     };
     const timer = setInterval(flush, 2000);
@@ -62,14 +67,21 @@ const BTCTransactionWrapper = () => {
   return (
     <Box>
       {transactions ? (
-        <Box display="flex" justifyContent="space-evenly" alignItems="center">
-          <Typography># Transactions in last 2s</Typography>
-          <Typography ml={5}>{transactions.size}</Typography>
-          {isConnected ? (
-            <LinearProgress color="success" sx={{ width: 40 }} />
-          ) : (
-            <SyncDisabledIcon sx={{ color: 'red' }} />
-          )}
+        <Box display="flex" flexDirection="column">
+          <Box display="flex" justifyContent="space-evenly" alignItems="center">
+            <Typography># of transactions broadcast in last 2s</Typography>
+            <Typography ml={5} color="#fa9e32">
+              {transactions.size}
+            </Typography>
+            {isConnected ? (
+              <LinearProgress color="success" sx={{ width: 40 }} />
+            ) : (
+              <SyncDisabledIcon sx={{ color: 'red' }} />
+            )}
+          </Box>
+          <Box>
+            <TransactionChart sizes={sizes} />
+          </Box>
         </Box>
       ) : null}
     </Box>
