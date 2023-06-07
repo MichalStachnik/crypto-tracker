@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import './App.css';
-import { Box, CircularProgress, Typography } from '@mui/material';
+import { Box, CircularProgress } from '@mui/material';
 import CoinTable from './components/CoinTable';
 import CoinChart from './components/CoinChart';
 import { Coin } from './types/Coin';
