@@ -377,7 +377,7 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
             <MenuIcon />
           </IconButton> */}
           <StyledLogo variant="h6" noWrap>
-            wen mewn
+            MB
           </StyledLogo>
           <Search>
             <SearchIconWrapper>
