@@ -7,7 +7,9 @@ const BTCMempoolWrapper = () => {
   useEffect(() => {
     const fetchMempool = () => {
       setIsLoading(true);
-      fetch('/api/mempool')
+      fetch('/api/mempool', {
+        method: 'POST',
+      })
         .then((res) => res.json())
         .then((res) => {
           setMempoolLength(Object.keys(res.result).length);
