@@ -28,7 +28,7 @@ function ChartTooltip({
         width="200px"
       >
         <Typography>{`${payload[0].value} Transactions`}</Typography>
-        <Typography>{`${label}`}</Typography>
+        <Typography>{label}</Typography>
       </Box>
     );
   }
@@ -41,10 +41,12 @@ interface TransactionChartProps {
 }
 
 const TransactionChart = ({ sizes }: TransactionChartProps) => {
+  let sum = 0;
   const data = sizes.map((size, index) => {
+    sum += size;
     return {
       time: index,
-      size,
+      size: sum / (index + 1),
     };
   });
   return (
