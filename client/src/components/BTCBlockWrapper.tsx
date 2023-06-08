@@ -67,13 +67,13 @@ const BTCBlockWrapper = () => {
     ws.current.onclose = () => console.log('ws closed');
 
     // TODO: fix
-    ws.current.onmessage = (e) => {
-      // console.log('new block', e);
-      // console.log('e.data', e.data);
-      // const message = JSON.parse(e.data);
-      // console.log('message', message);
-      // setBlocks([...blocks, message.x]);
-    };
+    // ws.current.onmessage = (e) => {
+    // console.log('new block', e);
+    // console.log('e.data', e.data);
+    // const message = JSON.parse(e.data);
+    // console.log('message', message);
+    // setBlocks([...blocks, message.x]);
+    // };
 
     const wsCurrent = ws.current;
 
