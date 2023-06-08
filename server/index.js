@@ -41,6 +41,7 @@ app.get('/api/mempool', async (req, res) => {
     res.json(mempool);
     return;
   }
+  console.log('trying to get mempool...');
   const data = await fetch(process.env.QUICK_NODE_URL, {
     method: 'POST',
     headers: {
@@ -53,7 +54,9 @@ app.get('/api/mempool', async (req, res) => {
       params: [true],
     }),
   });
+  console.log('the data back', data);
   const json = await data.json();
+  console.log('json back', json);
   mempool = json;
   res.json(json);
 });

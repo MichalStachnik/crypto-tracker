@@ -1,4 +1,4 @@
-import { Box, Typography, styled } from '@mui/material';
+import { Box, CircularProgress, Typography, styled } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
 
 interface Block {
@@ -45,11 +45,13 @@ const formatDate = (date: Date) =>
 const BTCBlockWrapper = () => {
   const ws = useRef<WebSocket | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   const fetchLatestBlock = async () => {
     const res = await fetch('/api/btc/latest-block');
     const data = await res.json();
     setBlocks([data]);
+    setIsLoading(false);
   };
 
   const handleSockOpen = () => {
@@ -68,9 +70,8 @@ const BTCBlockWrapper = () => {
     ws.current.onmessage = (e) => {
       // console.log('new block', e);
       // console.log('e.data', e.data);
-      const message = JSON.parse(e.data);
-      console.log('message', message);
-
+      // const message = JSON.parse(e.data);
+      // console.log('message', message);
       // setBlocks([...blocks, message.x]);
     };
 
@@ -85,24 +86,30 @@ const BTCBlockWrapper = () => {
   return (
     <Box>
       <Typography>BTC Latest Block</Typography>
-      {blocks.map((block: Block) => {
-        return (
-          <StyledBlock key={block.bits}>
-            <Typography>Hash: </Typography>
-            <Typography fontSize="10px">{block.hash}</Typography>
-            <Typography>Height: {block.height}</Typography>
-            <Typography>
-              Time: {formatDate(new Date(block.time * 1000))}
-            </Typography>
-            <Typography>Size: {block.size}</Typography>
-            <Typography>Weight: {block.weight}</Typography>
-            <Typography>Transactions: {block.n_tx}</Typography>
-            <Typography>Previous Block:</Typography>
-            {/* TODO: fetch prev block */}
-            <Typography fontSize="10px">{block.prev_block}</Typography>
-          </StyledBlock>
-        );
-      })}
+      {isLoading ? (
+        <CircularProgress />
+      ) : (
+        <>
+          {blocks.map((block: Block) => {
+            return (
+              <StyledBlock key={block.bits}>
+                <Typography>Hash: </Typography>
+                <Typography fontSize="10px">{block.hash}</Typography>
+                <Typography>Height: {block.height}</Typography>
+                <Typography>
+                  Time: {formatDate(new Date(block.time * 1000))}
+                </Typography>
+                <Typography>Size: {block.size}</Typography>
+                <Typography>Weight: {block.weight}</Typography>
+                <Typography>Transactions: {block.n_tx}</Typography>
+                <Typography>Previous Block:</Typography>
+                {/* TODO: fetch prev block */}
+                <Typography fontSize="10px">{block.prev_block}</Typography>
+              </StyledBlock>
+            );
+          })}
+        </>
+      )}
     </Box>
   );
 };
