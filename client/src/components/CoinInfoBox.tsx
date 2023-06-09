@@ -12,7 +12,7 @@ interface CoinInfoBoxProps {
 const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
   return (
     <Box
-      boxShadow="inset 0 0 10px rgba(0,0,0,0.5)"
+      boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
       p={2}
       flex={1}
       borderRadius={2}
@@ -46,7 +46,7 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
             screenName: `${liveCoinWatchData.links.twitter.split('.com/')[1]}`,
           }}
           options={{
-            height: '400',
+            height: '200',
           }}
         />
       )}

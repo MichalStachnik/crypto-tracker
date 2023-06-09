@@ -36,21 +36,23 @@ function ChartTooltip({
   return null;
 }
 
-interface TransactionChartProps {
+interface AverageTransactionChartProps {
   sizes: number[];
 }
 
-const TransactionChart = ({ sizes }: TransactionChartProps) => {
-  const data = sizes.map((size, index) => {
+const AverageTransactionChart = ({ sizes }: AverageTransactionChartProps) => {
+  let sum = 0;
+  const sumData = sizes.map((size, index) => {
+    sum += size;
     return {
       time: index,
-      size,
+      size: sum / (index + 1),
     };
   });
   return (
     <ResponsiveContainer width="100%" height={100}>
       <AreaChart
-        data={data}
+        data={sumData}
         margin={{
           top: 10,
           right: 30,
@@ -85,4 +87,4 @@ const TransactionChart = ({ sizes }: TransactionChartProps) => {
   );
 };
 
-export default TransactionChart;
+export default AverageTransactionChart;

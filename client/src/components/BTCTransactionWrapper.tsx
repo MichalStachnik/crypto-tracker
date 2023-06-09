@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { Box, LinearProgress, Typography } from '@mui/material';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import TransactionChart from './TransactionChart';
+import AverageTransactionChart from './AverageTransactionChart';
 
 interface Transaction {
   value: {
@@ -68,7 +69,11 @@ const BTCTransactionWrapper = () => {
     <Box>
       {transactions ? (
         <Box display="flex" flexDirection="column">
-          <Box display="flex" justifyContent="space-evenly" alignItems="center">
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Typography># of transactions broadcast in last 2s</Typography>
             <Typography ml={5} color="#fa9e32">
               {transactions.size}
@@ -81,6 +86,12 @@ const BTCTransactionWrapper = () => {
           </Box>
           <Box>
             <TransactionChart sizes={sizes} />
+          </Box>
+          <Box>
+            <Typography align="left">
+              average # of transactions in 2s intervals
+            </Typography>
+            <AverageTransactionChart sizes={sizes} />
           </Box>
         </Box>
       ) : null}

@@ -1,24 +1,6 @@
 import { Box, CircularProgress, Typography, styled } from '@mui/material';
 import { useEffect, useRef, useState } from 'react';
-
-interface Block {
-  bits: number;
-  block_index: number;
-  fee: number;
-  hash: string;
-  height: number;
-  main_chain: boolean;
-  mrkl_root: string;
-  n_tx: number;
-  next_block: Block[];
-  none: number;
-  prev_block: string;
-  size: number;
-  time: number;
-  tx: any[];
-  ver: number;
-  weight: number;
-}
+import { Block } from '../types/Block';
 
 const StyledBlock = styled(Box)(() => ({
   boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
@@ -93,15 +75,36 @@ const BTCBlockWrapper = () => {
           {blocks.map((block: Block) => {
             return (
               <StyledBlock key={block.bits}>
-                <Typography>Hash: </Typography>
-                <Typography fontSize="10px">{block.hash}</Typography>
-                <Typography>Height: {block.height}</Typography>
-                <Typography>
-                  Time: {formatDate(new Date(block.time * 1000))}
-                </Typography>
-                <Typography>Size: {block.size}</Typography>
-                <Typography>Weight: {block.weight}</Typography>
-                <Typography>Transactions: {block.n_tx}</Typography>
+                <Box
+                  display="flex"
+                  flexDirection="column"
+                  justifyContent="space-between"
+                >
+                  <Typography>Hash</Typography>
+                  <Typography fontSize="10px">{block.hash}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography>Height</Typography>
+                  <Typography>{block.height}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography>Time</Typography>
+                  <Typography>
+                    {formatDate(new Date(block.time * 1000))}
+                  </Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography>Size</Typography>
+                  <Typography>{block.size}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography>Weight</Typography>
+                  <Typography>{block.weight}</Typography>
+                </Box>
+                <Box display="flex" justifyContent="space-between">
+                  <Typography>Transactions</Typography>
+                  <Typography>{block.n_tx}</Typography>
+                </Box>
                 <Typography>Previous Block:</Typography>
                 {/* TODO: fetch prev block */}
                 <Typography fontSize="10px">{block.prev_block}</Typography>

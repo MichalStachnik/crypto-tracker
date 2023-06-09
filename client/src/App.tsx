@@ -70,7 +70,13 @@ function App() {
             />
             {liveCoinWatchData ? (
               <>
-                <Box display="flex" m={2}>
+                <Box
+                  display="flex"
+                  m={2}
+                  sx={{
+                    flexDirection: { xs: 'column', md: 'row' },
+                  }}
+                >
                   <CoinChart liveCoinWatchData={liveCoinWatchData} />
                   <CoinInfoBox liveCoinWatchData={liveCoinWatchData} />
                 </Box>

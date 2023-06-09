@@ -36,26 +36,30 @@ app.get('/coins', async (req, res) => {
   res.json(json);
 });
 
-app.post('/api/mempool', async (req, res) => {
+app.get('/api/mempool', async (req, res) => {
   if (mempool) {
     res.json(mempool);
     return;
   }
-  const data = await fetch(process.env.QUICK_NODE_URL, {
-    method: 'POST',
-    headers: {
-      'content-type': 'application/json',
-    },
-    body: JSON.stringify({
-      jsonrpc: '1.0',
-      id: 'curltest',
-      method: 'getrawmempool',
-      params: [true],
-    }),
-  });
-  const json = await data.json();
-  mempool = json;
-  res.json(json);
+  try {
+    const data = await fetch(process.env.QUICK_NODE_URL, {
+      method: 'POST',
+      headers: {
+        'content-type': 'application/json',
+      },
+      body: JSON.stringify({
+        jsonrpc: '1.0',
+        id: 'curltest',
+        method: 'getrawmempool',
+        params: [true],
+      }),
+    });
+    const json = await data.json();
+    mempool = json;
+    res.json(json);
+  } catch (error) {
+    console.error('error fetching from quick node', error);
+  }
 });
 
 app.get('/api/cmc', async (req, res) => {
