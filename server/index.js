@@ -42,6 +42,7 @@ app.get('/api/mempool', async (req, res) => {
     return;
   }
   try {
+    console.log('fetching from quick node...');
     const data = await fetch(process.env.QUICK_NODE_URL, {
       method: 'POST',
       headers: {
@@ -58,6 +59,7 @@ app.get('/api/mempool', async (req, res) => {
     mempool = json;
     res.json(json);
   } catch (error) {
+    console.log('error fetching from quick node', error);
     console.error('error fetching from quick node', error);
   }
 });
