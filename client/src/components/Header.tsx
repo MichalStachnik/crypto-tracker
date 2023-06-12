@@ -404,7 +404,7 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >
                   <Typography>Market cap</Typography>
-                  <Typography>
+                  <Typography fontSize="0.8rem">
                     {USDollar.format(globalData.market_cap_usd)}
                   </Typography>
                 </Box>
@@ -435,7 +435,7 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
                 Login
               </Button>
               <Button
-                variant="outlined"
+                variant="contained"
                 onClick={() => setIsSignupDialogOpen(true)}
               >
                 Signup
