@@ -3,7 +3,7 @@ import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
 import BTCTransactionWrapper from './BTCTransactionWrapper';
 import { Timeline } from 'react-twitter-widgets';
-import BTCMempoolWrapper from './BTCMempoolWrapper';
+// import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
   liveCoinWatchData: LiveCoinWatchData;
