@@ -2,6 +2,7 @@ import express from 'express';
 import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 import path from 'path';
+import { fileURLToPath } from 'url';
 const app = express();
 
 dotenv.config();
@@ -247,6 +248,8 @@ app.post('/api/delete-favorite', async (req, res) => {
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/dist'));
   app.get('*', (req, res) => {
+    const __filename = fileURLToPath(import.meta.url);
+    const __dirname = path.dirname(__filename);
     res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
   });
 }
