@@ -38,7 +38,8 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       </Box>
       <BTCBlockWrapper />
       <BTCTransactionWrapper />
-      <BTCMempoolWrapper />
+      {/* TODO: fetch with jwt */}
+      {/* <BTCMempoolWrapper /> */}
       {liveCoinWatchData.links.twitter && (
         <Timeline
           dataSource={{

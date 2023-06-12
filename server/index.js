@@ -43,7 +43,6 @@ app.get('/api/mempool', async (req, res) => {
     return;
   }
   try {
-    console.log('fetching from quick node...');
     const data = await fetch(process.env.QUICK_NODE_URL, {
       method: 'POST',
       headers: {
@@ -96,9 +95,15 @@ app.get('/api/coin/:symbol', async (req, res) => {
   res.json(json);
 });
 
-app.get('/api/livecoinwatch/:symbol', async (req, res) => {
+app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
+  const { symbol, interval } = req.params;
   const now = new Date();
-  const yesterday = new Date(now.setDate(now.getDate() - 1));
+  let start;
+  if (interval === '24hr') {
+    start = new Date(now.setDate(now.getDate() - 1));
+  } else if (interval === '7d') {
+    start = new Date(now.setDate(now.getDate() - 7));
+  }
   const data = await fetch(`${LIVE_COIN_WATCH_BASE_URL}/coins/single/history`, {
     method: 'POST',
     headers: {
@@ -107,8 +112,8 @@ app.get('/api/livecoinwatch/:symbol', async (req, res) => {
     },
     body: JSON.stringify({
       currency: 'USD',
-      code: req.params.symbol,
-      start: yesterday.getTime(),
+      code: symbol,
+      start: start.getTime(),
       end: new Date().getTime(),
       meta: true,
     }),

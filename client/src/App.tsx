@@ -10,6 +10,8 @@ import { UserProvider } from './contexts/UserContext';
 import CoinInfoBox from './components/CoinInfoBox';
 import CoinHeader from './components/CoinHeader';
 
+export type TimeInterval = '24hr' | '7d';
+
 function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
@@ -17,12 +19,13 @@ function App() {
     useState<LiveCoinWatchData | null>(null);
   const [searchText, setSearchText] = useState<string>('');
   const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
+  const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
   const [isLoading, setIsLoading] = useState<boolean>(false);
 
   useEffect(() => {
     fetchGlobal();
     fetchCMC();
-    fetchLiveCoinWatch('BTC');
+    fetchLiveCoinWatch('BTC', '24hr');
   }, []);
 
   const fetchGlobal = () => {
@@ -39,8 +42,8 @@ function App() {
       .catch((err) => console.error('Error', err));
   };
 
-  const fetchLiveCoinWatch = (symbol: string) => {
-    fetch(`/api/livecoinwatch/${symbol}`)
+  const fetchLiveCoinWatch = (symbol: string, interval: TimeInterval) => {
+    fetch(`/api/livecoinwatch/${symbol}/${interval}`)
       .then((res) => res.json())
       .then((res) => setLiveCoinWatchData(res))
       .catch((err) => console.error('Error', err))
@@ -50,9 +53,17 @@ function App() {
   const handleCoinClick = (coin: Coin) => {
     setIsLoading(true);
     setSelectedCoin(coin);
-    fetchLiveCoinWatch(coin.symbol);
+    fetchLiveCoinWatch(coin.symbol, timeInterval);
   };
+
+  const handleIntervalClick = (newInterval: TimeInterval) => {
+    setTimeInterval(newInterval);
+    setIsLoading(true);
+    fetchLiveCoinWatch(selectedCoin?.symbol || 'BTC', newInterval);
+  };
+
   if (!coins.length) return <CircularProgress />;
+
   return (
     <>
       <UserProvider>
@@ -67,6 +78,8 @@ function App() {
               selectedCoin={selectedCoin}
               liveCoinWatchData={liveCoinWatchData}
               isLoading={isLoading}
+              timeInterval={timeInterval}
+              onIntervalClick={handleIntervalClick}
             />
             {liveCoinWatchData ? (
               <>
@@ -77,7 +90,10 @@ function App() {
                     flexDirection: { xs: 'column', md: 'row' },
                   }}
                 >
-                  <CoinChart liveCoinWatchData={liveCoinWatchData} />
+                  <CoinChart
+                    liveCoinWatchData={liveCoinWatchData}
+                    timeInterval={timeInterval}
+                  />
                   <CoinInfoBox liveCoinWatchData={liveCoinWatchData} />
                 </Box>
               </>

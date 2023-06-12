@@ -14,6 +14,7 @@ import {
   NameType,
   ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
+import { TimeInterval } from '../App';
 
 function ChartTooltip({
   active,
@@ -39,13 +40,19 @@ function ChartTooltip({
 
 interface CoinChartProps {
   liveCoinWatchData: LiveCoinWatchData;
+  timeInterval: TimeInterval;
 }
 
-export default function CoinChart({ liveCoinWatchData }: CoinChartProps) {
+export default function CoinChart({
+  liveCoinWatchData,
+  timeInterval,
+}: CoinChartProps) {
   let min = 0;
   let max = 0;
   const data = liveCoinWatchData.history.map((data, index) => {
     const time = new Date(data.date);
+    const month = time.getMonth();
+    const date = time.getDate();
     const hours = time.getHours();
     const minutes = time.getMinutes();
 
@@ -53,6 +60,10 @@ export default function CoinChart({ liveCoinWatchData }: CoinChartProps) {
     if (minutes < 10 || minutes === 0) {
       timeLabel = `${hours}:0${minutes}`;
     }
+    if (timeInterval === '7d') {
+      timeLabel = `${month}/${date} ${timeLabel}`;
+    }
+
     if (index === 0) {
       min = data.rate.toFixed(2);
       max = data.rate.toFixed(2);
