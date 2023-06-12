@@ -4,7 +4,7 @@ import App from './App.tsx';
 import ReactGA from 'react-ga4';
 import './index.css';
 
-ReactGA.initialize('G-6FEC3JDXV6');
+ReactGA.initialize('G-YFRTYN1N15');
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>

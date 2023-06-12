@@ -49,9 +49,6 @@ const StyledLogo = styled(Typography)(({ theme }) => ({
   backgroundClip: 'text',
   WebkitTextFillColor: 'transparent',
   [theme.breakpoints.down('sm')]: {
-    display: 'block',
-  },
-  [theme.breakpoints.down('xs')]: {
     display: 'none',
   },
 }));
@@ -393,13 +390,19 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
           <Box>
             {Object.keys(globalData).length && !globalData['error'] ? (
               <Box display="flex">
-                <Box display="flex" flexDirection="column">
+                <Box
+                  flexDirection="column"
+                  sx={{ display: { xs: 'none', md: 'flex' } }}
+                >
                   <Typography>Bitcoin dominance</Typography>
                   <Typography>
                     {globalData.bitcoin_dominance_percentage.toFixed(2)}%
                   </Typography>
                 </Box>
-                <Box display="flex" flexDirection="column">
+                <Box
+                  flexDirection="column"
+                  sx={{ display: { xs: 'none', md: 'flex' } }}
+                >
                   <Typography>Market cap</Typography>
                   <Typography>
                     {USDollar.format(globalData.market_cap_usd)}
