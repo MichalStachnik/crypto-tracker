@@ -37,7 +37,7 @@ const CoinHeader = ({
   onIntervalClick,
 }: CoinHeaderProps) => {
   return (
-    <Box minHeight="96px">
+    <Box minHeight="96px" data-testid="coin-header">
       {isLoading ? (
         <CircularProgress />
       ) : (

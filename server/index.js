@@ -18,6 +18,7 @@ app.use(express.json());
 let globalData;
 let cmcData;
 let mempool;
+let coins;
 
 app.get('/api/global', async (req, res) => {
   if (globalData) {
@@ -97,6 +98,10 @@ app.get('/api/coin/:symbol', async (req, res) => {
 
 app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
   const { symbol, interval } = req.params;
+  if (coins[symbol][interval]) {
+    res.json(coins[symbol[interval]]);
+    return;
+  }
   const now = new Date();
   let start;
   if (interval === '24hr') {
@@ -119,6 +124,7 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
     }),
   });
   const json = await data.json();
+  coins[symbol][interval] = json;
   res.json(json);
 });
 
