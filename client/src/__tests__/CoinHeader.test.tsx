@@ -11,7 +11,7 @@ it('should work', () => {
 });
 
 it('should render', () => {
-  const renderedOutput = render(
+  render(
     <CoinHeader
       selectedCoin={null}
       liveCoinWatchData={null}
