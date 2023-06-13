@@ -15,4 +15,6 @@ jobs:
       - name: Setup Node
         uses: actions/setup-node@v3
       - run: npm ci
-      - run: npm run test-client
+        working-directory: ./client
+      - run: npm run test
+        working-directory: ./client
