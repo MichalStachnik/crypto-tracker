@@ -219,7 +219,11 @@ export default function CoinTable({
                 onClick={() => handleCoinClick(coin)}
                 style={{ cursor: 'pointer' }}
                 hover={true}
-                selected={coin.name === selectedCoin?.name}
+                selected={
+                  selectedCoin
+                    ? coin.name === selectedCoin?.name
+                    : coin.name === 'Bitcoin'
+                }
               >
                 <TableCell component="th" scope="row" sx={{ color: 'white' }}>
                   {coin.cmc_rank}

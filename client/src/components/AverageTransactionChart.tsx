@@ -46,7 +46,7 @@ const AverageTransactionChart = ({ sizes }: AverageTransactionChartProps) => {
     sum += size;
     return {
       time: index,
-      size: sum / (index + 1),
+      size: Math.floor(sum / (index + 1)),
     };
   });
   return (
