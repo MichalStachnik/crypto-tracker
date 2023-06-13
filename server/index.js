@@ -100,9 +100,10 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
   const { symbol, interval } = req.params;
 
   if (coins[symbol] && coins[symbol][interval]) {
-    res.json(coins[symbol[interval]]);
+    res.json(coins[symbol][interval]);
     return;
   }
+
   const now = new Date();
   let start;
   if (interval === '24hr') {
