@@ -114,6 +114,8 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
     start = new Date(now.setDate(now.getDate() - 1));
   } else if (interval === '7d') {
     start = new Date(now.setDate(now.getDate() - 7));
+  } else if (interval === '30d') {
+    start = new Date(now.setDate(now.getDate() - 30));
   }
   const data = await fetch(`${LIVE_COIN_WATCH_BASE_URL}/coins/single/history`, {
     method: 'POST',
@@ -145,7 +147,7 @@ app.get('/api/btc/latest-block', async (req, res) => {
   const { hash } = json;
   const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
   const blockData = await rawBlockData.json();
-  redisClient.setEx('latestBlock', 60 * 5, JSON.stringify(json));
+  redisClient.setEx('latestBlock', 60 * 5, JSON.stringify(blockData));
   res.json(blockData);
 });
 

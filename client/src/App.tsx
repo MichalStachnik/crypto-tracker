@@ -9,8 +9,7 @@ import Header from './components/Header';
 import { UserProvider } from './contexts/UserContext';
 import CoinInfoBox from './components/CoinInfoBox';
 import CoinHeader from './components/CoinHeader';
-
-export type TimeInterval = '24hr' | '7d';
+import { TimeInterval } from './types/TimeInterval';
 
 function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
