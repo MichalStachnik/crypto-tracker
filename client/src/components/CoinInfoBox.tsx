@@ -1,4 +1,4 @@
-import { Box, Link } from '@mui/material';
+import { Avatar, Box, Link, Typography } from '@mui/material';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
 import BTCTransactionWrapper from './BTCTransactionWrapper';
@@ -20,7 +20,8 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       flexDirection="column"
       minWidth={400}
     >
-      <Box display="flex" flexDirection="column" alignItems="center">
+      <Box display="flex" flexDirection="column" alignItems="flex-start">
+        <Avatar alt={liveCoinWatchData.name} src={liveCoinWatchData.png64} />
         <Link
           href={liveCoinWatchData.links.website}
           target="_blank"
@@ -35,6 +36,14 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         >
           {liveCoinWatchData.name} whitepaper
         </Link>
+      </Box>
+      <Box display="flex" justifyContent="space-between">
+        <Typography># of Markets</Typography>
+        <Typography>{liveCoinWatchData.markets}</Typography>
+      </Box>
+      <Box display="flex" justifyContent="space-between">
+        <Typography># of Pairs</Typography>
+        <Typography>{liveCoinWatchData.pairs}</Typography>
       </Box>
       <BTCBlockWrapper />
       <BTCTransactionWrapper />

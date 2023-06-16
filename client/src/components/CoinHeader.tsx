@@ -15,10 +15,6 @@ const StyledToggleButton = styled(ToggleButton)(() => ({
   '&.Mui-selected': {
     background: 'white',
   },
-  ':hover': {
-    background: 'white',
-    color: '#1976d2',
-  },
 }));
 
 interface CoinHeaderProps {
@@ -43,7 +39,7 @@ const CoinHeader = ({
       ) : (
         <Box display="flex" justifyContent="center" alignItems="center">
           <Box display="flex" flexDirection="column">
-            <ToggleButtonGroup sx={{ color: 'white' }}>
+            <ToggleButtonGroup color="primary" exclusive>
               <StyledToggleButton
                 value="24hr"
                 selected={timeInterval === '24hr'}
