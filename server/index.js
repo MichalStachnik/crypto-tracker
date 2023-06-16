@@ -135,11 +135,17 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
 });
 
 app.get('/api/btc/latest-block', async (req, res) => {
+  const cacheValue = await redisClient.get('latestBlock');
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
+    return;
+  }
   const data = await fetch(`https://blockchain.info/latestblock`);
   const json = await data.json();
   const { hash } = json;
   const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
   const blockData = await rawBlockData.json();
+  redisClient.setEx('latestBlock', 60 * 5, JSON.stringify(json));
   res.json(blockData);
 });
 

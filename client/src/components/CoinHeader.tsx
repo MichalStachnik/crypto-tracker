@@ -43,7 +43,7 @@ const CoinHeader = ({
       ) : (
         <Box display="flex" justifyContent="center" alignItems="center">
           <Box display="flex" flexDirection="column">
-            <ToggleButtonGroup orientation="vertical" sx={{ color: 'white' }}>
+            <ToggleButtonGroup sx={{ color: 'white' }}>
               <StyledToggleButton
                 value="24hr"
                 selected={timeInterval === '24hr'}
