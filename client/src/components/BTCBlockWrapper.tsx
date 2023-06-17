@@ -66,12 +66,12 @@ const BTCBlockWrapper = () => {
   }, []);
 
   return (
-    <Box>
-      <Typography>BTC Latest Block</Typography>
+    <Box mt={2}>
       {isLoading ? (
         <CircularProgress />
       ) : (
         <>
+          <Typography>BTC Latest Block</Typography>
           {blocks.map((block: Block) => {
             return (
               <StyledBlock key={block.bits}>
@@ -83,29 +83,33 @@ const BTCBlockWrapper = () => {
                   <Typography>Hash</Typography>
                   <Typography fontSize="10px">{block.hash}</Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-between">
+                <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Height</Typography>
                   <Typography>{block.height}</Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-between">
+                <Box
+                  display="flex"
+                  justifyContent="space-between"
+                  width="100% "
+                >
                   <Typography>Time</Typography>
                   <Typography>
                     {formatDate(new Date(block.time * 1000))}
                   </Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-between">
+                <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Size</Typography>
                   <Typography>{block.size}</Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-between">
+                <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Weight</Typography>
                   <Typography>{block.weight}</Typography>
                 </Box>
-                <Box display="flex" justifyContent="space-between">
+                <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Transactions</Typography>
                   <Typography>{block.n_tx}</Typography>
                 </Box>
-                <Typography>Previous Block:</Typography>
+                <Typography>Previous Block</Typography>
                 {/* TODO: fetch prev block */}
                 <Typography fontSize="10px">{block.prev_block}</Typography>
               </StyledBlock>

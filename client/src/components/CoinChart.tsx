@@ -14,7 +14,7 @@ import {
   NameType,
   ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
-import { TimeInterval } from '../App';
+import { TimeInterval } from '../types/TimeInterval';
 
 function ChartTooltip({
   active,
@@ -60,7 +60,7 @@ export default function CoinChart({
     if (minutes < 10 || minutes === 0) {
       timeLabel = `${hours}:0${minutes}`;
     }
-    if (timeInterval === '7d') {
+    if (timeInterval === '7d' || timeInterval === '30d') {
       timeLabel = `${month}/${date} ${timeLabel}`;
     }
 

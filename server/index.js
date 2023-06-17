@@ -3,6 +3,7 @@ import fetch from 'node-fetch';
 import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import redis from 'redis';
 const app = express();
 
 dotenv.config();
@@ -14,21 +15,28 @@ const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
 
 app.use(express.json());
 
-// TODO implement an actual cache
-let globalData;
-let cmcData;
-let mempool;
-let coins = {};
+let redisClient;
+
+(async () => {
+  redisClient = redis.createClient({
+    url: process.env.REDIS_URL,
+  });
+
+  redisClient.on('error', (error) => console.error(`Error : ${error}`));
+
+  await redisClient.connect();
+})();
 
 app.get('/api/global', async (req, res) => {
-  if (globalData) {
-    res.json(globalData);
+  const cacheValue = await redisClient.get('globalData');
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
     return;
   }
 
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
-  globalData = json;
+  redisClient.setEx('globalData', 60 * 5, JSON.stringify(json));
   res.json(json);
 });
 
@@ -39,10 +47,6 @@ app.get('/coins', async (req, res) => {
 });
 
 app.get('/api/mempool', async (req, res) => {
-  if (mempool) {
-    res.json(mempool);
-    return;
-  }
   try {
     const data = await fetch(process.env.QUICK_NODE_URL, {
       method: 'POST',
@@ -57,7 +61,6 @@ app.get('/api/mempool', async (req, res) => {
       }),
     });
     const json = await data.json();
-    mempool = json;
     res.json(json);
   } catch (error) {
     console.log('error fetching from quick node', error);
@@ -66,15 +69,16 @@ app.get('/api/mempool', async (req, res) => {
 });
 
 app.get('/api/cmc', async (req, res) => {
-  if (cmcData) {
-    res.json(cmcData);
+  const cacheValue = await redisClient.get('cmcData');
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
     return;
   }
   const data = await fetch(
     `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
   );
   const json = await data.json();
-  cmcData = json;
+  redisClient.setEx('cmcData', 60 * 5, JSON.stringify(json));
   res.json(json);
 });
 
@@ -98,9 +102,9 @@ app.get('/api/coin/:symbol', async (req, res) => {
 
 app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
   const { symbol, interval } = req.params;
-
-  if (coins[symbol] && coins[symbol][interval]) {
-    res.json(coins[symbol][interval]);
+  const cacheValue = await redisClient.get(`${symbol}:${interval}`);
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
     return;
   }
 
@@ -110,6 +114,8 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
     start = new Date(now.setDate(now.getDate() - 1));
   } else if (interval === '7d') {
     start = new Date(now.setDate(now.getDate() - 7));
+  } else if (interval === '30d') {
+    start = new Date(now.setDate(now.getDate() - 30));
   }
   const data = await fetch(`${LIVE_COIN_WATCH_BASE_URL}/coins/single/history`, {
     method: 'POST',
@@ -126,18 +132,22 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
     }),
   });
   const json = await data.json();
-  coins[symbol] = {
-    [interval]: json,
-  };
+  redisClient.setEx(`${symbol}:${interval}`, 60 * 5, JSON.stringify(json));
   res.json(json);
 });
 
 app.get('/api/btc/latest-block', async (req, res) => {
+  const cacheValue = await redisClient.get('latestBlock');
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
+    return;
+  }
   const data = await fetch(`https://blockchain.info/latestblock`);
   const json = await data.json();
   const { hash } = json;
   const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
   const blockData = await rawBlockData.json();
+  redisClient.setEx('latestBlock', 60 * 5, JSON.stringify(blockData));
   res.json(blockData);
 });
 

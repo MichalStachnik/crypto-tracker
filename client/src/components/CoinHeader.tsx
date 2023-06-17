@@ -8,16 +8,12 @@ import {
 } from '@mui/material';
 import { Coin } from '../types/Coin';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
-import { TimeInterval } from '../App';
+import { TimeInterval } from '../types/TimeInterval';
 
 const StyledToggleButton = styled(ToggleButton)(() => ({
   color: 'white',
   '&.Mui-selected': {
     background: 'white',
-  },
-  ':hover': {
-    background: 'white',
-    color: '#1976d2',
   },
 }));
 
@@ -43,7 +39,7 @@ const CoinHeader = ({
       ) : (
         <Box display="flex" justifyContent="center" alignItems="center">
           <Box display="flex" flexDirection="column">
-            <ToggleButtonGroup orientation="vertical" sx={{ color: 'white' }}>
+            <ToggleButtonGroup color="primary" exclusive>
               <StyledToggleButton
                 value="24hr"
                 selected={timeInterval === '24hr'}
@@ -57,6 +53,13 @@ const CoinHeader = ({
                 onClick={() => onIntervalClick('7d')}
               >
                 7d
+              </StyledToggleButton>
+              <StyledToggleButton
+                value="30d"
+                selected={timeInterval === '30d'}
+                onClick={() => onIntervalClick('30d')}
+              >
+                30d
               </StyledToggleButton>
             </ToggleButtonGroup>
           </Box>
