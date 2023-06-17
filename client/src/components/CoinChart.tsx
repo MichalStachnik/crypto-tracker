@@ -14,7 +14,7 @@ import {
   NameType,
   ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
-import { TimeInterval } from '../App';
+import { TimeInterval } from '../types/TimeInterval';
 
 function ChartTooltip({
   active,
