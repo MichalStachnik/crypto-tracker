@@ -1,4 +1,4 @@
-import { Box, CircularProgress, Typography, styled } from '@mui/material';
+import { Box, Skeleton, Typography, styled } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Block } from '../types/Block';
 
@@ -68,7 +68,7 @@ const BTCBlockWrapper = () => {
   return (
     <Box mt={2}>
       {isLoading ? (
-        <CircularProgress />
+        <Skeleton variant="rounded" width={400} height={262} />
       ) : (
         <>
           <Typography>BTC Latest Block</Typography>

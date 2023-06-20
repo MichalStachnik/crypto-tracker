@@ -12,6 +12,7 @@ import { TimeInterval } from '../types/TimeInterval';
 
 const StyledToggleButton = styled(ToggleButton)(() => ({
   color: 'white',
+  flex: 1,
   '&.Mui-selected': {
     background: 'white',
   },
@@ -39,7 +40,11 @@ const CoinHeader = ({
       ) : (
         <Box display="flex" justifyContent="center" alignItems="center">
           <Box display="flex" flexDirection="column">
-            <ToggleButtonGroup color="primary" exclusive>
+            <ToggleButtonGroup
+              color="primary"
+              exclusive
+              sx={{ border: '1px solid white', width: 250 }}
+            >
               <StyledToggleButton
                 value="24hr"
                 selected={timeInterval === '24hr'}
