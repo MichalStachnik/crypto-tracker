@@ -276,9 +276,9 @@ if (process.env.NODE_ENV === 'production') {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
     console.log('import.meta.url --->', import.meta.url);
-    console.log('the filename -->', __dirname);
+    console.log('the filename -->', __filename);
     console.log('the dirname -->', __dirname);
-    res.sendFile(path.resolve(__dirname, 'client', 'dist', 'index.html'));
+    res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'));
   });
 }
 
