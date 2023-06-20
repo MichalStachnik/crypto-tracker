@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
-import { Box, LinearProgress, Typography } from '@mui/material';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { Box, IconButton, LinearProgress, Typography } from '@mui/material';
 import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
 import TransactionChart from './TransactionChart';
 import AverageTransactionChart from './AverageTransactionChart';
@@ -29,8 +29,8 @@ const BTCTransactionWrapper = () => {
   const [sizes, setSizes] = useState<number[]>([]);
   const [isConnected, setIsConnected] = useState<boolean>(false);
 
-  const handleSockOpen = () => {
-    if (!ws.current) return;
+  const handleSocketOpen = () => {
+    if (!ws.current || ws.current.readyState !== 1) return;
     // All unconfirmed txs
     const op = { op: 'unconfirmed_sub' };
     ws.current.send(JSON.stringify(op));
@@ -39,15 +39,16 @@ const BTCTransactionWrapper = () => {
 
   useEffect(() => {
     ws.current = new WebSocket('wss://ws.blockchain.info/inv');
-    ws.current.onopen = () => handleSockOpen();
+    ws.current.onopen = () => handleSocketOpen();
     ws.current.onclose = () => setIsConnected(false);
+    ws.current.onerror = (err) => console.error('websocket error', err);
 
     const data = new Set<Transaction>();
     const graphData: number[] = [];
     const flush = () => {
       setTransactions(new Set(data));
       graphData.push(data.size);
-      setSizes(graphData);
+      setSizes([...graphData]);
       data.clear();
     };
     const timer = setInterval(flush, 2000);
@@ -60,37 +61,63 @@ const BTCTransactionWrapper = () => {
     const wsCurrent = ws.current;
 
     return () => {
-      wsCurrent.close();
-      clearInterval(timer);
+      if (wsCurrent.readyState === 1) {
+        wsCurrent.close();
+        clearInterval(timer);
+      }
     };
   }, []);
 
+  const handleRetryConnect = () => {
+    handleSocketOpen();
+  };
+
+  const average = useMemo(() => {
+    if (!sizes.length) return 0;
+    let sum = 0;
+    sizes.forEach((size) => (sum += size));
+    return sum / sizes.length;
+  }, [sizes]);
   return (
     <Box>
       {transactions ? (
         <Box display="flex" flexDirection="column">
+          <Box display="flex" justifyContent="flex-end">
+            {isConnected ? (
+              <LinearProgress color="success" sx={{ width: 40 }} />
+            ) : (
+              <IconButton onClick={handleRetryConnect}>
+                <SyncDisabledIcon sx={{ color: 'red' }} />
+              </IconButton>
+            )}
+          </Box>
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
+            mt={2}
           >
             <Typography># of transactions broadcast in last 2s</Typography>
             <Typography ml={5} color="#fa9e32">
               {transactions.size}
             </Typography>
-            {isConnected ? (
-              <LinearProgress color="success" sx={{ width: 40 }} />
-            ) : (
-              <SyncDisabledIcon sx={{ color: 'red' }} />
-            )}
           </Box>
           <Box>
             <TransactionChart sizes={sizes} />
           </Box>
-          <Box>
+          <Box
+            display="flex"
+            justifyContent="space-between"
+            alignItems="center"
+          >
             <Typography align="left">
               average # of transactions in 2s intervals
             </Typography>
+            <Typography ml={5} color="#fa9e32">
+              {Math.floor(average)}
+            </Typography>
+          </Box>
+          <Box>
             <AverageTransactionChart sizes={sizes} />
           </Box>
         </Box>

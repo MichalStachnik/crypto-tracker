@@ -1,5 +1,5 @@
-import { Box, CircularProgress, Typography, styled } from '@mui/material';
-import { useEffect, useRef, useState } from 'react';
+import { Box, Skeleton, Typography, styled } from '@mui/material';
+import { useEffect, useState } from 'react';
 import { Block } from '../types/Block';
 
 const StyledBlock = styled(Box)(() => ({
@@ -25,7 +25,7 @@ const formatDate = (date: Date) =>
   });
 
 const BTCBlockWrapper = () => {
-  const ws = useRef<WebSocket | null>(null);
+  // const ws = useRef<WebSocket | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
 
@@ -36,17 +36,17 @@ const BTCBlockWrapper = () => {
     setIsLoading(false);
   };
 
-  const handleSockOpen = () => {
-    if (!ws.current) return;
-    // All new blocks
-    const op = { op: 'blocks_sub' };
-    ws.current.send(JSON.stringify(op));
-  };
+  // const handleSocketOpen = () => {
+  //   if (!ws.current) return;
+  //   // All new blocks
+  //   const op = { op: 'blocks_sub' };
+  //   ws.current.send(JSON.stringify(op));
+  // };
 
   useEffect(() => {
-    ws.current = new WebSocket('wss://ws.blockchain.info/inv');
-    ws.current.onopen = () => handleSockOpen();
-    ws.current.onclose = () => console.log('ws closed');
+    // ws.current = new WebSocket('wss://ws.blockchain.info/inv');
+    // ws.current.onopen = () => handleSocketOpen();
+    // ws.current.onclose = () => console.log('ws closed');
 
     // TODO: fix
     // ws.current.onmessage = (e) => {
@@ -57,18 +57,18 @@ const BTCBlockWrapper = () => {
     // setBlocks([...blocks, message.x]);
     // };
 
-    const wsCurrent = ws.current;
+    // const wsCurrent = ws.current;
 
     fetchLatestBlock();
-    return () => {
-      wsCurrent.close();
-    };
+    // return () => {
+    //   wsCurrent.close();
+    // };
   }, []);
 
   return (
     <Box mt={2}>
       {isLoading ? (
-        <CircularProgress />
+        <Skeleton variant="rounded" width={400} height={262} />
       ) : (
         <>
           <Typography>BTC Latest Block</Typography>

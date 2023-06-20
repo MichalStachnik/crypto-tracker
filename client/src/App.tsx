@@ -64,50 +64,48 @@ function App() {
   if (!coins.length) return <CircularProgress />;
 
   return (
-    <>
-      <UserProvider>
-        <Header
-          globalData={globalData}
-          searchText={searchText}
-          setSearchText={setSearchText}
-        />
-        <Box display="flex" flexDirection="column">
-          <Box>
-            <CoinHeader
-              selectedCoin={selectedCoin}
-              liveCoinWatchData={liveCoinWatchData}
-              isLoading={isLoading}
-              timeInterval={timeInterval}
-              onIntervalClick={handleIntervalClick}
-            />
-            {liveCoinWatchData ? (
-              <>
-                <Box
-                  display="flex"
-                  m={2}
-                  sx={{
-                    flexDirection: { xs: 'column', md: 'row' },
-                  }}
-                >
-                  <CoinChart
-                    liveCoinWatchData={liveCoinWatchData}
-                    timeInterval={timeInterval}
-                  />
-                  <CoinInfoBox liveCoinWatchData={liveCoinWatchData} />
-                </Box>
-              </>
-            ) : (
-              <CircularProgress />
-            )}
-          </Box>
-          <CoinTable
-            coins={coins}
-            onCoinClick={handleCoinClick}
-            searchText={searchText}
+    <UserProvider>
+      <Header
+        globalData={globalData}
+        searchText={searchText}
+        setSearchText={setSearchText}
+      />
+      <Box display="flex" flexDirection="column">
+        <Box>
+          <CoinHeader
+            selectedCoin={selectedCoin}
+            liveCoinWatchData={liveCoinWatchData}
+            isLoading={isLoading}
+            timeInterval={timeInterval}
+            onIntervalClick={handleIntervalClick}
           />
+          {liveCoinWatchData ? (
+            <>
+              <Box
+                display="flex"
+                m={2}
+                sx={{
+                  flexDirection: { xs: 'column', md: 'row' },
+                }}
+              >
+                <CoinChart
+                  liveCoinWatchData={liveCoinWatchData}
+                  timeInterval={timeInterval}
+                />
+                <CoinInfoBox liveCoinWatchData={liveCoinWatchData} />
+              </Box>
+            </>
+          ) : (
+            <CircularProgress />
+          )}
         </Box>
-      </UserProvider>
-    </>
+        <CoinTable
+          coins={coins}
+          onCoinClick={handleCoinClick}
+          searchText={searchText}
+        />
+      </Box>
+    </UserProvider>
   );
 }
 

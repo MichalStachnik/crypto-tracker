@@ -78,7 +78,7 @@ export default function CoinChart({
     };
   });
   return (
-    <ResponsiveContainer width="100%" height={600}>
+    <ResponsiveContainer width="100%" height={714}>
       <AreaChart
         data={data}
         margin={{

@@ -70,7 +70,7 @@ const TransactionChart = ({ sizes }: TransactionChartProps) => {
           axisLine={false}
           tickLine={false}
           dataKey="size"
-          width={70}
+          width={30}
           style={{ fontSize: '0.8rem' }}
         />
         <Tooltip content={<ChartTooltip />} />
