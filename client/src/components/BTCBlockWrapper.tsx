@@ -98,17 +98,20 @@ const BTCBlockWrapper = () => {
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
-                  <Typography>Size</Typography>
-                  <Typography>{block.size}</Typography>
+                  <Typography>Size (in bytes)</Typography>
+                  <Typography>{block.size.toLocaleString()}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Weight</Typography>
-                  <Typography>{block.weight}</Typography>
+                  <Typography>{block.weight.toLocaleString()}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Transactions</Typography>
-                  <Typography>{block.n_tx}</Typography>
+                  <Typography>{block.n_tx.toLocaleString()}</Typography>
                 </Box>
+                <Typography>Merkle Root</Typography>
+                {/* TODO: fetch prev block */}
+                <Typography fontSize="10px">{block.mrkl_root}</Typography>
                 <Typography>Previous Block</Typography>
                 {/* TODO: fetch prev block */}
                 <Typography fontSize="10px">{block.prev_block}</Typography>

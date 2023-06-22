@@ -3,6 +3,7 @@ import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
 import BTCTransactionWrapper from './BTCTransactionWrapper';
 import { Timeline } from 'react-twitter-widgets';
+import LaunchIcon from '@mui/icons-material/Launch';
 // import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
@@ -18,24 +19,33 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       borderRadius={2}
       display="flex"
       flexDirection="column"
+      justifyContent="space-between"
       minWidth={400}
     >
-      <Box display="flex" flexDirection="column" alignItems="flex-start">
+      <Box display="flex" justifyContent="space-between">
         <Avatar alt={liveCoinWatchData.name} src={liveCoinWatchData.png64} />
-        <Link
-          href={liveCoinWatchData.links.website}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {liveCoinWatchData.name} website
-        </Link>
-        <Link
-          href={liveCoinWatchData.links.whitepaper}
-          target="_blank"
-          rel="noreferrer noopener"
-        >
-          {liveCoinWatchData.name} whitepaper
-        </Link>
+        <Box display="flex" flexDirection="column" alignItems="flex-end">
+          <Link
+            href={liveCoinWatchData.links.website}
+            target="_blank"
+            rel="noreferrer noopener"
+            display="flex"
+            alignItems="center"
+          >
+            <Typography mr={1}>{liveCoinWatchData.name} website</Typography>
+            <LaunchIcon fontSize="small" />
+          </Link>
+          <Link
+            href={liveCoinWatchData.links.whitepaper}
+            target="_blank"
+            rel="noreferrer noopener"
+            display="flex"
+            alignItems="center"
+          >
+            <Typography mr={1}>{liveCoinWatchData.name} whitepaper </Typography>
+            <LaunchIcon fontSize="small" />
+          </Link>
+        </Box>
       </Box>
       <Box display="flex" justifyContent="space-between">
         <Typography># of Markets</Typography>

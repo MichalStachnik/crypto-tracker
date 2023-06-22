@@ -60,8 +60,11 @@ export default function CoinChart({
     if (minutes < 10 || minutes === 0) {
       timeLabel = `${hours}:0${minutes}`;
     }
-    if (timeInterval === '7d' || timeInterval === '30d') {
+    if (timeInterval === '7d') {
       timeLabel = `${month}/${date} ${timeLabel}`;
+    }
+    if (timeInterval === '30d') {
+      timeLabel = `${month}/${date}`;
     }
 
     if (index === 0) {
@@ -78,7 +81,7 @@ export default function CoinChart({
     };
   });
   return (
-    <ResponsiveContainer width="100%" height={714}>
+    <ResponsiveContainer width="100%" height={750}>
       <AreaChart
         data={data}
         margin={{
