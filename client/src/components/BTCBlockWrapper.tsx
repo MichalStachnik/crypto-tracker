@@ -122,10 +122,14 @@ const BTCBlockWrapper = () => {
                 </Box>
                 <Typography>Merkle Root</Typography>
                 {/* TODO: link to mkrl root */}
-                <Typography fontSize="10px">{block.mrkl_root}</Typography>
+                <Typography sx={{ fontSize: { sm: '8px', md: '10px' } }}>
+                  {block.mrkl_root}
+                </Typography>
                 <Typography>Previous Block</Typography>
                 {/* TODO: fetch prev block */}
-                <Typography fontSize="10px">{block.prev_block}</Typography>
+                <Typography sx={{ fontSize: { sm: '8px', md: '10px' } }}>
+                  {block.prev_block}
+                </Typography>
                 <Drawer
                   anchor="right"
                   open={!!selectedBlock}

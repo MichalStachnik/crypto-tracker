@@ -22,7 +22,7 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       display="flex"
       flexDirection="column"
       justifyContent="space-between"
-      minWidth={400}
+      minWidth={340}
     >
       <Box display="flex" justifyContent="space-between">
         <Avatar alt={liveCoinWatchData.name} src={liveCoinWatchData.png64} />

@@ -74,7 +74,7 @@ const Bubbles = ({ coins }: BubblesProps) => {
     canvas.height = height * devicePixelRatio;
     context?.scale(devicePixelRatio, devicePixelRatio);
     let animationId: number;
-    let i = 0;
+    // let i = 0;
     if (!context) return;
     console.log('coins', coins);
     const bubbles = createBubbles(context, coins);
