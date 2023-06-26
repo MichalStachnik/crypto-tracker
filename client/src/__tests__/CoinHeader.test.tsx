@@ -12,9 +12,10 @@ it('should render', () => {
     <CoinHeader
       selectedCoin={null}
       liveCoinWatchData={null}
-      isLoading={true}
       timeInterval="24hr"
       onIntervalClick={() => console.log('clicked')}
+      chartMode="price"
+      setChartMode={() => console.log('setChartMode')}
     />
   );
 
@@ -28,9 +29,10 @@ it('can fire its callback', () => {
     <CoinHeader
       selectedCoin={null}
       liveCoinWatchData={null}
-      isLoading={false}
       timeInterval="24hr"
       onIntervalClick={mockCb}
+      chartMode="price"
+      setChartMode={() => console.log('setChartMode')}
     />
   );
 

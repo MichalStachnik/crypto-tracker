@@ -1,6 +1,14 @@
-import { Box, Skeleton, Typography, styled } from '@mui/material';
+import {
+  Box,
+  Button,
+  Drawer,
+  Skeleton,
+  Typography,
+  styled,
+} from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Block } from '../types/Block';
+import { Transaction } from '../types/Transaction';
 
 const StyledBlock = styled(Box)(() => ({
   boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
@@ -28,6 +36,7 @@ const BTCBlockWrapper = () => {
   // const ws = useRef<WebSocket | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
 
   const fetchLatestBlock = async () => {
     const res = await fetch('/api/btc/latest-block');
@@ -98,20 +107,51 @@ const BTCBlockWrapper = () => {
                   </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
-                  <Typography>Size</Typography>
-                  <Typography>{block.size}</Typography>
+                  <Typography>Size (in bytes)</Typography>
+                  <Typography>{block.size.toLocaleString()}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Weight</Typography>
-                  <Typography>{block.weight}</Typography>
+                  <Typography>{block.weight.toLocaleString()}</Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Transactions</Typography>
-                  <Typography>{block.n_tx}</Typography>
+                  <Button onClick={() => setSelectedBlock(block)}>
+                    {block.n_tx.toLocaleString()}
+                  </Button>
                 </Box>
+                <Typography>Merkle Root</Typography>
+                {/* TODO: link to mkrl root */}
+                <Typography sx={{ fontSize: { sm: '8px', md: '10px' } }}>
+                  {block.mrkl_root}
+                </Typography>
                 <Typography>Previous Block</Typography>
                 {/* TODO: fetch prev block */}
-                <Typography fontSize="10px">{block.prev_block}</Typography>
+                <Typography sx={{ fontSize: { sm: '8px', md: '10px' } }}>
+                  {block.prev_block}
+                </Typography>
+                <Drawer
+                  anchor="right"
+                  open={!!selectedBlock}
+                  onClose={() => setSelectedBlock(null)}
+                >
+                  <Box bgcolor="black">
+                    {selectedBlock &&
+                      selectedBlock.tx.map((tx: Transaction) => {
+                        return (
+                          <Typography
+                            fontSize="0.8rem"
+                            mx={2}
+                            my={1}
+                            key={tx.tx_index}
+                            color="primary"
+                          >
+                            {tx.hash}
+                          </Typography>
+                        );
+                      })}
+                  </Box>
+                </Drawer>
               </StyledBlock>
             );
           })}

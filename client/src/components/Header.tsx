@@ -405,13 +405,14 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
                 >
                   <Typography>Market cap</Typography>
                   <Typography fontSize="0.8rem">
-                    {USDollar.format(globalData.market_cap_usd)}
+                    {USDollar.format(globalData.market_cap_usd.toFixed(0))}
                   </Typography>
                 </Box>
                 <Box display="flex" flexDirection="column">
                   <Typography>Market cap change 24hr</Typography>
                   <Typography
                     style={styleCell(globalData.market_cap_change_24h)}
+                    fontWeight="bold"
                   >
                     {globalData.market_cap_change_24h.toFixed(2)}%
                   </Typography>

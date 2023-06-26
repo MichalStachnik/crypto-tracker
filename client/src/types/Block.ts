@@ -1,3 +1,5 @@
+import { Transaction } from './Transaction';
+
 export interface Block {
   bits: number;
   block_index: number;
@@ -12,7 +14,7 @@ export interface Block {
   prev_block: string;
   size: number;
   time: number;
-  tx: any[];
+  tx: Transaction[];
   ver: number;
   weight: number;
 }
