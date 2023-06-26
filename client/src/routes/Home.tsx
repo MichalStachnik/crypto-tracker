@@ -7,6 +7,7 @@ import CoinTable from '../components/CoinTable';
 import { Coin } from '../types/Coin';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
+import { ChartMode } from '../types/ChartMode';
 
 interface HomeProps {
   coins: Coin[];
@@ -18,6 +19,7 @@ const Home = ({ coins, searchText }: HomeProps) => {
   const [liveCoinWatchData, setLiveCoinWatchData] =
     useState<LiveCoinWatchData | null>(null);
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
+  const [chartMode, setChartMode] = useState<ChartMode>('price');
 
   useEffect(() => {
     fetchLiveCoinWatch('BTC', '24hr');
@@ -49,6 +51,8 @@ const Home = ({ coins, searchText }: HomeProps) => {
           liveCoinWatchData={liveCoinWatchData}
           timeInterval={timeInterval}
           onIntervalClick={handleIntervalClick}
+          chartMode={chartMode}
+          setChartMode={setChartMode}
         />
         {liveCoinWatchData ? (
           <>
@@ -62,6 +66,7 @@ const Home = ({ coins, searchText }: HomeProps) => {
               <CoinChart
                 liveCoinWatchData={liveCoinWatchData}
                 timeInterval={timeInterval}
+                chartMode={chartMode}
               />
               <CoinInfoBox liveCoinWatchData={liveCoinWatchData} />
             </Box>

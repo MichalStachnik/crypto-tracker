@@ -1,9 +1,11 @@
-import { Avatar, Box, Link, Typography } from '@mui/material';
+import { Avatar, Box, Button, Link, Typography } from '@mui/material';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
 import BTCTransactionWrapper from './BTCTransactionWrapper';
 import { Timeline } from 'react-twitter-widgets';
+import ArticleIcon from '@mui/icons-material/Article';
 import LaunchIcon from '@mui/icons-material/Launch';
+import PublicIcon from '@mui/icons-material/Public';
 // import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
@@ -32,8 +34,13 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
             display="flex"
             alignItems="center"
           >
-            <Typography mr={1}>{liveCoinWatchData.name} website</Typography>
-            <LaunchIcon fontSize="small" />
+            <Button>
+              <PublicIcon fontSize="small" />
+              <Typography mx={1} textTransform="capitalize">
+                website
+              </Typography>
+              <LaunchIcon fontSize="small" />
+            </Button>
           </Link>
           <Link
             href={liveCoinWatchData.links.whitepaper}
@@ -42,8 +49,13 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
             display="flex"
             alignItems="center"
           >
-            <Typography mr={1}>{liveCoinWatchData.name} whitepaper </Typography>
-            <LaunchIcon fontSize="small" />
+            <Button>
+              <ArticleIcon fontSize="small" />
+              <Typography mx={1} textTransform="capitalize">
+                whitepaper{' '}
+              </Typography>
+              <LaunchIcon fontSize="small" />
+            </Button>
           </Link>
         </Box>
       </Box>

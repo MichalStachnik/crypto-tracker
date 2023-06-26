@@ -41,7 +41,7 @@ class Bubble {
 
   getFontSize() {
     const _percentChange = Math.ceil(this.coin.quote.USD.percent_change_24h);
-    if (_percentChange < 10) return 10;
+    if (_percentChange < 10) return 12;
     else if (_percentChange > 30) return 30;
   }
 }

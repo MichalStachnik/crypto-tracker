@@ -1,6 +1,5 @@
 import {
   Box,
-  CircularProgress,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
@@ -9,10 +8,13 @@ import {
 import { Coin } from '../types/Coin';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
+import { ChartMode } from '../types/ChartMode';
+import { Dispatch, SetStateAction } from 'react';
 
 const StyledToggleButton = styled(ToggleButton)(() => ({
   color: 'white',
   flex: 1,
+  textTransform: 'capitalize',
   '&.Mui-selected': {
     background: 'white',
   },
@@ -23,6 +25,8 @@ interface CoinHeaderProps {
   liveCoinWatchData: LiveCoinWatchData | null;
   timeInterval: TimeInterval;
   onIntervalClick: (newInterval: TimeInterval) => void;
+  chartMode: ChartMode;
+  setChartMode: Dispatch<SetStateAction<ChartMode>>;
 }
 
 const CoinHeader = ({
@@ -30,6 +34,8 @@ const CoinHeader = ({
   liveCoinWatchData,
   timeInterval,
   onIntervalClick,
+  chartMode,
+  setChartMode,
 }: CoinHeaderProps) => {
   return (
     <Box minHeight="96px" data-testid="coin-header">
@@ -38,7 +44,8 @@ const CoinHeader = ({
           <ToggleButtonGroup
             color="primary"
             exclusive
-            sx={{ border: '1px solid white', width: 250 }}
+            sx={{ width: 150 }}
+            orientation="vertical"
           >
             <StyledToggleButton
               value="24hr"
@@ -63,8 +70,37 @@ const CoinHeader = ({
             </StyledToggleButton>
           </ToggleButtonGroup>
         </Box>
+        <Box ml={2}>
+          <ToggleButtonGroup
+            orientation="vertical"
+            exclusive
+            sx={{ width: 150 }}
+          >
+            <StyledToggleButton
+              value="price"
+              selected={chartMode === 'price'}
+              onClick={() => setChartMode('price')}
+            >
+              price
+            </StyledToggleButton>
+            <StyledToggleButton
+              value="marketCap"
+              selected={chartMode === 'marketCap'}
+              onClick={() => setChartMode('marketCap')}
+            >
+              market cap
+            </StyledToggleButton>
+            <StyledToggleButton
+              value="volume"
+              selected={chartMode === 'volume'}
+              onClick={() => setChartMode('volume')}
+            >
+              volume
+            </StyledToggleButton>
+          </ToggleButtonGroup>
+        </Box>
         <Typography mx={2} display="inline">
-          price data for
+          data for
         </Typography>
         &nbsp;
         <Box bgcolor="white" display="inline" p="8px" borderRadius="4px">

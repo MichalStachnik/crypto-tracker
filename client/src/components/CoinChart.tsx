@@ -15,6 +15,7 @@ import {
   ValueType,
 } from 'recharts/types/component/DefaultTooltipContent';
 import { TimeInterval } from '../types/TimeInterval';
+import { ChartMode } from '../types/ChartMode';
 
 function ChartTooltip({
   active,
@@ -29,7 +30,9 @@ function ChartTooltip({
         flexDirection="column"
         width="200px"
       >
-        <Typography>{`${payload[0].value} USD`}</Typography>
+        <Typography>{`${Number(
+          payload[0].value
+        ).toLocaleString()} USD`}</Typography>
         <Typography>{`${label}`}</Typography>
       </Box>
     );
@@ -41,11 +44,19 @@ function ChartTooltip({
 interface CoinChartProps {
   liveCoinWatchData: LiveCoinWatchData;
   timeInterval: TimeInterval;
+  chartMode: ChartMode;
 }
+
+const key = {
+  marketCap: 'cap',
+  price: 'rate',
+  volume: 'volume',
+};
 
 export default function CoinChart({
   liveCoinWatchData,
   timeInterval,
+  chartMode,
 }: CoinChartProps) {
   let min = 0;
   let max = 0;
@@ -67,17 +78,18 @@ export default function CoinChart({
       timeLabel = `${month}/${date}`;
     }
 
+    const mode = key[chartMode];
     if (index === 0) {
-      min = data.rate.toFixed(2);
-      max = data.rate.toFixed(2);
-    } else if (data.rate < min) {
-      min = data.rate.toFixed(2);
-    } else if (data.rate > max) {
-      max = data.rate.toFixed(2);
+      min = data[mode].toFixed(2);
+      max = data[mode].toFixed(2);
+    } else if (data[mode] < min) {
+      min = data[mode].toFixed(2);
+    } else if (data[mode] > max) {
+      max = data[mode].toFixed(2);
     }
     return {
       time: timeLabel,
-      price: data.rate.toFixed(0),
+      price: data[mode].toFixed(0),
     };
   });
   return (
@@ -95,6 +107,8 @@ export default function CoinChart({
           <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
             <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
             <stop offset="95%" stopColor="#8884d8" stopOpacity={0.05} />
+            {/* <stop offset="5%" stopColor="#5ccd7c" stopOpacity={0.8} />
+            <stop offset="95%" stopColor="#5ccd7c" stopOpacity={0.05} /> */}
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
@@ -106,12 +120,14 @@ export default function CoinChart({
           domain={[min - 100, max + 100]}
           width={70}
           style={{ fontSize: '0.8rem' }}
+          tickFormatter={(v) => Math.floor(v).toLocaleString()}
         />
         <Tooltip content={<ChartTooltip />} />
         <Area
           type="monotone"
           dataKey="price"
           stroke="#8884d8"
+          // stroke="#5ccd7c"
           fill="url(#color)"
         />
       </AreaChart>

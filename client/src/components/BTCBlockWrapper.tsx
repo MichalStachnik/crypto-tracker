@@ -131,19 +131,22 @@ const BTCBlockWrapper = () => {
                   open={!!selectedBlock}
                   onClose={() => setSelectedBlock(null)}
                 >
-                  {selectedBlock &&
-                    selectedBlock.tx.map((tx: Transaction) => {
-                      return (
-                        <Typography
-                          fontSize="0.8rem"
-                          mx={2}
-                          my={1}
-                          key={tx.tx_index}
-                        >
-                          {tx.hash}
-                        </Typography>
-                      );
-                    })}
+                  <Box bgcolor="black">
+                    {selectedBlock &&
+                      selectedBlock.tx.map((tx: Transaction) => {
+                        return (
+                          <Typography
+                            fontSize="0.8rem"
+                            mx={2}
+                            my={1}
+                            key={tx.tx_index}
+                            color="primary"
+                          >
+                            {tx.hash}
+                          </Typography>
+                        );
+                      })}
+                  </Box>
                 </Drawer>
               </StyledBlock>
             );
