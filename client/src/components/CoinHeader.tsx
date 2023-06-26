@@ -72,6 +72,7 @@ const CoinHeader = ({
         </Box>
         <Box ml={2}>
           <ToggleButtonGroup
+            color="primary"
             orientation="vertical"
             exclusive
             sx={{ width: 150 }}
