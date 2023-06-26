@@ -90,7 +90,9 @@ const BTCBlockWrapper = () => {
                   justifyContent="space-between"
                 >
                   <Typography>Hash</Typography>
-                  <Typography fontSize="10px">{block.hash}</Typography>
+                  <Typography sx={{ fontSize: { xs: '8px', md: '10px' } }}>
+                    {block.hash}
+                  </Typography>
                 </Box>
                 <Box display="flex" justifyContent="space-between" width="100%">
                   <Typography>Height</Typography>
@@ -122,12 +124,12 @@ const BTCBlockWrapper = () => {
                 </Box>
                 <Typography>Merkle Root</Typography>
                 {/* TODO: link to mkrl root */}
-                <Typography sx={{ fontSize: { sm: '8px', md: '10px' } }}>
+                <Typography sx={{ fontSize: { xs: '8px', md: '10px' } }}>
                   {block.mrkl_root}
                 </Typography>
                 <Typography>Previous Block</Typography>
                 {/* TODO: fetch prev block */}
-                <Typography sx={{ fontSize: { sm: '8px', md: '10px' } }}>
+                <Typography sx={{ fontSize: { xs: '8px', md: '10px' } }}>
                   {block.prev_block}
                 </Typography>
                 <Drawer
