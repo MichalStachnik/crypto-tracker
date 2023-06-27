@@ -223,7 +223,7 @@ function NotificationDialog(props: NotificationDialogProps) {
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle display="flex" flexDirection="column">
-        {userContext.user ? (
+        {!userContext.user ? (
           <Box>Need to be logged in to set notifications</Box>
         ) : (
           <>
