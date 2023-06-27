@@ -24,6 +24,9 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  Select,
+  SelectChangeEvent,
+  Snackbar,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { UserContext } from '../contexts/UserContext';
@@ -181,11 +184,110 @@ function AuthDialog(props: AuthDialogProps) {
   );
 }
 
-export default function Header({ globalData, searchText, setSearchText }: any) {
+export interface NotificationDialogProps {
+  open: boolean;
+  onClose: () => void;
+  onSubmit: ({
+    coin,
+    price,
+  }: {
+    coin: '' | HTMLSelectElement | undefined;
+    price: number;
+  }) => void;
+  coins: Coin[];
+}
+
+function NotificationDialog(props: NotificationDialogProps) {
+  const { onClose, open, onSubmit, coins } = props;
+  const userContext = useContext(UserContext);
+  const [coin, setCoin] = useState<'' | HTMLSelectElement | undefined>('');
+  const [price, setPrice] = useState<number | null>(0);
+
+  const handleClose = () => {
+    onClose();
+  };
+
+  const handleCoinChange = (e: SelectChangeEvent<HTMLSelectElement>) => {
+    setCoin(e.target.value as HTMLSelectElement);
+  };
+
+  const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
+    setPrice(Number(e.target.value));
+  };
+
+  const handleSubmit = () => {
+    if (!price) return;
+    onSubmit({ coin, price });
+  };
+
+  return (
+    <Dialog onClose={handleClose} open={open}>
+      <DialogTitle display="flex" flexDirection="column">
+        {userContext.user ? (
+          <Box>Need to be logged in to set notifications</Box>
+        ) : (
+          <>
+            <FormControl fullWidth>
+              <InputLabel id="demo-simple-select-label">Coin</InputLabel>
+              <Select
+                labelId="demo-simple-select-label"
+                id="demo-simple-select"
+                value={coin}
+                label="Coin"
+                onChange={handleCoinChange}
+              >
+                {coins.map((coin: Coin) => {
+                  return (
+                    <MenuItem value={coin.name} key={coin.name}>
+                      {coin.name}
+                    </MenuItem>
+                  );
+                })}
+              </Select>
+            </FormControl>
+            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
+              <InputLabel htmlFor="outlined-adornment-password">
+                Price
+              </InputLabel>
+              <OutlinedInput
+                id="outlined-adornment-password"
+                type="number"
+                label="Price"
+                value={price?.toFixed(0)}
+                onChange={handlePriceChange}
+              />
+            </FormControl>
+            <Button
+              variant="contained"
+              onClick={handleSubmit}
+              style={{ marginTop: 15 }}
+            >
+              Set Notification
+            </Button>
+          </>
+        )}
+      </DialogTitle>
+    </Dialog>
+  );
+}
+
+interface Coin {
+  name: string;
+}
+
+export default function Header({
+  globalData,
+  searchText,
+  setSearchText,
+  coins,
+}: any) {
   const userContext = useContext(UserContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
+    useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
   const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
     useState<null | HTMLElement>(null);
 
@@ -317,10 +419,6 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     setIsSignupDialogOpen(false);
   };
 
-  interface Coin {
-    name: string;
-  }
-
   const handleLogin = async ({
     email,
     password,
@@ -358,6 +456,23 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
     localStorage.clear();
     userContext.setUser(null);
     await fetch('/api/logout');
+  };
+
+  const handleNotificationSubmit = async ({
+    coin,
+    price,
+  }: {
+    coin: '' | HTMLSelectElement | undefined;
+    price: number;
+  }) => {
+    const response = await fetch('/api/add-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: userContext.user, coin, price }),
+    });
+    if (response.status === 200) setIsSnackbarOpen(true);
   };
 
   return (
@@ -420,6 +535,16 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
               </Box>
             ) : null}
           </Box>
+          <Box>
+            <Badge color="success" badgeContent={'New'}>
+              <Button onClick={() => setIsNotificationDialogOpen(true)}>
+                <NotificationsIcon />
+                <Typography textTransform="capitalize">
+                  Notifications
+                </Typography>
+              </Button>
+            </Badge>
+          </Box>
           {!userContext.user ? (
             <Box
               sx={{
@@ -464,6 +589,18 @@ export default function Header({ globalData, searchText, setSearchText }: any) {
         onClose={() => setIsLoginDialogOpen(false)}
         onSubmit={handleLoginDialogSubmit}
         mode="login"
+      />
+      <NotificationDialog
+        open={isNotificationDialogOpen}
+        onClose={() => setIsNotificationDialogOpen(false)}
+        onSubmit={handleNotificationSubmit}
+        coins={coins}
+      />
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setIsSnackbarOpen(false)}
+        message="Notification Set"
       />
     </Box>
   );

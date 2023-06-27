@@ -271,26 +271,28 @@ app.post('/api/delete-favorite', async (req, res) => {
 
 app.post('/api/add-notification', async (req, res) => {
   const { jwt, coin, price } = req.body;
-
   const user = await supabase.auth.getUser(jwt);
   const email = user.data.user.email;
 
-  // Check if notification already exists for user
+  // // Check if notification already exists for user
   const userData = await supabase
-    .from('notification')
+    .from('notifications')
     .select('coin')
     .eq('coin', coin)
     .eq('email', email);
 
   if (userData.data.length) {
     const hasNotification = userData.data.find(
-      (notification) => notification.coin === coin
+      (notification) =>
+        notification.coin === coin && notification.price === price
     );
-    if (hasNotification) return;
+    if (hasNotification) {
+      res.status(500)({ message: 'notification already exists' });
+    }
   }
 
   const { error } = await supabase
-    .from('notification')
+    .from('notifications')
     .insert({ email, coin, price });
   if (error) {
     res.status(500).json({ error });
@@ -298,6 +300,50 @@ app.post('/api/add-notification', async (req, res) => {
     res.status(200).json({ message: 'success' });
   }
 });
+
+(() => {
+  setInterval(async () => {
+    // Get all notifications
+    const { data: notificationData, error } = await supabase
+      .from('notifications')
+      .select('*');
+    if (error) {
+      console.error('error', error);
+      return;
+    }
+
+    // Check and get cmcData cache value
+    const cacheValue = await redisClient.get('cmcData');
+    let cmcData = JSON.parse(cacheValue);
+    if (!cmcData) {
+      const data = await fetch(
+        `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
+      );
+      cmcData = await data.json();
+      redisClient.setEx('cmcData', 60 * 5, JSON.stringify(cmcData));
+    }
+
+    // For each notification data check if the corresponding cmcData price is greater
+    notificationData.map(async (notificationItem) => {
+      const cmcItem = cmcData.data.find(
+        (item) => item.name === notificationItem.coin
+      );
+
+      if (cmcItem.quote.USD.price >= notificationItem.price) {
+        const response = await fetch(process.env.SUPABASE_EMAIL_EDGE_FUNCTION, {
+          method: 'POST',
+          headers: {
+            'content-type': 'application/json',
+          },
+          body: JSON.stringify({
+            email: notificationItem.email,
+            message: `hey! ${notificationItem.coin} has reached ${notificationItem.price} - check it out on wenmewn.app`,
+          }),
+        });
+      }
+    });
+  }, 1000 * 60 * 5);
+})();
 
 // Serve for production
 if (process.env.NODE_ENV === 'production') {
