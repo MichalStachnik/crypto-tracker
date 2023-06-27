@@ -1,13 +1,5 @@
 import { serve } from 'https://deno.land/std@0.168.0/http/server.ts';
 
-// console.log('Hello from Functions!!');
-
-// To invoke:
-// curl -i --location --request POST 'http://localhost:54321/functions/v1/' \
-//   --header 'Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZS1kZW1vIiwicm9sZSI6ImFub24iLCJleHAiOjE5ODM4MTI5OTZ9.CRXP1A7WOeoJeXxjNni43kdQwgnWNReilDMblYTn_I0' \
-//   --header 'Content-Type: application/json' \
-//   --data '{"name":"Functions"}'
-
 const RESEND_API_KEY = Deno.env.get('RESEND_API_KEY');
 
 const handler = async (_request: Request): Promise<Response> => {
@@ -20,7 +12,6 @@ const handler = async (_request: Request): Promise<Response> => {
       },
     });
   }
-  // console.log('the email we got...', email);
   const res = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
@@ -30,7 +21,6 @@ const handler = async (_request: Request): Promise<Response> => {
     body: JSON.stringify({
       // from: 'contact@wenmewn.app',
       from: 'onboarding@resend.dev',
-      // to: 'delivered@resend.dev',
       to: email,
       subject: 'hello world',
       html: `<strong>it works! ${message}</strong>`,
