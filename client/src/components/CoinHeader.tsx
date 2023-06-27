@@ -39,65 +39,73 @@ const CoinHeader = ({
 }: CoinHeaderProps) => {
   return (
     <Box minHeight="96px" data-testid="coin-header">
-      <Box display="flex" justifyContent="center" alignItems="center">
-        <Box display="flex" flexDirection="column">
-          <ToggleButtonGroup
-            color="primary"
-            exclusive
-            sx={{ width: 150 }}
-            orientation="vertical"
-          >
-            <StyledToggleButton
-              value="24hr"
-              selected={timeInterval === '24hr'}
-              onClick={() => onIntervalClick('24hr')}
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
+      >
+        <Box display="flex">
+          <Box display="flex" flexDirection="column">
+            <ToggleButtonGroup
+              color="primary"
+              exclusive
+              sx={{ width: 150 }}
+              orientation="vertical"
             >
-              24hr
-            </StyledToggleButton>
-            <StyledToggleButton
-              value="7d"
-              selected={timeInterval === '7d'}
-              onClick={() => onIntervalClick('7d')}
+              <StyledToggleButton
+                value="24hr"
+                selected={timeInterval === '24hr'}
+                onClick={() => onIntervalClick('24hr')}
+              >
+                24hr
+              </StyledToggleButton>
+              <StyledToggleButton
+                value="7d"
+                selected={timeInterval === '7d'}
+                onClick={() => onIntervalClick('7d')}
+              >
+                7d
+              </StyledToggleButton>
+              <StyledToggleButton
+                value="30d"
+                selected={timeInterval === '30d'}
+                onClick={() => onIntervalClick('30d')}
+              >
+                30d
+              </StyledToggleButton>
+            </ToggleButtonGroup>
+          </Box>
+          <Box ml={2}>
+            <ToggleButtonGroup
+              color="primary"
+              orientation="vertical"
+              exclusive
+              sx={{ width: 150 }}
             >
-              7d
-            </StyledToggleButton>
-            <StyledToggleButton
-              value="30d"
-              selected={timeInterval === '30d'}
-              onClick={() => onIntervalClick('30d')}
-            >
-              30d
-            </StyledToggleButton>
-          </ToggleButtonGroup>
-        </Box>
-        <Box ml={2}>
-          <ToggleButtonGroup
-            orientation="vertical"
-            exclusive
-            sx={{ width: 150 }}
-          >
-            <StyledToggleButton
-              value="price"
-              selected={chartMode === 'price'}
-              onClick={() => setChartMode('price')}
-            >
-              price
-            </StyledToggleButton>
-            <StyledToggleButton
-              value="marketCap"
-              selected={chartMode === 'marketCap'}
-              onClick={() => setChartMode('marketCap')}
-            >
-              market cap
-            </StyledToggleButton>
-            <StyledToggleButton
-              value="volume"
-              selected={chartMode === 'volume'}
-              onClick={() => setChartMode('volume')}
-            >
-              volume
-            </StyledToggleButton>
-          </ToggleButtonGroup>
+              <StyledToggleButton
+                value="price"
+                selected={chartMode === 'price'}
+                onClick={() => setChartMode('price')}
+              >
+                price
+              </StyledToggleButton>
+              <StyledToggleButton
+                value="marketCap"
+                selected={chartMode === 'marketCap'}
+                onClick={() => setChartMode('marketCap')}
+              >
+                market cap
+              </StyledToggleButton>
+              <StyledToggleButton
+                value="volume"
+                selected={chartMode === 'volume'}
+                onClick={() => setChartMode('volume')}
+              >
+                volume
+              </StyledToggleButton>
+            </ToggleButtonGroup>
+          </Box>
         </Box>
         <Typography mx={2} display="inline">
           data for

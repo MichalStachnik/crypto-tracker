@@ -61,7 +61,6 @@ interface BubblesProps {
 }
 
 const Bubbles = ({ coins }: BubblesProps) => {
-  // console.log('coins', coins);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {

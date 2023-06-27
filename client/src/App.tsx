@@ -49,6 +49,7 @@ function App() {
         globalData={globalData}
         searchText={searchText}
         setSearchText={setSearchText}
+        coins={coins}
       />
       <Routes>
         <Route
