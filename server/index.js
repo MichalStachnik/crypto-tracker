@@ -269,6 +269,36 @@ app.post('/api/delete-favorite', async (req, res) => {
   }
 });
 
+app.post('/api/add-notification', async (req, res) => {
+  const { jwt, coin, price } = req.body;
+
+  const user = await supabase.auth.getUser(jwt);
+  const email = user.data.user.email;
+
+  // Check if notification already exists for user
+  const userData = await supabase
+    .from('notification')
+    .select('coin')
+    .eq('coin', coin)
+    .eq('email', email);
+
+  if (userData.data.length) {
+    const hasNotification = userData.data.find(
+      (notification) => notification.coin === coin
+    );
+    if (hasNotification) return;
+  }
+
+  const { error } = await supabase
+    .from('notification')
+    .insert({ email, coin, price });
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
+});
+
 // Serve for production
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static('client/dist'));
