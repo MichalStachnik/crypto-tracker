@@ -1,8 +1,10 @@
 import {
   Box,
   Button,
+  CircularProgress,
   Drawer,
   IconButton,
+  MobileStepper,
   Skeleton,
   Tooltip,
   Typography,
@@ -39,6 +41,8 @@ const BTCBlockWrapper = () => {
   // const ws = useRef<WebSocket | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [isLoadingPrevious, setIsLoadingPrevious] = useState<boolean>(false);
+  const [activeStep, setActiveStep] = useState<number>(0);
   const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
 
   const fetchLatestBlock = async () => {
@@ -78,6 +82,9 @@ const BTCBlockWrapper = () => {
   }, []);
 
   const handleGetPreviousBlock = async (hash: string) => {
+    const foundBlock = blocks.find((b) => b.hash === hash);
+    if (foundBlock) return;
+    setIsLoadingPrevious(true);
     const res = await fetch('/api/btc/get-block', {
       method: 'POST',
       headers: {
@@ -87,6 +94,7 @@ const BTCBlockWrapper = () => {
     });
     const block = await res.json();
     setBlocks([block, ...blocks]);
+    setIsLoadingPrevious(false);
   };
 
   return (
@@ -95,80 +103,96 @@ const BTCBlockWrapper = () => {
         <Skeleton variant="rounded" width={400} height={262} />
       ) : (
         <>
-          <Typography>BTC Latest Block</Typography>
-          <Box display="flex" sx={{ overflowX: 'auto' }}>
-            {blocks.map((block: Block) => {
-              return (
-                <StyledBlock key={block.hash}>
-                  <Box
-                    display="flex"
-                    flexDirection="column"
-                    justifyContent="space-between"
-                  >
-                    <Typography>Hash</Typography>
-                    <Typography fontSize="0.5rem">{block.hash}</Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <Typography>Height</Typography>
-                    <Typography>{block.height}</Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    width="100% "
-                  >
-                    <Typography>Time</Typography>
-                    <Typography>
-                      {formatDate(new Date(block.time * 1000))}
-                    </Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <Tooltip title="Bitcoin's block size is capped at 1MB but can go higher due to SegWit">
-                      <Typography>Size (in bytes)</Typography>
-                    </Tooltip>
-                    <Typography>{block.size.toLocaleString()}</Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <Typography>Weight</Typography>
-                    <Typography>{block.weight.toLocaleString()}</Typography>
-                  </Box>
-                  <Box
-                    display="flex"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <Typography>Transactions</Typography>
-                    <Button onClick={() => setSelectedBlock(block)}>
-                      {block.n_tx.toLocaleString()}
-                    </Button>
-                  </Box>
-                  <Typography>Merkle Root</Typography>
-                  {/* TODO: link to mkrl root */}
-                  <Typography fontSize="0.5rem">{block.mrkl_root}</Typography>
-                  <Typography>Previous Block</Typography>
-                  <Button
-                    onClick={() => handleGetPreviousBlock(block.prev_block)}
-                  >
-                    <Typography fontSize="0.5rem">
-                      {block.prev_block}
-                    </Typography>
-                  </Button>
-                </StyledBlock>
-              );
-            })}
+          <Box display="flex" justifyContent="center" alignItems="center">
+            <Typography mr={2}>BTC Latest Block</Typography>
+            {isLoadingPrevious && <CircularProgress />}
           </Box>
+          {blocks.length > 1 ? (
+            <Box>
+              <MobileStepper
+                variant="dots"
+                steps={blocks.length}
+                position="static"
+                activeStep={activeStep}
+                nextButton={
+                  <Button
+                    onClick={() => setActiveStep(activeStep + 1)}
+                    disabled={activeStep === blocks.length - 1}
+                  >
+                    next
+                  </Button>
+                }
+                backButton={
+                  <Button
+                    onClick={() => setActiveStep(activeStep - 1)}
+                    disabled={activeStep === 0}
+                  >
+                    back
+                  </Button>
+                }
+                sx={{ background: 'transparent' }}
+              />
+            </Box>
+          ) : null}
+          {/* <Box display="flex"> */}
+          <StyledBlock>
+            <Box
+              display="flex"
+              flexDirection="column"
+              justifyContent="space-between"
+            >
+              <Typography>Hash</Typography>
+              <Typography fontSize="0.5rem">
+                {blocks[activeStep].hash}
+              </Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Typography>Height</Typography>
+              <Typography>{blocks[activeStep].height}</Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" width="100% ">
+              <Typography>Time</Typography>
+              <Typography>
+                {formatDate(new Date(blocks[activeStep].time * 1000))}
+              </Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Tooltip title="Bitcoin's block size is capped at 1MB but can go higher due to SegWit">
+                <Typography>Size (in bytes)</Typography>
+              </Tooltip>
+              <Typography>
+                {blocks[activeStep].size.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Typography>Weight</Typography>
+              <Typography>
+                {blocks[activeStep].weight.toLocaleString()}
+              </Typography>
+            </Box>
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Typography>Transactions</Typography>
+              <Button onClick={() => setSelectedBlock(blocks[activeStep])}>
+                {blocks[activeStep].n_tx.toLocaleString()}
+              </Button>
+            </Box>
+            <Typography>Merkle Root</Typography>
+            {/* TODO: link to mkrl root */}
+            <Typography fontSize="0.5rem">
+              {blocks[activeStep].mrkl_root}
+            </Typography>
+            <Typography>Previous Block</Typography>
+            <Button
+              onClick={() =>
+                handleGetPreviousBlock(blocks[activeStep].prev_block)
+              }
+            >
+              <Typography fontSize="0.5rem">
+                {blocks[activeStep].prev_block}
+              </Typography>
+            </Button>
+          </StyledBlock>
+          {/* </Box> */}
         </>
       )}
       <Drawer

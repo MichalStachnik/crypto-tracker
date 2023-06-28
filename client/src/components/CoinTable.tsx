@@ -21,9 +21,18 @@ const styleCell = (percentChange: number) => {
   }
 };
 
-const StyledTableCell = styled(TableCell)(() => ({
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
   cursor: 'pointer',
-  color: 'white',
+  color: theme.palette.common.white,
+  '& .MuiTableSortLabel-root:hover': {
+    color: theme.palette.primary.main,
+  },
+  '& .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+    color: theme.palette.primary.main,
+  },
+  '& .MuiTableSortLabel-root.Mui-active': {
+    color: theme.palette.primary.main,
+  },
 }));
 
 interface CoinTableProps {
