@@ -110,9 +110,7 @@ const BTCTransactionWrapper = () => {
             justifyContent="space-between"
             alignItems="center"
           >
-            <Typography align="left">
-              average # of transactions in 2s intervals
-            </Typography>
+            <Typography align="left">average # of transactions</Typography>
             <Typography ml={5} color="#fa9e32">
               {Math.floor(average)}
             </Typography>

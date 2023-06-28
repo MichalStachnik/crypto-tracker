@@ -1,4 +1,3 @@
-'use client';
 import { createContext, ReactNode, useEffect, useState } from 'react';
 
 interface UserContextInterface {
@@ -6,6 +5,8 @@ interface UserContextInterface {
   setUser: any;
   favoriteCoins: string[];
   setFavoriteCoins: any;
+  notifications: any[];
+  setNotifications: any;
 }
 
 const initialState: UserContextInterface = {
@@ -13,6 +14,8 @@ const initialState: UserContextInterface = {
   setUser: {},
   favoriteCoins: [],
   setFavoriteCoins: {},
+  notifications: [],
+  setNotifications: {},
 };
 
 export const UserContext = createContext<UserContextInterface>(initialState);
@@ -27,6 +30,7 @@ interface UserProviderProps {
 export const UserProvider = ({ children }: UserProviderProps) => {
   const [user, setUser] = useState<string | null>(null);
   const [favoriteCoins, setFavoriteCoins] = useState<string[]>([]);
+  const [notifications, setNotifications] = useState<any[]>([]);
 
   const getFavorites = async (user: string) => {
     const res = await fetch('/api/get-favorites', {
@@ -44,6 +48,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
       localStorage.clear();
       setUser(null);
       setFavoriteCoins([]);
+      setNotifications([]);
       return;
     }
 
@@ -53,11 +58,37 @@ export const UserProvider = ({ children }: UserProviderProps) => {
     }
   };
 
+  const getNotifications = async (user: string) => {
+    const res = await fetch('/api/get-notifications', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: user }),
+    });
+
+    const data = await res.json();
+    // If the jwt is invalid, clear local storage
+    // probably expired
+    if (data.error && data.error.message) {
+      localStorage.clear();
+      setUser(null);
+      setFavoriteCoins([]);
+      setNotifications([]);
+      return;
+    }
+
+    if (data.data.length !== 0) {
+      setNotifications(data.data);
+    }
+  };
+
   useEffect(() => {
     const loggedInUser = localStorage.getItem('user');
     if (loggedInUser) {
       setUser(loggedInUser);
       getFavorites(loggedInUser);
+      getNotifications(loggedInUser);
     }
   }, []);
 
@@ -68,6 +99,8 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         setUser,
         favoriteCoins,
         setFavoriteCoins,
+        notifications,
+        setNotifications,
       }}
     >
       {children}

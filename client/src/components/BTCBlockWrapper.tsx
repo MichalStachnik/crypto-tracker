@@ -2,13 +2,16 @@ import {
   Box,
   Button,
   Drawer,
+  IconButton,
   Skeleton,
+  Tooltip,
   Typography,
   styled,
 } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Block } from '../types/Block';
 import { Transaction } from '../types/Transaction';
+import CloseIcon from '@mui/icons-material/Close';
 
 const StyledBlock = styled(Box)(() => ({
   boxShadow: 'inset 0 0 10px rgba(0,0,0,0.5)',
@@ -74,6 +77,18 @@ const BTCBlockWrapper = () => {
     // };
   }, []);
 
+  const handleGetPreviousBlock = async (hash: string) => {
+    const res = await fetch('/api/btc/get-block', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ hash }),
+    });
+    const block = await res.json();
+    setBlocks([block, ...blocks]);
+  };
+
   return (
     <Box mt={2}>
       {isLoading ? (
@@ -81,78 +96,122 @@ const BTCBlockWrapper = () => {
       ) : (
         <>
           <Typography>BTC Latest Block</Typography>
-          {blocks.map((block: Block) => {
-            return (
-              <StyledBlock key={block.bits}>
-                <Box
-                  display="flex"
-                  flexDirection="column"
-                  justifyContent="space-between"
-                >
-                  <Typography>Hash</Typography>
-                  <Typography fontSize="0.5rem">{block.hash}</Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between" width="100%">
-                  <Typography>Height</Typography>
-                  <Typography>{block.height}</Typography>
-                </Box>
-                <Box
-                  display="flex"
-                  justifyContent="space-between"
-                  width="100% "
-                >
-                  <Typography>Time</Typography>
-                  <Typography>
-                    {formatDate(new Date(block.time * 1000))}
-                  </Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between" width="100%">
-                  <Typography>Size (in bytes)</Typography>
-                  <Typography>{block.size.toLocaleString()}</Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between" width="100%">
-                  <Typography>Weight</Typography>
-                  <Typography>{block.weight.toLocaleString()}</Typography>
-                </Box>
-                <Box display="flex" justifyContent="space-between" width="100%">
-                  <Typography>Transactions</Typography>
-                  <Button onClick={() => setSelectedBlock(block)}>
-                    {block.n_tx.toLocaleString()}
-                  </Button>
-                </Box>
-                <Typography>Merkle Root</Typography>
-                {/* TODO: link to mkrl root */}
-                <Typography fontSize="0.5rem">{block.mrkl_root}</Typography>
-                <Typography>Previous Block</Typography>
-                {/* TODO: fetch prev block */}
-                <Typography fontSize="0.5rem">{block.prev_block}</Typography>
-                <Drawer
-                  anchor="right"
-                  open={!!selectedBlock}
-                  onClose={() => setSelectedBlock(null)}
-                >
-                  <Box bgcolor="black">
-                    {selectedBlock &&
-                      selectedBlock.tx.map((tx: Transaction) => {
-                        return (
-                          <Typography
-                            fontSize="0.8rem"
-                            mx={2}
-                            my={1}
-                            key={tx.tx_index}
-                            color="primary"
-                          >
-                            {tx.hash}
-                          </Typography>
-                        );
-                      })}
+          <Box display="flex" sx={{ overflowX: 'auto' }}>
+            {blocks.map((block: Block) => {
+              return (
+                <StyledBlock key={block.hash}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    justifyContent="space-between"
+                  >
+                    <Typography>Hash</Typography>
+                    <Typography fontSize="0.5rem">{block.hash}</Typography>
                   </Box>
-                </Drawer>
-              </StyledBlock>
-            );
-          })}
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Typography>Height</Typography>
+                    <Typography>{block.height}</Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100% "
+                  >
+                    <Typography>Time</Typography>
+                    <Typography>
+                      {formatDate(new Date(block.time * 1000))}
+                    </Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Tooltip title="Bitcoin's block size is capped at 1MB but can go higher due to SegWit">
+                      <Typography>Size (in bytes)</Typography>
+                    </Tooltip>
+                    <Typography>{block.size.toLocaleString()}</Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Typography>Weight</Typography>
+                    <Typography>{block.weight.toLocaleString()}</Typography>
+                  </Box>
+                  <Box
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Typography>Transactions</Typography>
+                    <Button onClick={() => setSelectedBlock(block)}>
+                      {block.n_tx.toLocaleString()}
+                    </Button>
+                  </Box>
+                  <Typography>Merkle Root</Typography>
+                  {/* TODO: link to mkrl root */}
+                  <Typography fontSize="0.5rem">{block.mrkl_root}</Typography>
+                  <Typography>Previous Block</Typography>
+                  <Button
+                    onClick={() => handleGetPreviousBlock(block.prev_block)}
+                  >
+                    <Typography fontSize="0.5rem">
+                      {block.prev_block}
+                    </Typography>
+                  </Button>
+                </StyledBlock>
+              );
+            })}
+          </Box>
         </>
       )}
+      <Drawer
+        anchor="right"
+        open={!!selectedBlock}
+        onClose={() => setSelectedBlock(null)}
+      >
+        <Box bgcolor="black">
+          <Box display="flex" justifyContent="flex-end">
+            <IconButton onClick={() => setSelectedBlock(null)}>
+              <CloseIcon color="primary" />
+            </IconButton>
+          </Box>
+          {selectedBlock &&
+            selectedBlock.tx.map((tx: Transaction) => {
+              return (
+                <Box key={tx.tx_index}>
+                  <Typography fontSize="0.8rem" mx={2} my={1} color="primary">
+                    hash: {tx.hash}
+                  </Typography>
+                  <Typography
+                    fontSize="0.8rem"
+                    mx={2}
+                    my={1}
+                    key={tx.tx_index}
+                    color="primary"
+                  >
+                    size: {tx.size}
+                  </Typography>
+                  <Typography
+                    fontSize="0.8rem"
+                    mx={2}
+                    my={1}
+                    key={tx.tx_index}
+                    color="primary"
+                  >
+                    weight: {tx.weight}
+                  </Typography>
+                </Box>
+              );
+            })}
+        </Box>
+      </Drawer>
     </Box>
   );
 };

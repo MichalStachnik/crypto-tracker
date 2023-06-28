@@ -151,6 +151,19 @@ app.get('/api/btc/latest-block', async (req, res) => {
   res.json(blockData);
 });
 
+app.post('/api/btc/get-block', async (req, res) => {
+  const { hash } = req.body;
+  const cacheValue = await redisClient.get(hash);
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
+    return;
+  }
+  const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
+  const blockData = await rawBlockData.json();
+  redisClient.setEx(hash, 60 * 5, JSON.stringify(blockData));
+  res.json(blockData);
+});
+
 import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
@@ -173,6 +186,7 @@ app.post('/api/login', async (req, res) => {
   });
   if (signInQuery.error) {
     res.json({ message: 'error', error: signInQuery.error });
+    return;
   }
   res.setHeader(
     'Set-Cookie',
@@ -188,6 +202,16 @@ app.post('/api/login', async (req, res) => {
   if (!coinQuery.error) {
     data['favorites'] = coinQuery.data;
   }
+
+  const notificationQuery = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('email', req.body.email);
+
+  if (!notificationQuery.error) {
+    data['notifications'] = notificationQuery.data;
+  }
+
   res.json({ message: 'success', data });
 });
 
@@ -298,6 +322,23 @@ app.post('/api/add-notification', async (req, res) => {
     res.status(500).json({ error });
   } else {
     res.status(200).json({ message: 'success' });
+  }
+});
+
+app.post('/api/get-notifications', async (req, res) => {
+  const { jwt } = req.body;
+  const user = await supabase.auth.getUser(jwt);
+  const email = user.data.user.email;
+
+  const { data, error } = await supabase
+    .from('notifications')
+    .select('*')
+    .eq('email', email);
+
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ data, message: 'success' });
   }
 });
 

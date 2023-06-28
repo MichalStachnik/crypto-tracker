@@ -92,6 +92,13 @@ export default function CoinChart({
       price: data[mode].toFixed(0),
     };
   });
+
+  min = Number(min) - Number(min) * 0.05;
+  max = Number(max) + Number(max) * 0.05;
+
+  const longestLabelLength = data
+    .map((p) => p.price)
+    .reduce((acc, cur) => (cur.length > acc ? cur.length : acc), 0);
   return (
     <ResponsiveContainer width="100%" height={750}>
       <AreaChart
@@ -112,14 +119,14 @@ export default function CoinChart({
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" opacity={0.1} vertical={false} />
-        <XAxis dataKey="time" />
+        <XAxis dataKey="time" style={{ fontSize: '0.8rem' }} />
         <YAxis
           axisLine={false}
           tickLine={false}
           dataKey="price"
-          domain={[min - 100, max + 100]}
-          width={70}
-          style={{ fontSize: '0.8rem' }}
+          domain={[min, max]}
+          width={longestLabelLength * 10}
+          style={{ fontSize: '0.7rem' }}
           tickFormatter={(v) => Math.floor(v).toLocaleString()}
         />
         <Tooltip content={<ChartTooltip />} />
