@@ -59,7 +59,7 @@ const Home = ({ coins, searchText }: HomeProps) => {
             <Box
               display="flex"
               sx={{
-                m: { xs: 0, md: 2 },
+                m: { xs: 0, md: 1 },
                 flexDirection: { xs: 'column', md: 'row' },
               }}
             >

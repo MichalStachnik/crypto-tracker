@@ -145,9 +145,11 @@ function AuthDialog(props: AuthDialogProps) {
             onChange={handleEmailChange}
           />
         </FormControl>
-        <FormHelperText sx={{ m: 1 }} id="my-helper-text">
-          We'll never share your email.
-        </FormHelperText>
+        {mode === 'signup' ? (
+          <FormHelperText sx={{ m: 1 }} id="my-helper-text">
+            We'll never share your email.
+          </FormHelperText>
+        ) : null}
         <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">
             Password
@@ -224,14 +226,23 @@ function NotificationDialog(props: NotificationDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle display="flex" flexDirection="column">
         {!userContext.user ? (
-          <Box>Need to be logged in to set notifications</Box>
+          <Box>You need to be logged in to set notifications</Box>
         ) : (
           <>
+            <Box>
+              {userContext.notifications.map((notification) => {
+                return (
+                  <Typography>
+                    {notification.coin} {notification.price}
+                  </Typography>
+                );
+              })}
+            </Box>
             <FormControl fullWidth>
-              <InputLabel id="demo-simple-select-label">Coin</InputLabel>
+              <InputLabel id="coin-label">Coin</InputLabel>
               <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
+                labelId="coin-label"
+                id="coin-label"
                 value={coin}
                 label="Coin"
                 onChange={handleCoinChange}
@@ -502,7 +513,7 @@ export default function Header({
               onChange={handleSearch}
             />
           </Search>
-          <Box>
+          <Box flex={1}>
             {Object.keys(globalData).length && !globalData['error'] ? (
               <Box display="flex">
                 <Box
@@ -535,7 +546,7 @@ export default function Header({
               </Box>
             ) : null}
           </Box>
-          <Box>
+          <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
             <Badge color="success" badgeContent={'New'}>
               <Button onClick={() => setIsNotificationDialogOpen(true)}>
                 <NotificationsIcon />
