@@ -75,7 +75,7 @@ app.get('/api/cmc', async (req, res) => {
     return;
   }
   const data = await fetch(
-    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
+    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&limit=1000`
   );
   const json = await data.json();
   redisClient.setEx('cmcData', 60 * 5, JSON.stringify(json));
