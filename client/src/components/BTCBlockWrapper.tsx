@@ -114,33 +114,46 @@ const BTCBlockWrapper = () => {
             </Typography>
             {isLoadingPrevious && <CircularProgress />}
           </Box>
-          {blocks.length > 1 ? (
-            <Box>
-              <MobileStepper
-                variant="dots"
-                steps={blocks.length}
-                position="static"
-                activeStep={activeStep}
-                nextButton={
+          <Box>
+            <MobileStepper
+              variant="dots"
+              steps={blocks.length}
+              position="static"
+              activeStep={activeStep}
+              nextButton={
+                <Button
+                  onClick={() => setActiveStep(activeStep + 1)}
+                  disabled={activeStep === blocks.length - 1}
+                  sx={{ textTransform: 'capitalize' }}
+                  variant="outlined"
+                >
+                  next block
+                </Button>
+              }
+              backButton={
+                activeStep === 0 ? (
                   <Button
-                    onClick={() => setActiveStep(activeStep + 1)}
-                    disabled={activeStep === blocks.length - 1}
+                    onClick={() =>
+                      handleGetPreviousBlock(blocks[activeStep].prev_block)
+                    }
+                    sx={{ textTransform: 'capitalize' }}
+                    variant="outlined"
                   >
-                    next
+                    previous block
                   </Button>
-                }
-                backButton={
+                ) : (
                   <Button
                     onClick={() => setActiveStep(activeStep - 1)}
-                    disabled={activeStep === 0}
+                    sx={{ textTransform: 'capitalize' }}
+                    variant="outlined"
                   >
-                    back
+                    previous block
                   </Button>
-                }
-                sx={{ background: 'transparent' }}
-              />
-            </Box>
-          ) : null}
+                )
+              }
+              sx={{ background: 'transparent' }}
+            />
+          </Box>
           <Box
             display="flex"
             sx={{
@@ -218,13 +231,9 @@ const BTCBlockWrapper = () => {
                     {/* TODO: link to mkrl root */}
                     <Typography fontSize="0.5rem">{block.mrkl_root}</Typography>
                     <Typography>Previous Block</Typography>
-                    <Button
-                      onClick={() => handleGetPreviousBlock(block.prev_block)}
-                    >
-                      <Typography fontSize="0.5rem">
-                        {block.prev_block}
-                      </Typography>
-                    </Button>
+                    <Typography fontSize="0.5rem">
+                      {block.prev_block}
+                    </Typography>
                   </StyledBlock>
                 );
               })}
