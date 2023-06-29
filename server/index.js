@@ -298,7 +298,7 @@ app.post('/api/add-notification', async (req, res) => {
   const user = await supabase.auth.getUser(jwt);
   const email = user.data.user.email;
 
-  // // Check if notification already exists for user
+  // Check if notification already exists for user
   const userData = await supabase
     .from('notifications')
     .select('coin')
@@ -314,6 +314,9 @@ app.post('/api/add-notification', async (req, res) => {
       res.status(500)({ message: 'notification already exists' });
     }
   }
+
+  // TODO: timestamp the coin price to determine if its lower or higher
+  // get current price to determine lower or higher
 
   const { error } = await supabase
     .from('notifications')

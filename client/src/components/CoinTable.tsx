@@ -6,24 +6,39 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import { IconButton, TableSortLabel, styled } from '@mui/material';
+import {
+  IconButton,
+  TableSortLabel,
+  Theme,
+  styled,
+  useTheme,
+} from '@mui/material';
 import { Coin } from '../types/Coin';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { UserContext } from '../contexts/UserContext';
 
-const styleCell = (percentChange: number) => {
+const styleCell = (percentChange: number, theme: Theme) => {
   if (percentChange > 0) {
-    return { color: 'green' };
+    return { color: theme.palette.success.light };
   } else if (percentChange < 0) {
-    return { color: 'red' };
+    return { color: theme.palette.error.light };
   } else {
-    return { color: 'white' };
+    return { color: theme.palette.primary.light };
   }
 };
 
-const StyledTableCell = styled(TableCell)(() => ({
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
   cursor: 'pointer',
-  color: 'white',
+  color: theme.palette.common.white,
+  '& .MuiTableSortLabel-root:hover': {
+    color: theme.palette.primary.main,
+  },
+  '& .MuiTableSortLabel-root.Mui-active .MuiTableSortLabel-icon': {
+    color: theme.palette.primary.main,
+  },
+  '& .MuiTableSortLabel-root.Mui-active': {
+    color: theme.palette.primary.main,
+  },
 }));
 
 interface CoinTableProps {
@@ -48,6 +63,7 @@ export default function CoinTable({
     sortDirection: 'asc',
   });
   const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
+  const theme = useTheme();
 
   const toggleSort = (sortKey: string) => {
     const newDirection = sort.sortDirection === 'asc' ? 'desc' : 'asc';
@@ -251,19 +267,19 @@ export default function CoinTable({
                 </TableCell>
                 <TableCell
                   align="right"
-                  style={styleCell(coin.quote.USD.percent_change_24h)}
+                  style={styleCell(coin.quote.USD.percent_change_24h, theme)}
                 >
                   {coin.quote.USD.percent_change_24h.toFixed(2)}%
                 </TableCell>
                 <TableCell
                   align="right"
-                  style={styleCell(coin.quote.USD.percent_change_7d)}
+                  style={styleCell(coin.quote.USD.percent_change_7d, theme)}
                 >
                   {coin.quote.USD.percent_change_7d.toFixed(2)}%
                 </TableCell>
                 <TableCell
                   align="right"
-                  style={styleCell(coin.quote.USD.percent_change_30d)}
+                  style={styleCell(coin.quote.USD.percent_change_30d, theme)}
                 >
                   {coin.quote.USD.percent_change_30d.toFixed(2)}%
                 </TableCell>

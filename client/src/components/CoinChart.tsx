@@ -89,16 +89,23 @@ export default function CoinChart({
     }
     return {
       time: timeLabel,
-      price: data[mode].toFixed(0),
+      price: data[mode] > 1000 ? data[mode].toFixed(0) : data[mode].toFixed(6),
     };
   });
 
-  min = Number(min) - Number(min) * 0.05;
-  max = Number(max) + Number(max) * 0.05;
+  // Add 1% buffer in upper and lower bounds
+  min = Number(min) - Number(min) * 0.01;
+  max = Number(max) + Number(max) * 0.01;
+
+  if (min > 10000 && max > 10000) {
+    min = Math.ceil(min / 100) * 100;
+    max = Math.ceil(max / 100) * 100;
+  }
 
   const longestLabelLength = data
     .map((p) => p.price)
     .reduce((acc, cur) => (cur.length > acc ? cur.length : acc), 0);
+
   return (
     <ResponsiveContainer width="100%" height={750}>
       <AreaChart
@@ -127,7 +134,10 @@ export default function CoinChart({
           domain={[min, max]}
           width={longestLabelLength * 10}
           style={{ fontSize: '0.7rem' }}
-          tickFormatter={(v) => Math.floor(v).toLocaleString()}
+          tickFormatter={(v) => {
+            return v > 10000 ? Math.floor(v).toLocaleString() : v.toFixed(4);
+          }}
+          tickCount={20}
         />
         <Tooltip content={<ChartTooltip />} />
         <Area

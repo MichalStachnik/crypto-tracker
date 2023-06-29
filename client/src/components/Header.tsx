@@ -27,6 +27,8 @@ import {
   Select,
   SelectChangeEvent,
   Snackbar,
+  Theme,
+  useTheme,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { UserContext } from '../contexts/UserContext';
@@ -36,13 +38,13 @@ const USDollar = new Intl.NumberFormat('en-US', {
   currency: 'USD',
 });
 
-const styleCell = (percentChange: number) => {
+const styleCell = (percentChange: number, theme: Theme) => {
   if (percentChange > 0) {
-    return { color: 'green' };
+    return { color: theme.palette.success.light };
   } else if (percentChange < 0) {
-    return { color: 'red' };
+    return { color: theme.palette.error.light };
   } else {
-    return { color: 'black' };
+    return { color: theme.palette.primary.light };
   }
 };
 
@@ -304,6 +306,7 @@ export default function Header({
 
   const isMenuOpen = Boolean(anchorEl);
   const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
+  const theme = useTheme();
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorEl(event.currentTarget);
@@ -537,7 +540,7 @@ export default function Header({
                 <Box display="flex" flexDirection="column">
                   <Typography>Market cap change 24hr</Typography>
                   <Typography
-                    style={styleCell(globalData.market_cap_change_24h)}
+                    style={styleCell(globalData.market_cap_change_24h, theme)}
                     fontWeight="bold"
                   >
                     {globalData.market_cap_change_24h.toFixed(2)}%
