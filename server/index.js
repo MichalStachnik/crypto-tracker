@@ -384,6 +384,12 @@ app.post('/api/get-notifications', async (req, res) => {
             message: `hey! ${notificationItem.coin} has reached ${notificationItem.price} - check it out on wenmewn.app`,
           }),
         });
+
+        // Remove notification from table
+        await supabase
+          .from('notifications')
+          .delete()
+          .eq('id', notificationItem.id);
       }
     });
   }, 1000 * 60 * 5);

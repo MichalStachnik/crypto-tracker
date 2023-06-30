@@ -486,7 +486,10 @@ export default function Header({
       },
       body: JSON.stringify({ jwt: userContext.user, coin, price }),
     });
-    if (response.status === 200) setIsSnackbarOpen(true);
+    if (response.status === 200) {
+      setIsSnackbarOpen(true);
+      setIsNotificationDialogOpen(false);
+    }
   };
 
   return (
