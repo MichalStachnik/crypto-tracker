@@ -554,7 +554,10 @@ export default function Header({
           </Box>
           <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
             <Badge color="success" badgeContent={'New'}>
-              <Button onClick={() => setIsNotificationDialogOpen(true)}>
+              <Button
+                onClick={() => setIsNotificationDialogOpen(true)}
+                variant="outlined"
+              >
                 <NotificationsIcon />
                 <Typography textTransform="capitalize">
                   Notifications
@@ -567,7 +570,7 @@ export default function Header({
               sx={{
                 display: { xs: 'none', md: 'flex' },
                 justifyContent: 'flex-end',
-                flex: 1,
+                flex: 0.4,
               }}
             >
               <Button
