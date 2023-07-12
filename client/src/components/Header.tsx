@@ -97,6 +97,9 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
   width: 250,
+  '& .MuiInputBase-root': {
+    padding: 0,
+  },
   '& .MuiInputBase-input.MuiAutocomplete-input': {
     color: theme.palette.primary.main,
     padding: theme.spacing(1, 1, 1, 0),
