@@ -140,7 +140,7 @@ export default function CoinChart({
           width={longestLabelLength * 10}
           style={{ fontSize: '0.7rem' }}
           tickFormatter={(v) => {
-            return v > 10000 ? Math.floor(v).toLocaleString() : v.toFixed(4);
+            return v > 1000 ? Math.floor(v).toLocaleString() : v.toFixed(4);
           }}
           tickCount={20}
         />
