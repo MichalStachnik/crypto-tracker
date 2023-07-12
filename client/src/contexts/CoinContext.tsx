@@ -1,4 +1,4 @@
-import { createContext, Dispatch, ReactNode, useEffect, useState } from 'react';
+import { createContext, Dispatch, ReactNode, useState } from 'react';
 import { Coin } from '../types/Coin';
 import { TimeInterval } from '../types/TimeInterval';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
@@ -38,10 +38,6 @@ export const CoinProvider = ({ children }: CoinProviderProps) => {
       .then((res) => setLiveCoinWatchData(res))
       .catch((err) => console.error('Error', err));
   };
-
-  // useEffect(() => {
-  //   fetchLiveCoinWatch('BTC', '24hr');
-  // }, []);
 
   return (
     <CoinContext.Provider

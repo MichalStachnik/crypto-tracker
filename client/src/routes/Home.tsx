@@ -5,7 +5,6 @@ import CoinChart from '../components/CoinChart';
 import CoinInfoBox from '../components/CoinInfoBox';
 import CoinTable from '../components/CoinTable';
 import { Coin } from '../types/Coin';
-// import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
 import { CoinContext } from '../contexts/CoinContext';
@@ -22,21 +21,12 @@ const Home = ({ coins, searchText }: HomeProps) => {
     liveCoinWatchData,
     fetchLiveCoinWatch,
   } = useContext(CoinContext);
-  // const [liveCoinWatchData, setLiveCoinWatchData] =
-  //   useState<LiveCoinWatchData | null>(null);
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
   const [chartMode, setChartMode] = useState<ChartMode>('price');
 
   useEffect(() => {
     fetchLiveCoinWatch('BTC', '24hr');
   }, []);
-
-  // const fetchLiveCoinWatch = (symbol: string, interval: TimeInterval) => {
-  //   fetch(`/api/livecoinwatch/${symbol}/${interval}`)
-  //     .then((res) => res.json())
-  //     .then((res) => setLiveCoinWatchData(res))
-  //     .catch((err) => console.error('Error', err));
-  // };
 
   const handleCoinClick = (coin: Coin) => {
     setSelectedCoin(coin);
