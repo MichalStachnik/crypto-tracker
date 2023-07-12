@@ -1,10 +1,16 @@
-import { ChangeEvent, useState, MouseEvent, useContext } from 'react';
+import {
+  ChangeEvent,
+  useState,
+  MouseEvent,
+  useContext,
+  useMemo,
+  SyntheticEvent,
+} from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
 import Badge from '@mui/material/Badge';
 import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
@@ -15,6 +21,8 @@ import MailIcon from '@mui/icons-material/Mail';
 import NotificationsIcon from '@mui/icons-material/Notifications';
 // import MoreIcon from '@mui/icons-material/MoreVert';
 import {
+  Autocomplete,
+  AutocompleteRenderInputParams,
   Box,
   Button,
   Dialog,
@@ -27,11 +35,14 @@ import {
   Select,
   SelectChangeEvent,
   Snackbar,
+  TextField,
   Theme,
   useTheme,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { UserContext } from '../contexts/UserContext';
+import { Coin } from '../types/Coin';
+import { CoinContext } from '../contexts/CoinContext';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -84,9 +95,13 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
   justifyContent: 'center',
 }));
 
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  '& .MuiInputBase-input': {
+const StyledTextField = styled(TextField)(({ theme }) => ({
+  width: 250,
+  '& .MuiInputBase-root': {
+    padding: 0,
+  },
+  '& .MuiInputBase-input.MuiAutocomplete-input': {
+    color: theme.palette.primary.main,
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
@@ -284,10 +299,6 @@ function NotificationDialog(props: NotificationDialogProps) {
   );
 }
 
-interface Coin {
-  name: string;
-}
-
 export default function Header({
   globalData,
   searchText,
@@ -295,6 +306,7 @@ export default function Header({
   coins,
 }: any) {
   const userContext = useContext(UserContext);
+  const { setSelectedCoin, fetchLiveCoinWatch } = useContext(CoinContext);
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
@@ -486,7 +498,24 @@ export default function Header({
       },
       body: JSON.stringify({ jwt: userContext.user, coin, price }),
     });
-    if (response.status === 200) setIsSnackbarOpen(true);
+    if (response.status === 200) {
+      setIsSnackbarOpen(true);
+      setIsNotificationDialogOpen(false);
+    }
+  };
+
+  const coinNameSuggestions = useMemo(() => {
+    if (!searchText) return [];
+    else return coins.map((coin: Coin) => coin.name);
+  }, [searchText, coins]);
+
+  const handleAutoCompleteChange = (
+    _event: SyntheticEvent<Element, Event>,
+    value: unknown
+  ) => {
+    const selectedCoin = coins.find((c: Coin) => c.name === value);
+    setSelectedCoin(selectedCoin);
+    fetchLiveCoinWatch(selectedCoin.symbol, '24hr');
   };
 
   return (
@@ -509,11 +538,19 @@ export default function Header({
             <SearchIconWrapper>
               <SearchIcon />
             </SearchIconWrapper>
-            <StyledInputBase
-              placeholder="Search…"
-              inputProps={{ 'aria-label': 'search' }}
-              value={searchText}
-              onChange={handleSearch}
+            <Autocomplete
+              freeSolo
+              options={coinNameSuggestions}
+              noOptionsText="Search..."
+              onChange={handleAutoCompleteChange}
+              renderInput={(params: AutocompleteRenderInputParams) => (
+                <StyledTextField
+                  {...params}
+                  placeholder="Search…"
+                  value={searchText}
+                  onChange={handleSearch}
+                />
+              )}
             />
           </Search>
           <Box flex={1}>
@@ -551,7 +588,10 @@ export default function Header({
           </Box>
           <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
             <Badge color="success" badgeContent={'New'}>
-              <Button onClick={() => setIsNotificationDialogOpen(true)}>
+              <Button
+                onClick={() => setIsNotificationDialogOpen(true)}
+                variant="outlined"
+              >
                 <NotificationsIcon />
                 <Typography textTransform="capitalize">
                   Notifications
@@ -564,7 +604,7 @@ export default function Header({
               sx={{
                 display: { xs: 'none', md: 'flex' },
                 justifyContent: 'flex-end',
-                flex: 1,
+                flex: 0.4,
               }}
             >
               <Button

@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import './App.css';
-import Header from './components/Header';
-import { UserProvider } from './contexts/UserContext';
 import { Route, Routes } from 'react-router-dom';
 import Home from './routes/Home';
 import Bubbles from './routes/Bubbles';
+import './App.css';
+import Header from './components/Header';
+import { UserProvider } from './contexts/UserContext';
+import { CoinProvider } from './contexts/CoinContext';
 import { Coin } from './types/Coin';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
@@ -45,19 +46,21 @@ function App() {
 
   return (
     <UserProvider>
-      <Header
-        globalData={globalData}
-        searchText={searchText}
-        setSearchText={setSearchText}
-        coins={coins}
-      />
-      <Routes>
-        <Route
-          path="/"
-          element={<Home coins={coins} searchText={searchText} />}
+      <CoinProvider>
+        <Header
+          globalData={globalData}
+          searchText={searchText}
+          setSearchText={setSearchText}
+          coins={coins}
         />
-        <Route path="/bubbles" element={<Bubbles coins={coins} />} />
-      </Routes>
+        <Routes>
+          <Route
+            path="/"
+            element={<Home coins={coins} searchText={searchText} />}
+          />
+          <Route path="/bubbles" element={<Bubbles coins={coins} />} />
+        </Routes>
+      </CoinProvider>
     </UserProvider>
   );
 }

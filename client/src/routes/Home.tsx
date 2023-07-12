@@ -1,13 +1,13 @@
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Box, CircularProgress } from '@mui/material';
 import CoinHeader from '../components/CoinHeader';
 import CoinChart from '../components/CoinChart';
 import CoinInfoBox from '../components/CoinInfoBox';
 import CoinTable from '../components/CoinTable';
 import { Coin } from '../types/Coin';
-import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
+import { CoinContext } from '../contexts/CoinContext';
 
 interface HomeProps {
   coins: Coin[];
@@ -15,22 +15,18 @@ interface HomeProps {
 }
 
 const Home = ({ coins, searchText }: HomeProps) => {
-  const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
-  const [liveCoinWatchData, setLiveCoinWatchData] =
-    useState<LiveCoinWatchData | null>(null);
+  const {
+    selectedCoin,
+    setSelectedCoin,
+    liveCoinWatchData,
+    fetchLiveCoinWatch,
+  } = useContext(CoinContext);
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
   const [chartMode, setChartMode] = useState<ChartMode>('price');
 
   useEffect(() => {
     fetchLiveCoinWatch('BTC', '24hr');
   }, []);
-
-  const fetchLiveCoinWatch = (symbol: string, interval: TimeInterval) => {
-    fetch(`/api/livecoinwatch/${symbol}/${interval}`)
-      .then((res) => res.json())
-      .then((res) => setLiveCoinWatchData(res))
-      .catch((err) => console.error('Error', err));
-  };
 
   const handleCoinClick = (coin: Coin) => {
     setSelectedCoin(coin);

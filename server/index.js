@@ -75,7 +75,7 @@ app.get('/api/cmc', async (req, res) => {
     return;
   }
   const data = await fetch(
-    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
+    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&limit=500`
   );
   const json = await data.json();
   redisClient.setEx('cmcData', 60 * 5, JSON.stringify(json));
@@ -384,6 +384,12 @@ app.post('/api/get-notifications', async (req, res) => {
             message: `hey! ${notificationItem.coin} has reached ${notificationItem.price} - check it out on wenmewn.app`,
           }),
         });
+
+        // Remove notification from table
+        await supabase
+          .from('notifications')
+          .delete()
+          .eq('id', notificationItem.id);
       }
     });
   }, 1000 * 60 * 5);

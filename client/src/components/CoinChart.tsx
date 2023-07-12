@@ -102,6 +102,11 @@ export default function CoinChart({
     max = Math.ceil(max / 100) * 100;
   }
 
+  if (min > 1000) {
+    min = Math.floor(min);
+    max = Math.floor(max);
+  }
+
   const longestLabelLength = data
     .map((p) => p.price)
     .reduce((acc, cur) => (cur.length > acc ? cur.length : acc), 0);
@@ -135,7 +140,7 @@ export default function CoinChart({
           width={longestLabelLength * 10}
           style={{ fontSize: '0.7rem' }}
           tickFormatter={(v) => {
-            return v > 10000 ? Math.floor(v).toLocaleString() : v.toFixed(4);
+            return v > 1000 ? Math.floor(v).toLocaleString() : v.toFixed(4);
           }}
           tickCount={20}
         />
