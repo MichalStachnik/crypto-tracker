@@ -20,7 +20,6 @@ import {
   Legend,
   Pie,
   PieChart,
-  PieLabel,
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
@@ -239,7 +238,7 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
                 labelLine={false}
                 animationDuration={1000}
               >
-                {formattedMiners.map((entry, index) => (
+                {formattedMiners.map((_entry, index) => (
                   <Cell
                     key={`cell-${index}`}
                     fill={COLORS[index % COLORS.length]}
