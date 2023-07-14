@@ -23,7 +23,7 @@ const StyledNewsFeed = styled(Box)(() => ({
   height: '40px',
   display: 'flex',
   alignItems: 'center',
-  animation: `${scroll} 1200s infinite`,
+  animation: `${scroll} 3000s infinite`,
   '&:hover': {
     animationPlayState: 'paused',
   },
