@@ -1,5 +1,5 @@
 import { useContext, useEffect, useState } from 'react';
-import { Box, CircularProgress } from '@mui/material';
+import { Box, CircularProgress, Skeleton } from '@mui/material';
 import CoinHeader from '../components/CoinHeader';
 import CoinChart from '../components/CoinChart';
 import CoinInfoBox from '../components/CoinInfoBox';
@@ -38,7 +38,14 @@ const Home = ({ coins, searchText }: HomeProps) => {
     fetchLiveCoinWatch(selectedCoin?.symbol || 'BTC', newInterval);
   };
 
-  if (!coins.length) return <CircularProgress />;
+  if (!coins.length)
+    return (
+      <Box mx={2} display="flex">
+        <Skeleton width="70vw" height="100vh" />;
+        <Skeleton width="30vw" height="100vh" />;
+      </Box>
+    );
+
   return (
     <Box display="flex" flexDirection="column">
       <Box>

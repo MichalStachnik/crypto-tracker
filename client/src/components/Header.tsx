@@ -513,6 +513,11 @@ export default function Header({
     _event: SyntheticEvent<Element, Event>,
     value: unknown
   ) => {
+    if (value === null) {
+      setSelectedCoin(null);
+      setSearchText('');
+      return;
+    }
     const selectedCoin = coins.find((c: Coin) => c.name === value);
     setSelectedCoin(selectedCoin);
     fetchLiveCoinWatch(selectedCoin.symbol, '24hr');
