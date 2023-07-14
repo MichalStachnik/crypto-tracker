@@ -46,7 +46,6 @@ const NewsFeed = () => {
       .catch((err) => console.error('Error', err));
   };
 
-  // console.log(articles.length);
   return (
     <StyledNewsFeedWrapper>
       <StyledNewsFeed>
