@@ -4,6 +4,7 @@ import Home from './routes/Home';
 import Bubbles from './routes/Bubbles';
 import './App.css';
 import Header from './components/Header';
+import NewsFeed from './components/NewsFeed';
 import { UserProvider } from './contexts/UserContext';
 import { CoinProvider } from './contexts/CoinContext';
 import { Coin } from './types/Coin';
@@ -53,6 +54,7 @@ function App() {
           setSearchText={setSearchText}
           coins={coins}
         />
+        <NewsFeed />
         <Routes>
           <Route
             path="/"
