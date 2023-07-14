@@ -56,19 +56,12 @@ const formatTimeInterval = (timeInterval: string) => {
   let lastIndex = 0;
   timeInterval.split('').forEach((char: string, idx: number) => {
     if (!isNaN(Number(char))) {
-      // console.log('it does', char);
-      // console.log(typeof Number(char));
       lastIndex = idx;
     }
   });
 
-  // console.log(timeInterval);
-  // console.log(lastIndex);
   const first = timeInterval.substring(0, lastIndex + 1);
   const last = timeInterval.substring(lastIndex + 1);
-
-  // console.log(first);
-  // console.log(last);
   return `${first} ${last}`;
 };
 
@@ -234,7 +227,6 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
                 innerRadius={50}
                 outerRadius={90}
                 fill="#82ca9d"
-                // label
                 label={renderCustomizedLabel}
                 labelLine={false}
                 animationDuration={1000}
