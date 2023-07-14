@@ -20,10 +20,11 @@ import {
   Legend,
   Pie,
   PieChart,
+  PieLabel,
   ResponsiveContainer,
   Tooltip,
 } from 'recharts';
-import { TimeInterval } from '../types/TimeInterval';
+import { PieLabelRenderProps } from 'recharts';
 // import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
@@ -75,8 +76,15 @@ const renderCustomizedLabel = ({
   outerRadius,
   value,
   fill,
-}: any) => {
+}: PieLabelRenderProps) => {
   if (value < 10) return null;
+  if (
+    typeof innerRadius !== 'number' ||
+    typeof outerRadius !== 'number' ||
+    typeof cx !== 'number' ||
+    typeof cy !== 'number'
+  )
+    return null;
   const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
   const x = cx + radius * 1.5 * Math.cos(-midAngle * RADIAN);
   const y = cy + radius * 1.5 * Math.sin(-midAngle * RADIAN);
