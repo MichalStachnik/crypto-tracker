@@ -345,6 +345,15 @@ app.post('/api/get-notifications', async (req, res) => {
   }
 });
 
+app.get('/api/miners/:interval', async (req, res) => {
+  const timespan = req.params.interval;
+  const data = await fetch(
+    `https://api.blockchain.info/pools?timespan=${timespan}`
+  );
+  const json = await data.json();
+  res.json(json);
+});
+
 (() => {
   setInterval(async () => {
     // Get all notifications
