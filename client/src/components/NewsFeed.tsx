@@ -17,6 +17,9 @@ const StyledNewsFeedWrapper = styled(Box)(({ theme }) => ({
   borderBottom: `1px solid ${theme.palette.primary.dark}`,
   width: '100dvw',
   overflow: 'hidden',
+  [theme.breakpoints.down('sm')]: {
+    display: 'none',
+  },
 }));
 
 const StyledNewsFeed = styled(Box)(() => ({
