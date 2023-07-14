@@ -22,8 +22,8 @@ const handler = async (_request: Request): Promise<Response> => {
       // from: 'contact@wenmewn.app',
       from: 'onboarding@resend.dev',
       to: email,
-      subject: 'hello world',
-      html: `<strong>it works! ${message}</strong>`,
+      subject: 'Notification from wenmewn',
+      html: `<strong>${message}</strong>`,
     }),
   });
 
