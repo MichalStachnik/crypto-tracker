@@ -112,7 +112,7 @@ export default function CoinChart({
     .reduce((acc, cur) => (cur.length > acc ? cur.length : acc), 0);
 
   return (
-    <ResponsiveContainer width="100%" height={750}>
+    <ResponsiveContainer width="100%" height={837}>
       <AreaChart
         data={data}
         margin={{
