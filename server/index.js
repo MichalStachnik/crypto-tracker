@@ -354,6 +354,15 @@ app.get('/api/miners/:interval', async (req, res) => {
   res.json(json);
 });
 
+app.get('/api/news/:query', async (req, res) => {
+  const { query } = req.params;
+  const data = await fetch(
+    `https://newsapi.org/v2/everything?q=${query}&apiKey=${process.env.NEWS_API}`
+  );
+  const json = await data.json();
+  res.json(json);
+});
+
 (() => {
   setInterval(async () => {
     // Get all notifications

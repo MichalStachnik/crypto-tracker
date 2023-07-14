@@ -6,6 +6,7 @@ import {
   Tab,
   Tabs,
   Typography,
+  useTheme,
 } from '@mui/material';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
@@ -108,6 +109,7 @@ const TabPanel = (props: TabPanelProps) => {
 };
 
 const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
+  const theme = useTheme();
   const [miners, setMiners] = useState(null);
   const [activeTab, setActiveTab] = useState<string>('Blocks');
   const [timeInterval, setTimeInterval] = useState('5days');
@@ -193,8 +195,16 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         <Typography>{liveCoinWatchData.pairs}</Typography>
       </Box>
       <Tabs value={activeTab} onChange={handleTabChange} centered>
-        <Tab value="Blocks" label="Blocks" />
-        <Tab value="Miners" label="Miners" />
+        <Tab
+          value="Blocks"
+          label="Blocks"
+          sx={{ color: theme.palette.primary.main }}
+        />
+        <Tab
+          value="Miners"
+          label="Miners"
+          sx={{ color: theme.palette.primary.main }}
+        />
       </Tabs>
       <TabPanel value={activeTab} index={'Blocks'}>
         <BTCBlockWrapper />
