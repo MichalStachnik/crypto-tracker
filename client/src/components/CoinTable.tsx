@@ -44,7 +44,6 @@ const StyledTableCell = styled(TableCell)(({ theme }) => ({
 interface CoinTableProps {
   coins: Coin[];
   onCoinClick: (coin: Coin) => void;
-  searchText: string;
 }
 
 interface Sort {
@@ -52,11 +51,7 @@ interface Sort {
   sortDirection: SortDirection;
 }
 
-export default function CoinTable({
-  coins,
-  onCoinClick,
-  searchText,
-}: CoinTableProps) {
+export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
   const { user, favoriteCoins, setFavoriteCoins } = useContext(UserContext);
   const [sort, setSort] = useState<Sort>({
     sortKey: '',
@@ -172,14 +167,6 @@ export default function CoinTable({
         </TableHead>
         <TableBody>
           {coins
-            .filter((coin) => {
-              if (
-                searchText === '' ||
-                coin.name.toLowerCase().includes(searchText.toLowerCase())
-              ) {
-                return coin;
-              }
-            })
             .sort((a, b) => {
               if (sort.sortKey === '24hr' && sort.sortDirection === 'asc') {
                 return (
