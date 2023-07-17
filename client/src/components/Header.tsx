@@ -78,7 +78,6 @@ const Search = styled('div')(({ theme }) => ({
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
-  width: '100%',
   [theme.breakpoints.up('sm')]: {
     marginLeft: theme.spacing(3),
     width: 'auto',
@@ -96,20 +95,33 @@ const SearchIconWrapper = styled('div')(({ theme }) => ({
 }));
 
 const StyledTextField = styled(TextField)(({ theme }) => ({
-  width: 250,
   '& .MuiInputBase-root': {
     padding: 0,
   },
   '& .MuiInputBase-input.MuiAutocomplete-input': {
-    color: theme.palette.primary.main,
+    color: 'initial',
     padding: theme.spacing(1, 1, 1, 0),
     // vertical padding + font size from searchIcon
     paddingLeft: `calc(1em + ${theme.spacing(4)})`,
     transition: theme.transitions.create('width'),
     width: '100%',
-    [theme.breakpoints.up('md')]: {
-      width: '20ch',
+    [theme.breakpoints.down('md')]: {
+      width: 30,
+      color: 'transparent',
+      padding: '8px 12px',
+      '::placeholder': {
+        display: 'none',
+      },
+      ':focus': {
+        width: 100,
+        color: 'initial',
+        padding: theme.spacing(1, 1, 1, 0),
+        paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+      },
     },
+  },
+  '& .MuiOutlinedInput-notchedOutline': {
+    border: 'none',
   },
 }));
 
@@ -561,11 +573,8 @@ export default function Header({
           <Box flex={1}>
             {Object.keys(globalData).length && !globalData['error'] ? (
               <Box display="flex">
-                <Box
-                  flexDirection="column"
-                  sx={{ display: { xs: 'none', md: 'flex' } }}
-                >
-                  <Typography>Bitcoin dominance</Typography>
+                <Box flexDirection="column" display="flex">
+                  <Typography fontSize="0.8rem">Bitcoin dominance</Typography>
                   <Typography>
                     {globalData.bitcoin_dominance_percentage.toFixed(2)}%
                   </Typography>
@@ -574,13 +583,15 @@ export default function Header({
                   flexDirection="column"
                   sx={{ display: { xs: 'none', md: 'flex' } }}
                 >
-                  <Typography>Market cap</Typography>
+                  <Typography fontSize="0.8rem">Market cap</Typography>
                   <Typography fontSize="0.8rem">
                     {USDollar.format(globalData.market_cap_usd.toFixed(0))}
                   </Typography>
                 </Box>
                 <Box display="flex" flexDirection="column">
-                  <Typography>Market cap change 24hr</Typography>
+                  <Typography fontSize="0.8rem">
+                    Market cap &Delta; 24hr
+                  </Typography>
                   <Typography
                     style={styleCell(globalData.market_cap_change_24h, theme)}
                     fontWeight="bold"

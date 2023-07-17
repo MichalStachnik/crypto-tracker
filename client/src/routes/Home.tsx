@@ -11,10 +11,9 @@ import { CoinContext } from '../contexts/CoinContext';
 
 interface HomeProps {
   coins: Coin[];
-  searchText: string;
 }
 
-const Home = ({ coins, searchText }: HomeProps) => {
+const Home = ({ coins }: HomeProps) => {
   const {
     selectedCoin,
     setSelectedCoin,
@@ -78,11 +77,7 @@ const Home = ({ coins, searchText }: HomeProps) => {
           <CircularProgress />
         )}
       </Box>
-      <CoinTable
-        coins={coins}
-        onCoinClick={handleCoinClick}
-        searchText={searchText}
-      />
+      <CoinTable coins={coins} onCoinClick={handleCoinClick} />
     </Box>
   );
 };

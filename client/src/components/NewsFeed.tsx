@@ -23,14 +23,33 @@ const StyledNewsFeed = styled(Box)(() => ({
   height: '40px',
   display: 'flex',
   alignItems: 'center',
-  animation: `${scroll} 1200s infinite`,
+  animation: `${scroll} linear 3000s infinite`,
   '&:hover': {
     animationPlayState: 'paused',
   },
 }));
 
-const StyledArticle = styled(Box)(() => ({
-  minWidth: '60%',
+const StyledArticle = styled(Box)(({ theme }) => ({
+  minWidth: '50%',
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  [theme.breakpoints.down('md')]: {
+    minWidth: '70%',
+  },
+  [theme.breakpoints.down('sm')]: {
+    minWidth: '100%',
+  },
+}));
+
+const StyledLink = styled(Link)(({ theme }) => ({
+  fontSize: '0.8rem',
+  '&:hover': {
+    color: theme.palette.primary.light,
+  },
+  [theme.breakpoints.down('md')]: {
+    fontSize: '0.6rem',
+  },
 }));
 
 const NewsFeed = () => {
@@ -51,10 +70,15 @@ const NewsFeed = () => {
       <StyledNewsFeed>
         {articles?.map((article: Article) => (
           <StyledArticle key={article.url}>
-            <Link target="_blank" href={article.url} underline="none" mr={2}>
+            <StyledLink
+              target="_blank"
+              href={article.url}
+              underline="none"
+              mr={2}
+            >
               {article.title}
-            </Link>
-            <Chip label={article.source.name} color="primary" />
+            </StyledLink>
+            <Chip label={article.source.name} color="primary" size="small" />
           </StyledArticle>
         ))}
       </StyledNewsFeed>

@@ -56,10 +56,7 @@ function App() {
         />
         <NewsFeed />
         <Routes>
-          <Route
-            path="/"
-            element={<Home coins={coins} searchText={searchText} />}
-          />
+          <Route path="/" element={<Home coins={coins} />} />
           <Route path="/bubbles" element={<Bubbles coins={coins} />} />
         </Routes>
       </CoinProvider>
