@@ -347,8 +347,19 @@ app.post('/api/get-notifications', async (req, res) => {
 
 app.get('/api/miners/:interval', async (req, res) => {
   const timespan = req.params.interval;
+  console.log('interval', timespan);
   const data = await fetch(
     `https://api.blockchain.info/pools?timespan=${timespan}`
+  );
+  const json = await data.json();
+  res.json(json);
+});
+
+app.get('/api/hashrate/:interval', async (req, res) => {
+  const timespan = req.params.interval;
+  console.log('the timespan', timespan);
+  const data = await fetch(
+    `https://api.blockchain.info/charts/hash-rate?timespan=${timespan}`
   );
   const json = await data.json();
   res.json(json);
@@ -363,6 +374,7 @@ app.get('/api/news/:query', async (req, res) => {
   res.json(json);
 });
 
+// Check notifications
 (() => {
   setInterval(async () => {
     // Get all notifications

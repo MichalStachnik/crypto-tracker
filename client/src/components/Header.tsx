@@ -608,7 +608,7 @@ export default function Header({
                 onClick={() => setIsNotificationDialogOpen(true)}
                 variant="outlined"
               >
-                <NotificationsIcon />
+                <NotificationsIcon fontSize="small" />
                 <Typography textTransform="capitalize">
                   Notifications
                 </Typography>
