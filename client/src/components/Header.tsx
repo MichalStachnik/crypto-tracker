@@ -174,7 +174,6 @@ function AuthDialog(props: AuthDialogProps) {
       body: JSON.stringify({ email }),
     });
     const data = await res.json();
-    console.log('data', data);
     if (data.error) {
       // Add error toast
       console.warn(data.error);
