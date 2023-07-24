@@ -17,12 +17,17 @@ import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
 import { useEffect, useMemo, useState } from 'react';
 import {
+  Area,
+  AreaChart,
+  CartesianGrid,
   Cell,
   Legend,
   Pie,
   PieChart,
   ResponsiveContainer,
   Tooltip,
+  XAxis,
+  YAxis,
 } from 'recharts';
 import { PieLabelRenderProps } from 'recharts';
 // import BTCMempoolWrapper from './BTCMempoolWrapper';
@@ -108,23 +113,43 @@ const TabPanel = (props: TabPanelProps) => {
   return <div hidden={value !== index}>{children}</div>;
 };
 
+interface HashRateResponse {
+  description: string;
+  name: string;
+  period: string;
+  status: string;
+  unit: string;
+  values: { x: number; y: number }[];
+}
+
 const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
   const theme = useTheme();
   const [miners, setMiners] = useState(null);
+  const [hashRateResponse, setHashRateResponse] =
+    useState<HashRateResponse | null>(null);
   const [activeTab, setActiveTab] = useState<string>('Blocks');
-  const [timeInterval, setTimeInterval] = useState('5days');
+  const [minerTimeInterval, setMinerTimeInterval] = useState('5days');
+  const [hashRateTimeInterval, setHashRateTimeInterval] = useState('3months');
   const handleTabChange = (_event: React.SyntheticEvent, newValue: string) => {
     setActiveTab(newValue);
   };
 
   useEffect(() => {
-    fetchMiners(timeInterval);
+    fetchMiners(minerTimeInterval);
+    fetchHashRate(hashRateTimeInterval);
   }, []);
 
   const fetchMiners = (timeInterval: string) => {
     fetch(`/api/miners/${timeInterval}`)
       .then((res) => res.json())
       .then((res) => setMiners(res))
+      .catch((err) => console.error('Error', err));
+  };
+
+  const fetchHashRate = (timeInterval: string) => {
+    fetch(`/api/hashrate/${timeInterval}`)
+      .then((res) => res.json())
+      .then((res) => setHashRateResponse(res))
       .catch((err) => console.error('Error', err));
   };
 
@@ -135,10 +160,30 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
     });
   }, [miners]);
 
-  const handleTimeIntervalClick = (timeInterval: string) => {
-    setTimeInterval(timeInterval);
+  const handleMinerTimeIntervalClick = (timeInterval: string) => {
+    setMinerTimeInterval(timeInterval);
     fetchMiners(timeInterval);
   };
+
+  const handleHashRateTimeIntervalClick = (timeInterval: string) => {
+    setHashRateTimeInterval(timeInterval);
+    fetchHashRate(timeInterval);
+  };
+
+  const formattedHashRateData = useMemo(() => {
+    if (!hashRateResponse) return null;
+    return hashRateResponse.values.map((value) => {
+      const time = new Date(value.x * 1000);
+      const month = time.getMonth();
+      const date = time.getDate();
+
+      const timeLabel = `${month}/${date}`;
+      return {
+        time: timeLabel,
+        hashRate: value.y.toFixed(2),
+      };
+    });
+  }, [hashRateResponse]);
 
   return (
     <Box
@@ -205,31 +250,36 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
           label="Miners"
           sx={{ color: theme.palette.primary.main }}
         />
+        <Tab
+          value="HashRate"
+          label="Hash Rate"
+          sx={{ color: theme.palette.primary.main }}
+        />
       </Tabs>
       <TabPanel value={activeTab} index={'Blocks'}>
         <BTCBlockWrapper />
       </TabPanel>
       <TabPanel value={activeTab} index={'Miners'}>
         <Typography mt={2} fontSize="0.7rem">
-          Number of blocks mined in the last {formatTimeInterval(timeInterval)}{' '}
-          by mining pool
+          Number of blocks mined in the last{' '}
+          {formatTimeInterval(minerTimeInterval)} by mining pool
         </Typography>
         <Button
-          variant={timeInterval === '24hours' ? 'contained' : 'outlined'}
-          onClick={() => handleTimeIntervalClick('24hours')}
+          variant={minerTimeInterval === '24hours' ? 'contained' : 'outlined'}
+          onClick={() => handleMinerTimeIntervalClick('24hours')}
         >
           24hr
         </Button>
         <Button
-          variant={timeInterval === '5days' ? 'contained' : 'outlined'}
-          onClick={() => handleTimeIntervalClick('5days')}
+          variant={minerTimeInterval === '5days' ? 'contained' : 'outlined'}
+          onClick={() => handleMinerTimeIntervalClick('5days')}
           style={{ margin: 10 }}
         >
           5d
         </Button>
         <Button
-          variant={timeInterval === '10days' ? 'contained' : 'outlined'}
-          onClick={() => handleTimeIntervalClick('10days')}
+          variant={minerTimeInterval === '10days' ? 'contained' : 'outlined'}
+          onClick={() => handleMinerTimeIntervalClick('10days')}
         >
           10d
         </Button>
@@ -258,6 +308,77 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
               <Legend verticalAlign="bottom" />
               <Tooltip />
             </PieChart>
+          </ResponsiveContainer>
+        ) : null}
+      </TabPanel>
+      <TabPanel value={activeTab} index={'HashRate'}>
+        <Typography mt={2} fontSize="0.7rem">
+          {hashRateResponse?.description}
+        </Typography>
+        <Box display="flex" justifyContent="space-evenly" my={2}>
+          <Button
+            variant={
+              hashRateTimeInterval === '4weeks' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('4weeks')}
+          >
+            1M
+          </Button>
+          <Button
+            variant={
+              hashRateTimeInterval === '3months' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('3months')}
+          >
+            3M
+          </Button>
+          <Button
+            variant={
+              hashRateTimeInterval === '6months' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('6months')}
+          >
+            6M
+          </Button>
+          <Button
+            variant={
+              hashRateTimeInterval === '12months' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('12months')}
+          >
+            1YR
+          </Button>
+        </Box>
+        {formattedHashRateData ? (
+          <ResponsiveContainer width="100%" height={400}>
+            <AreaChart data={formattedHashRateData}>
+              <defs>
+                <linearGradient id="color" x1="0" y1="0" x2="0" y2="1">
+                  <stop offset="5%" stopColor="#8884d8" stopOpacity={0.8} />
+                  <stop offset="95%" stopColor="#8884d8" stopOpacity={0.05} />
+                </linearGradient>
+              </defs>
+              <CartesianGrid
+                strokeDasharray="3 3"
+                opacity={0.1}
+                vertical={false}
+              />
+              <XAxis dataKey="time" style={{ fontSize: '0.8rem' }} />
+              <YAxis
+                axisLine={false}
+                tickLine={false}
+                dataKey="hashRate"
+                style={{ fontSize: '0.7rem' }}
+                tickCount={20}
+              />
+              <Tooltip />
+              <Area
+                type="monotone"
+                dataKey="hashRate"
+                stroke="#8884d8"
+                fill="url(#color)"
+              />
+            </AreaChart>
           </ResponsiveContainer>
         ) : null}
       </TabPanel>
