@@ -1,6 +1,7 @@
 import { Avatar, Box, Chip, Link, keyframes, styled } from '@mui/material';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { Article } from '../types/Article';
+import { CoinContext } from '../contexts/CoinContext';
 
 const scroll = keyframes`
   from {
@@ -53,13 +54,20 @@ const StyledLink = styled(Link)(({ theme }) => ({
 }));
 
 const NewsFeed = () => {
+  const { selectedCoin } = useContext(CoinContext);
   const [articles, setArticles] = useState<Article[] | null>(null);
   useEffect(() => {
-    fetchNews();
+    fetchNews('bitcoin');
   }, []);
 
-  const fetchNews = () => {
-    fetch('/api/news/bitcoin')
+  useEffect(() => {
+    if (selectedCoin) {
+      fetchNews(selectedCoin.name.toLowerCase());
+    }
+  }, [selectedCoin]);
+
+  const fetchNews = (coin: string) => {
+    fetch(`/api/news/${coin}`)
       .then((res) => res.json())
       .then((res) => setArticles(res.articles))
       .catch((err) => console.error('Error', err));
