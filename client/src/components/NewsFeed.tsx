@@ -1,4 +1,4 @@
-import { Box, Chip, Link, keyframes, styled } from '@mui/material';
+import { Avatar, Box, Chip, Link, keyframes, styled } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { Article } from '../types/Article';
 
@@ -78,7 +78,14 @@ const NewsFeed = () => {
             >
               {article.title}
             </StyledLink>
-            <Chip label={article.source.name} color="primary" size="small" />
+            <Chip
+              avatar={
+                <Avatar alt={article.source.name} src={article.urlToImage} />
+              }
+              label={article.source.name}
+              color="primary"
+              size="small"
+            />
           </StyledArticle>
         ))}
       </StyledNewsFeed>

@@ -37,13 +37,14 @@ const Home = ({ coins }: HomeProps) => {
     fetchLiveCoinWatch(selectedCoin?.symbol || 'BTC', newInterval);
   };
 
-  if (!coins.length)
+  if (!coins.length) {
     return (
-      <Box mx={2} display="flex">
-        <Skeleton width="70vw" height="100vh" />;
-        <Skeleton width="30vw" height="100vh" />;
+      <Box mx={2} display="flex" justifyContent="space-between" gap={2}>
+        <Skeleton width="100%" height="100vh" />
+        <Skeleton width="340px" height="100vh" />
       </Box>
     );
+  }
 
   return (
     <Box display="flex" flexDirection="column">

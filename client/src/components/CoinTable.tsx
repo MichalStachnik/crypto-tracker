@@ -29,6 +29,7 @@ const styleCell = (percentChange: number, theme: Theme) => {
 
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
   cursor: 'pointer',
+  whiteSpace: 'nowrap',
   color: theme.palette.common.white,
   '& .MuiTableSortLabel-root:hover': {
     color: theme.palette.primary.main,
@@ -134,7 +135,7 @@ export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
                 active={sort.sortKey === '24hr'}
                 direction={sort.sortDirection === 'asc' ? 'asc' : 'desc'}
               >
-                % Change 24hr
+                &Delta; 24hr
               </TableSortLabel>
             </StyledTableCell>
             <StyledTableCell
@@ -146,7 +147,7 @@ export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
                 active={sort.sortKey === '7d'}
                 direction={sort.sortDirection === 'asc' ? 'asc' : 'desc'}
               >
-                % Change 7d
+                &Delta; 7d
               </TableSortLabel>
             </StyledTableCell>
             <StyledTableCell
@@ -160,7 +161,7 @@ export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
                 active={sort.sortKey === '30d'}
                 direction={sort.sortDirection === 'asc' ? 'asc' : 'desc'}
               >
-                % Change 30d
+                &Delta; 30d
               </TableSortLabel>
             </StyledTableCell>
           </TableRow>

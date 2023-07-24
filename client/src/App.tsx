@@ -8,6 +8,8 @@ import NewsFeed from './components/NewsFeed';
 import { UserProvider } from './contexts/UserContext';
 import { CoinProvider } from './contexts/CoinContext';
 import { Coin } from './types/Coin';
+import { Box } from '@mui/material';
+import PasswordReset from './routes/PasswordReset';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -58,6 +60,7 @@ function App() {
         <Routes>
           <Route path="/" element={<Home coins={coins} />} />
           <Route path="/bubbles" element={<Bubbles coins={coins} />} />
+          <Route path="/password-reset" element={<PasswordReset />} />
         </Routes>
       </CoinProvider>
     </UserProvider>

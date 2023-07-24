@@ -47,6 +47,7 @@ import { CoinContext } from '../contexts/CoinContext';
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
+  minimumFractionDigits: 0,
 });
 
 const styleCell = (percentChange: number, theme: Theme) => {
@@ -136,6 +137,7 @@ function AuthDialog(props: AuthDialogProps) {
   const { onClose, open, onSubmit, mode } = props;
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [resetPasswordSent, setResetPasswordSent] = useState(false);
 
   const handleClose = () => {
     onClose();
@@ -159,6 +161,27 @@ function AuthDialog(props: AuthDialogProps) {
 
   const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
     event.preventDefault();
+  };
+
+  const handleForgotPasswordClick = async () => {
+    if (!email) return;
+    setResetPasswordSent(true);
+    const res = await fetch('/api/forgot-password', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+    const data = await res.json();
+    console.log('data', data);
+    if (data.error) {
+      // Add error toast
+      console.warn(data.error);
+    } else {
+      // Add toast
+      console.log(data.message);
+    }
   };
 
   return (
@@ -202,6 +225,25 @@ function AuthDialog(props: AuthDialogProps) {
             value={password}
             onChange={handlePasswordChange}
           />
+          {mode === 'login' ? (
+            <Box display="flex">
+              {resetPasswordSent ? (
+                <FormHelperText>Sent, please check your email</FormHelperText>
+              ) : (
+                <>
+                  <FormHelperText sx={{ m: 1 }}>
+                    Forgot your password?
+                  </FormHelperText>
+                  <Button
+                    onClick={handleForgotPasswordClick}
+                    sx={{ textTransform: 'initial', fontSize: '0.8rem' }}
+                  >
+                    Click here
+                  </Button>
+                </>
+              )}
+            </Box>
+          ) : null}
         </FormControl>
         <Button
           variant="contained"
@@ -572,7 +614,7 @@ export default function Header({
           </Search>
           <Box flex={1}>
             {Object.keys(globalData).length && !globalData['error'] ? (
-              <Box display="flex">
+              <Box display="flex" justifyContent="space-evenly">
                 <Box flexDirection="column" display="flex">
                   <Typography fontSize="0.8rem">Bitcoin dominance</Typography>
                   <Typography>
@@ -585,7 +627,7 @@ export default function Header({
                 >
                   <Typography fontSize="0.8rem">Market cap</Typography>
                   <Typography fontSize="0.8rem">
-                    {USDollar.format(globalData.market_cap_usd.toFixed(0))}
+                    {USDollar.format(globalData.market_cap_usd)}
                   </Typography>
                 </Box>
                 <Box display="flex" flexDirection="column">
@@ -602,7 +644,7 @@ export default function Header({
               </Box>
             ) : null}
           </Box>
-          <Box sx={{ display: { xs: 'none', sm: 'flex' } }}>
+          <Box display="flex" justifyContent="space-evenly" flex={0.6} gap={1}>
             <Badge color="success" badgeContent={'New'}>
               <Button
                 onClick={() => setIsNotificationDialogOpen(true)}
@@ -614,36 +656,27 @@ export default function Header({
                 </Typography>
               </Button>
             </Badge>
-          </Box>
-          {!userContext.user ? (
-            <Box
-              sx={{
-                display: { xs: 'none', md: 'flex' },
-                justifyContent: 'flex-end',
-                flex: 0.4,
-              }}
-            >
-              <Button
-                variant="outlined"
-                style={{ marginRight: 10 }}
-                onClick={() => setIsLoginDialogOpen(true)}
-              >
-                Login
-              </Button>
-              <Button
-                variant="contained"
-                onClick={() => setIsSignupDialogOpen(true)}
-              >
-                Signup
-              </Button>
-            </Box>
-          ) : (
-            <Box sx={{ display: 'flex', justifyContent: 'flex-end', flex: 1 }}>
+            {!userContext.user ? (
+              <>
+                <Button
+                  variant="outlined"
+                  onClick={() => setIsLoginDialogOpen(true)}
+                >
+                  Login
+                </Button>
+                <Button
+                  variant="contained"
+                  onClick={() => setIsSignupDialogOpen(true)}
+                >
+                  Signup
+                </Button>
+              </>
+            ) : (
               <Button variant="outlined" onClick={handleLogout}>
                 Logout
               </Button>
-            </Box>
-          )}
+            )}
+          </Box>
         </Toolbar>
       </AppBar>
       {renderMobileMenu}

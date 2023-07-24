@@ -173,14 +173,6 @@ const BTCBlockWrapper = () => {
                   <StyledBlock key={block.hash}>
                     <Box
                       display="flex"
-                      flexDirection="column"
-                      justifyContent="space-between"
-                    >
-                      <Typography>Hash</Typography>
-                      <Typography fontSize="0.5rem">{block.hash}</Typography>
-                    </Box>
-                    <Box
-                      display="flex"
                       justifyContent="space-between"
                       width="100%"
                     >
@@ -227,11 +219,17 @@ const BTCBlockWrapper = () => {
                         {block.n_tx.toLocaleString()}
                       </Button>
                     </Box>
+                    <Typography>Hash</Typography>
+                    <Typography fontSize="0.5rem" color="warning.main">
+                      {block.hash}
+                    </Typography>
                     <Typography>Merkle Root</Typography>
                     {/* TODO: link to mkrl root */}
-                    <Typography fontSize="0.5rem">{block.mrkl_root}</Typography>
+                    <Typography fontSize="0.5rem" color="warning.main">
+                      {block.mrkl_root}
+                    </Typography>
                     <Typography>Previous Block</Typography>
-                    <Typography fontSize="0.5rem">
+                    <Typography fontSize="0.5rem" color="warning.main">
                       {block.prev_block}
                     </Typography>
                   </StyledBlock>

@@ -170,7 +170,6 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
     fetchHashRate(timeInterval);
   };
 
-  console.log(hashRateResponse);
   const formattedHashRateData = useMemo(() => {
     if (!hashRateResponse) return null;
     return hashRateResponse.values.map((value) => {
@@ -316,29 +315,40 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         <Typography mt={2} fontSize="0.7rem">
           {hashRateResponse?.description}
         </Typography>
-        <Button
-          variant={hashRateTimeInterval === '4weeks' ? 'contained' : 'outlined'}
-          onClick={() => handleHashRateTimeIntervalClick('4weeks')}
-        >
-          1M
-        </Button>
-        <Button
-          variant={
-            hashRateTimeInterval === '3months' ? 'contained' : 'outlined'
-          }
-          onClick={() => handleHashRateTimeIntervalClick('3months')}
-          style={{ margin: 10 }}
-        >
-          3M
-        </Button>
-        <Button
-          variant={
-            hashRateTimeInterval === '6months' ? 'contained' : 'outlined'
-          }
-          onClick={() => handleHashRateTimeIntervalClick('6months')}
-        >
-          6M
-        </Button>
+        <Box display="flex" justifyContent="space-evenly" my={2}>
+          <Button
+            variant={
+              hashRateTimeInterval === '4weeks' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('4weeks')}
+          >
+            1M
+          </Button>
+          <Button
+            variant={
+              hashRateTimeInterval === '3months' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('3months')}
+          >
+            3M
+          </Button>
+          <Button
+            variant={
+              hashRateTimeInterval === '6months' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('6months')}
+          >
+            6M
+          </Button>
+          <Button
+            variant={
+              hashRateTimeInterval === '12months' ? 'contained' : 'outlined'
+            }
+            onClick={() => handleHashRateTimeIntervalClick('12months')}
+          >
+            1YR
+          </Button>
+        </Box>
         {formattedHashRateData ? (
           <ResponsiveContainer width="100%" height={400}>
             <AreaChart data={formattedHashRateData}>

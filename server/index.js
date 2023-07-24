@@ -168,7 +168,12 @@ import { createClient } from '@supabase/supabase-js';
 
 const supabase = createClient(
   process.env.SUPABASE_PROJECT_URL,
-  process.env.SUPABASE_API_KEY
+  process.env.SUPABASE_API_KEY,
+  {
+    auth: {
+      persistSession: false,
+    },
+  }
 );
 
 app.post('/api/signup', async (req, res) => {
@@ -223,6 +228,51 @@ app.get('/api/logout', async (req, res) => {
   } else {
     res.status(202).json({ message: 'success' });
   }
+});
+
+app.post('/api/forgot-password', async (req, res) => {
+  const { email } = req.body;
+
+  const redirectTo =
+    process.env.NODE_ENV === 'production'
+      ? 'https://wenmewn.app/password-reset'
+      : 'http://localhost:5173/password-reset';
+  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
+    redirectTo,
+  });
+
+  if (error) {
+    res.status(500).json({ message: 'error' });
+  } else {
+    res.status(201).json({ message: 'email sent' });
+  }
+});
+
+app.post('/api/update-password', async (req, res) => {
+  const { password, refreshToken } = req.body;
+
+  const refreshSession = await supabase.auth.refreshSession({
+    refresh_token: refreshToken,
+  });
+
+  if (refreshSession.error) {
+    res.status(500).json({ message: 'error' });
+    return;
+  }
+
+  const updateUser = await supabase.auth.updateUser({ password });
+
+  if (updateUser.error) {
+    res.status(500).json({ message: 'error' });
+    return;
+  }
+
+  const redirectTo =
+    process.env.NODE_ENV === 'production'
+      ? 'https://wenmewn.app/'
+      : 'http://localhost:5173/';
+
+  res.json({ message: 'password updated', redirectTo });
 });
 
 app.post('/api/get-favorites', async (req, res) => {
@@ -347,7 +397,6 @@ app.post('/api/get-notifications', async (req, res) => {
 
 app.get('/api/miners/:interval', async (req, res) => {
   const timespan = req.params.interval;
-  console.log('interval', timespan);
   const data = await fetch(
     `https://api.blockchain.info/pools?timespan=${timespan}`
   );
@@ -357,7 +406,6 @@ app.get('/api/miners/:interval', async (req, res) => {
 
 app.get('/api/hashrate/:interval', async (req, res) => {
   const timespan = req.params.interval;
-  console.log('the timespan', timespan);
   const data = await fetch(
     `https://api.blockchain.info/charts/hash-rate?timespan=${timespan}`
   );
