@@ -82,7 +82,7 @@ const BTCTransactionWrapper = () => {
     <Box>
       {transactions ? (
         <Box display="flex" flexDirection="column">
-          <Box display="flex" justifyContent="flex-end">
+          {/* <Box display="flex" justifyContent="flex-end">
             {isConnected ? (
               <LinearProgress color="success" sx={{ width: 40 }} />
             ) : (
@@ -90,7 +90,7 @@ const BTCTransactionWrapper = () => {
                 <SyncDisabledIcon sx={{ color: 'red' }} />
               </IconButton>
             )}
-          </Box>
+          </Box> */}
           <Box
             display="flex"
             justifyContent="space-between"
