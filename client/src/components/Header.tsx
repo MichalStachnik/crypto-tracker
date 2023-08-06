@@ -614,7 +614,10 @@ export default function Header({
           <Box flex={1}>
             {Object.keys(globalData).length && !globalData['error'] ? (
               <Box display="flex" justifyContent="space-evenly">
-                <Box flexDirection="column" display="flex">
+                <Box
+                  flexDirection="column"
+                  sx={{ display: { xs: 'none', md: 'flex' } }}
+                >
                   <Typography fontSize="0.8rem">Bitcoin dominance</Typography>
                   <Typography>
                     {globalData.bitcoin_dominance_percentage.toFixed(2)}%
@@ -644,7 +647,11 @@ export default function Header({
             ) : null}
           </Box>
           <Box display="flex" justifyContent="space-evenly" flex={0.6} gap={1}>
-            <Badge color="success" badgeContent={'New'}>
+            <Badge
+              color="success"
+              badgeContent={'New'}
+              sx={{ display: { xs: 'none', md: 'flex' } }}
+            >
               <Button
                 onClick={() => setIsNotificationDialogOpen(true)}
                 variant="outlined"
@@ -660,12 +667,14 @@ export default function Header({
                 <Button
                   variant="outlined"
                   onClick={() => setIsLoginDialogOpen(true)}
+                  size={theme.breakpoints.down('sm') ? 'small' : 'medium'}
                 >
                   Login
                 </Button>
                 <Button
                   variant="contained"
                   onClick={() => setIsSignupDialogOpen(true)}
+                  size={theme.breakpoints.down('sm') ? 'small' : 'medium'}
                 >
                   Signup
                 </Button>
@@ -678,8 +687,8 @@ export default function Header({
           </Box>
         </Toolbar>
       </AppBar>
-      {renderMobileMenu}
-      {renderMenu}
+      {/* {renderMobileMenu} */}
+      {/* {renderMenu} */}
       <AuthDialog
         open={isSignupDialogOpen}
         onClose={() => setIsSignupDialogOpen(false)}
