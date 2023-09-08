@@ -53,6 +53,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
   },
 }));
 
+// TODO: filter by news source
 const NewsFeed = () => {
   const { selectedCoin } = useContext(CoinContext);
   const [articles, setArticles] = useState<Article[] | null>(null);

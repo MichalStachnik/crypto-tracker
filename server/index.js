@@ -18,16 +18,20 @@ app.use(express.json());
 let redisClient;
 
 (async () => {
-  redisClient = redis.createClient({
-    url: process.env.REDIS_URL,
-  });
+  try {
+    redisClient = redis.createClient({
+      url: process.env.REDIS_URL,
+    });
 
-  redisClient.on('error', async (error) => {
-    console.error(`Redis Error : ${error}`);
-    await redisClient.disconnect();
-  });
+    redisClient.on('error', async (error) => {
+      console.error(`Redis Error : ${error}`);
+      await redisClient.disconnect();
+    });
 
-  await redisClient.connect();
+    await redisClient.connect();
+  } catch (error) {
+    console.error('redis error', error);
+  }
 })();
 
 app.get('/api/global', async (req, res) => {
