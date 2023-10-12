@@ -13,6 +13,7 @@ const scroll = keyframes`
 `;
 
 const StyledNewsFeedWrapper = styled(Box)(({ theme }) => ({
+  marginTop: '42px',
   marginBottom: '20px',
   borderTop: `1px solid ${theme.palette.primary.dark}`,
   borderBottom: `1px solid ${theme.palette.primary.dark}`,

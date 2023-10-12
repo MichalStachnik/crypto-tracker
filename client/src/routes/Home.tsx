@@ -4,10 +4,10 @@ import CoinHeader from '../components/CoinHeader';
 import CoinChart from '../components/CoinChart';
 import CoinInfoBox from '../components/CoinInfoBox';
 import CoinTable from '../components/CoinTable';
+import { CoinContext } from '../contexts/CoinContext';
 import { Coin } from '../types/Coin';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
-import { CoinContext } from '../contexts/CoinContext';
 
 interface HomeProps {
   coins: Coin[];
@@ -78,7 +78,9 @@ const Home = ({ coins }: HomeProps) => {
           <CircularProgress />
         )}
       </Box>
-      <CoinTable coins={coins} onCoinClick={handleCoinClick} />
+      <Box p={2}>
+        <CoinTable coins={coins} onCoinClick={handleCoinClick} />
+      </Box>
     </Box>
   );
 };

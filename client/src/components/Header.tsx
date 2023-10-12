@@ -1,7 +1,6 @@
 import {
   ChangeEvent,
   useState,
-  MouseEvent,
   useContext,
   useMemo,
   SyntheticEvent,
@@ -39,10 +38,11 @@ import {
   Theme,
   useTheme,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
+
 import { UserContext } from '../contexts/UserContext';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
+import AuthDialog from './AuthDialog';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -60,7 +60,7 @@ const styleCell = (percentChange: number, theme: Theme) => {
   }
 };
 
-const StyledLogo = styled(Typography)(({ theme }) => ({
+export const StyledLogo = styled(Typography)(({ theme }) => ({
   backgroundImage:
     'linear-gradient(90deg, rgb(255,255,255) 0%, rgba(136,132,216,1) 99%)',
   backgroundClip: 'text',
@@ -125,136 +125,6 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
     border: 'none',
   },
 }));
-
-export interface AuthDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: ({ email, password }: { email: string; password: string }) => void;
-  mode: 'login' | 'signup';
-}
-
-function AuthDialog(props: AuthDialogProps) {
-  const { onClose, open, onSubmit, mode } = props;
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [resetPasswordSent, setResetPasswordSent] = useState(false);
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setEmail(e.target.value);
-  };
-
-  const handlePasswordChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPassword(e.target.value);
-  };
-
-  const handleSubmit = () => {
-    onSubmit({ email, password });
-  };
-
-  const [showPassword, setShowPassword] = useState(false);
-
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-
-  const handleMouseDownPassword = (event: MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault();
-  };
-
-  const handleForgotPasswordClick = async () => {
-    if (!email) return;
-    setResetPasswordSent(true);
-    const res = await fetch('/api/forgot-password', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    });
-    const data = await res.json();
-    if (data.error) {
-      // Add error toast
-      console.warn(data.error);
-    } else {
-      // Add toast
-      console.log(data.message);
-    }
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle display="flex" flexDirection="column">
-        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-          <InputLabel htmlFor="email">Email</InputLabel>
-          <OutlinedInput
-            id="email"
-            label="Email"
-            aria-describedby="my-helper-text"
-            value={email}
-            onChange={handleEmailChange}
-          />
-        </FormControl>
-        {mode === 'signup' ? (
-          <FormHelperText sx={{ m: 1 }} id="my-helper-text">
-            We'll never share your email.
-          </FormHelperText>
-        ) : null}
-        <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-          <InputLabel htmlFor="outlined-adornment-password">
-            Password
-          </InputLabel>
-          <OutlinedInput
-            id="outlined-adornment-password"
-            type={showPassword ? 'text' : 'password'}
-            endAdornment={
-              <InputAdornment position="end">
-                <IconButton
-                  aria-label="toggle password visibility"
-                  onClick={handleClickShowPassword}
-                  onMouseDown={handleMouseDownPassword}
-                  edge="end"
-                >
-                  {showPassword ? <VisibilityOff /> : <Visibility />}
-                </IconButton>
-              </InputAdornment>
-            }
-            label="Password"
-            value={password}
-            onChange={handlePasswordChange}
-          />
-          {mode === 'login' ? (
-            <Box display="flex">
-              {resetPasswordSent ? (
-                <FormHelperText>Sent, please check your email</FormHelperText>
-              ) : (
-                <>
-                  <FormHelperText sx={{ m: 1 }}>
-                    Forgot your password?
-                  </FormHelperText>
-                  <Button
-                    onClick={handleForgotPasswordClick}
-                    sx={{ textTransform: 'initial', fontSize: '0.8rem' }}
-                  >
-                    Click here
-                  </Button>
-                </>
-              )}
-            </Box>
-          ) : null}
-        </FormControl>
-        <Button
-          variant="contained"
-          onClick={handleSubmit}
-          style={{ marginTop: 15 }}
-        >
-          {mode === 'signup' ? 'Sign Up' : 'Login'}
-        </Button>
-      </DialogTitle>
-    </Dialog>
-  );
-}
 
 export interface NotificationDialogProps {
   open: boolean;
@@ -531,11 +401,11 @@ export default function Header({
     setIsLoginDialogOpen(false);
   };
 
-  const handleLogout = async () => {
-    localStorage.clear();
-    userContext.setUser(null);
-    await fetch('/api/logout');
-  };
+  // const handleLogout = async () => {
+  //   localStorage.clear();
+  //   userContext.setUser(null);
+  //   await fetch('/api/logout');
+  // };
 
   const handleNotificationSubmit = async ({
     coin,
@@ -580,15 +450,6 @@ export default function Header({
     <Box flexGrow={1}>
       <AppBar position="static" sx={{ bgcolor: 'black' }}>
         <Toolbar>
-          {/* <IconButton
-            size="large"
-            edge="start"
-            color="inherit"
-            aria-label="open drawer"
-            sx={{ mr: 2 }}
-          >
-            <MenuIcon />
-          </IconButton> */}
           <StyledLogo variant="h6" noWrap fontWeight="bold">
             wm
           </StyledLogo>
@@ -613,26 +474,53 @@ export default function Header({
           </Search>
           <Box flex={1}>
             {Object.keys(globalData).length && !globalData['error'] ? (
-              <Box display="flex" justifyContent="space-evenly">
+              <Box
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="center"
+                gap={1}
+              >
                 <Box
                   flexDirection="column"
-                  sx={{ display: { xs: 'none', md: 'flex' } }}
+                  justifyContent="center"
+                  alignItems="center"
+                  p={1}
+                  height="45px"
+                  sx={{
+                    display: { xs: 'none', md: 'flex' },
+                  }}
                 >
                   <Typography fontSize="0.8rem">Bitcoin dominance</Typography>
                   <Typography>
                     {globalData.bitcoin_dominance_percentage.toFixed(2)}%
                   </Typography>
                 </Box>
+
                 <Box
                   flexDirection="column"
-                  sx={{ display: { xs: 'none', md: 'flex' } }}
+                  justifyContent="center"
+                  alignItems="center"
+                  p={1}
+                  height="45px"
+                  sx={{
+                    display: { xs: 'none', md: 'flex' },
+                  }}
                 >
                   <Typography fontSize="0.8rem">Market cap</Typography>
                   <Typography fontSize="0.8rem">
                     {USDollar.format(globalData.market_cap_usd)}
                   </Typography>
                 </Box>
-                <Box display="flex" flexDirection="column">
+                <Box
+                  flexDirection="column"
+                  justifyContent="center"
+                  alignItems="center"
+                  p={1}
+                  height="45px"
+                  sx={{
+                    display: { xs: 'none', md: 'flex' },
+                  }}
+                >
                   <Typography fontSize="0.8rem">
                     Market cap &Delta; 24hr
                   </Typography>
@@ -646,23 +534,21 @@ export default function Header({
               </Box>
             ) : null}
           </Box>
-          <Box display="flex" justifyContent="space-evenly" flex={0.6} gap={1}>
-            <Badge
+          {/* <Box display="flex" justifyContent="space-evenly" flex={0.6} gap={1}> */}
+          {/* <Badge
               color="success"
               badgeContent={'New'}
               sx={{ display: { xs: 'none', md: 'flex' } }}
+            > */}
+          {/* <Button
+              onClick={() => setIsNotificationDialogOpen(true)}
+              variant="outlined"
             >
-              <Button
-                onClick={() => setIsNotificationDialogOpen(true)}
-                variant="outlined"
-              >
-                <NotificationsIcon fontSize="small" />
-                <Typography textTransform="capitalize">
-                  Notifications
-                </Typography>
-              </Button>
-            </Badge>
-            {!userContext.user ? (
+              <NotificationsIcon fontSize="small" />
+              <Typography textTransform="capitalize">Notifications</Typography>
+            </Button> */}
+          {/* </Badge> */}
+          {/* {!userContext.user ? (
               <>
                 <Button
                   variant="outlined"
@@ -683,12 +569,10 @@ export default function Header({
               <Button variant="outlined" onClick={handleLogout}>
                 Logout
               </Button>
-            )}
-          </Box>
+            )} */}
+          {/* </Box> */}
         </Toolbar>
       </AppBar>
-      {/* {renderMobileMenu} */}
-      {/* {renderMenu} */}
       <AuthDialog
         open={isSignupDialogOpen}
         onClose={() => setIsSignupDialogOpen(false)}
