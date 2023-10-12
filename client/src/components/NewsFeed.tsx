@@ -13,6 +13,7 @@ const scroll = keyframes`
 `;
 
 const StyledNewsFeedWrapper = styled(Box)(({ theme }) => ({
+  marginTop: '42px',
   marginBottom: '20px',
   borderTop: `1px solid ${theme.palette.primary.dark}`,
   borderBottom: `1px solid ${theme.palette.primary.dark}`,
@@ -53,6 +54,7 @@ const StyledLink = styled(Link)(({ theme }) => ({
   },
 }));
 
+// TODO: filter by news source
 const NewsFeed = () => {
   const { selectedCoin } = useContext(CoinContext);
   const [articles, setArticles] = useState<Article[] | null>(null);

@@ -220,16 +220,16 @@ const BTCBlockWrapper = () => {
                       </Button>
                     </Box>
                     <Typography>Hash</Typography>
-                    <Typography fontSize="0.5rem" color="warning.main">
+                    <Typography fontSize="0.5rem" color="primary.main">
                       {block.hash}
                     </Typography>
                     <Typography>Merkle Root</Typography>
                     {/* TODO: link to mkrl root */}
-                    <Typography fontSize="0.5rem" color="warning.main">
+                    <Typography fontSize="0.5rem" color="primary.main">
                       {block.mrkl_root}
                     </Typography>
                     <Typography>Previous Block</Typography>
-                    <Typography fontSize="0.5rem" color="warning.main">
+                    <Typography fontSize="0.5rem" color="primary.main">
                       {block.prev_block}
                     </Typography>
                   </StyledBlock>

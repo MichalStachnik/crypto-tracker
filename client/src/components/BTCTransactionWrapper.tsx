@@ -1,6 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { Box, IconButton, LinearProgress, Typography } from '@mui/material';
-import SyncDisabledIcon from '@mui/icons-material/SyncDisabled';
+import { Box, Typography } from '@mui/material';
 import TransactionChart from './TransactionChart';
 import AverageTransactionChart from './AverageTransactionChart';
 
@@ -27,7 +26,7 @@ const BTCTransactionWrapper = () => {
   const ws = useRef<WebSocket | null>(null);
   const [transactions, setTransactions] = useState<Set<Transaction>>(new Set());
   const [sizes, setSizes] = useState<number[]>([]);
-  const [isConnected, setIsConnected] = useState<boolean>(false);
+  const [, setIsConnected] = useState<boolean>(false);
 
   const handleSocketOpen = () => {
     if (!ws.current || ws.current.readyState !== 1) return;
@@ -68,9 +67,9 @@ const BTCTransactionWrapper = () => {
     };
   }, []);
 
-  const handleRetryConnect = () => {
-    handleSocketOpen();
-  };
+  // const handleRetryConnect = () => {
+  //   handleSocketOpen();
+  // };
 
   const average = useMemo(() => {
     if (!sizes.length) return 0;
@@ -82,7 +81,7 @@ const BTCTransactionWrapper = () => {
     <Box>
       {transactions ? (
         <Box display="flex" flexDirection="column">
-          <Box display="flex" justifyContent="flex-end">
+          {/* <Box display="flex" justifyContent="flex-end">
             {isConnected ? (
               <LinearProgress color="success" sx={{ width: 40 }} />
             ) : (
@@ -90,7 +89,7 @@ const BTCTransactionWrapper = () => {
                 <SyncDisabledIcon sx={{ color: 'red' }} />
               </IconButton>
             )}
-          </Box>
+          </Box> */}
           <Box
             display="flex"
             justifyContent="space-between"
