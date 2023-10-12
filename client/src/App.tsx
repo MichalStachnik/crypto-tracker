@@ -1,24 +1,21 @@
 import { useContext, useEffect, useState } from 'react';
-import { styled, useTheme } from '@mui/material/styles';
+import { styled } from '@mui/material/styles';
 import { Route, Routes } from 'react-router-dom';
 import Home from './routes/Home';
 import Bubbles from './routes/Bubbles';
 import './App.css';
-import Header, { StyledLogo } from './components/Header';
+import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import { UserContext, UserProvider } from './contexts/UserContext';
 import { CoinProvider } from './contexts/CoinContext';
 import { Coin } from './types/Coin';
 import PasswordReset from './routes/PasswordReset';
-// import { CircularProgress } from '@mui/material';
-import Sidebar from './components/Sidebar';
 import { Box } from '@mui/material';
 import Drawer from '@mui/material/Drawer';
-import CssBaseline from '@mui/material/CssBaseline';
+// import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import List from '@mui/material/List';
-import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -259,7 +256,7 @@ function App() {
               {MenuItems.map((menuItem) => (
                 <ListItem key={menuItem.name} disablePadding>
                   <ListItemButton
-                    onClick={(e) => {
+                    onClick={() => {
                       menuItem.handleClick();
                     }}
                     alignItems="center"

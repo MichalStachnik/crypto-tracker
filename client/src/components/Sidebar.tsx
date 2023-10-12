@@ -9,7 +9,7 @@ const Sidebar = () => {
   const userContext = useContext(UserContext);
   const [isOpen, setIsOpen] = useState<boolean>(true);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
-  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
+  const [, setIsSignupDialogOpen] = useState<boolean>(false);
 
   const handleLogout = async () => {
     localStorage.clear();
