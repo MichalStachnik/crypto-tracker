@@ -38,7 +38,6 @@ const formatDate = (date: Date) =>
   });
 
 const BTCBlockWrapper = () => {
-  // return null;
   // const ws = useRef<WebSocket | null>(null);
   const [blocks, setBlocks] = useState<Block[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
