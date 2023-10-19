@@ -1,23 +1,21 @@
-import { useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import {
-  Box,
   Drawer,
   IconButton,
   List,
   ListItem,
   ListItemButton,
   ListItemIcon,
+  Snackbar,
   styled,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import InboxIcon from '@mui/icons-material/MoveToInbox';
 import MailIcon from '@mui/icons-material/Mail';
 import ListItemText from '@mui/material/ListItemText';
-import AuthDialog from './AuthDialog';
 import { UserContext } from '../contexts/UserContext';
+import AuthDialog from './AuthDialog';
+import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
-
-// const drawerWidth = 240;
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -28,10 +26,20 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   justifyContent: 'flex-end',
 }));
 
-const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: any) => {
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  drawerWidth: number;
+  coins: Coin[];
+}
+
+const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
   const userContext = useContext(UserContext);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
+    useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
   const MenuItems = [
     {
@@ -110,6 +118,27 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: any) => {
     userContext.setUser(null);
     await fetch('/api/logout');
   };
+
+  const handleNotificationSubmit = async ({
+    coin,
+    price,
+  }: {
+    coin: '' | HTMLSelectElement | undefined;
+    price: number;
+  }) => {
+    const response = await fetch('/api/add-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: userContext.user, coin, price }),
+    });
+    if (response.status === 200) {
+      setIsSnackbarOpen(true);
+      setIsNotificationDialogOpen(false);
+    }
+  };
+
   return (
     <>
       <Drawer
@@ -139,11 +168,11 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: any) => {
           </IconButton>
         </DrawerHeader>
         <List>
-          {['Notifications'].map((text, index) => (
+          {['Notifications'].map((text) => (
             <ListItem key={text} disablePadding>
-              <ListItemButton>
+              <ListItemButton onClick={() => setIsNotificationDialogOpen(true)}>
                 <ListItemIcon>
-                  {index % 2 === 0 ? <InboxIcon /> : <MailIcon />}
+                  <MailIcon />
                 </ListItemIcon>
                 <ListItemText primary={text} />
               </ListItemButton>
@@ -189,6 +218,18 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: any) => {
           onClose={() => setIsSignupDialogOpen(false)}
           onSubmit={handleSignupDialogSubmit}
           mode="signup"
+        />
+        <NotificationDialog
+          open={isNotificationDialogOpen}
+          onClose={() => setIsNotificationDialogOpen(false)}
+          onSubmit={handleNotificationSubmit}
+          coins={coins}
+        />
+        <Snackbar
+          open={isSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setIsSnackbarOpen(false)}
+          message="Notification Set"
         />
       </Drawer>
     </>

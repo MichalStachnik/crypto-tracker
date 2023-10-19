@@ -124,6 +124,7 @@ function App() {
             isOpen={isOpen}
             setIsOpen={setIsOpen}
             drawerWidth={drawerWidth}
+            coins={coins}
           />
           <Main open={isOpen}>
             <Box display="flex" flexDirection="column" mt={3}>
