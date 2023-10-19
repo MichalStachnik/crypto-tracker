@@ -1,21 +1,56 @@
-import { ChevronLeft, ChevronRight } from '@mui/icons-material';
-import { Box, Button, Drawer, IconButton } from '@mui/material';
-import { useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import {
+  Drawer,
+  IconButton,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemIcon,
+  Snackbar,
+  styled,
+} from '@mui/material';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import MailIcon from '@mui/icons-material/Mail';
+import ListItemText from '@mui/material/ListItemText';
 import { UserContext } from '../contexts/UserContext';
-import { Coin } from '../types/Coin';
 import AuthDialog from './AuthDialog';
+import NotificationDialog from './NotificationDialog';
+import { Coin } from '../types/Coin';
 
-const Sidebar = () => {
+const DrawerHeader = styled('div')(({ theme }) => ({
+  display: 'flex',
+  alignItems: 'center',
+  padding: theme.spacing(0, 1),
+  // necessary for content to be below app bar
+  ...theme.mixins.toolbar,
+  justifyContent: 'flex-end',
+}));
+
+interface SidebarProps {
+  isOpen: boolean;
+  setIsOpen: Dispatch<SetStateAction<boolean>>;
+  drawerWidth: number;
+  coins: Coin[];
+}
+
+const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
   const userContext = useContext(UserContext);
-  const [isOpen, setIsOpen] = useState<boolean>(true);
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
-  const [, setIsSignupDialogOpen] = useState<boolean>(false);
+  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
+  const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
+    useState(false);
+  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
-  const handleLogout = async () => {
-    localStorage.clear();
-    userContext.setUser(null);
-    await fetch('/api/logout');
-  };
+  const MenuItems = [
+    {
+      name: 'Login',
+      handleClick: () => setIsLoginDialogOpen(true),
+    },
+    {
+      name: 'Signup',
+      handleClick: () => setIsSignupDialogOpen(true),
+    },
+  ];
 
   const handleLoginDialogSubmit = ({
     email,
@@ -50,52 +85,154 @@ const Sidebar = () => {
     userContext.setFavoriteCoins(newFavorites);
   };
 
-  return (
-    <Box>
-      <IconButton onClick={() => setIsOpen(true)}>
-        <ChevronRight />
-      </IconButton>
-      <Drawer variant="persistent" anchor="left" open={isOpen}>
-        <Box bgcolor="#242424" height="100%">
-          {isOpen ? (
-            <Box>
-              <IconButton onClick={() => setIsOpen(false)}>
-                <ChevronLeft />
-              </IconButton>
+  const handleSignupDialogSubmit = ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    handleSignup({ email, password });
+    setIsSignupDialogOpen(false);
+  };
 
-              {!userContext.user ? (
-                <>
-                  <Button
-                    variant="outlined"
-                    onClick={() => setIsLoginDialogOpen(true)}
-                    // size={theme.breakpoints.down('sm') ? 'small' : 'medium'}
+  const handleSignup = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    await fetch('/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    // TODO: check res and tell user to check email or login
+  };
+
+  const handleLogout = async () => {
+    localStorage.clear();
+    userContext.setUser(null);
+    await fetch('/api/logout');
+  };
+
+  const handleNotificationSubmit = async ({
+    coin,
+    price,
+  }: {
+    coin: '' | HTMLSelectElement | undefined;
+    price: number;
+  }) => {
+    const response = await fetch('/api/add-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: userContext.user, coin, price }),
+    });
+    if (response.status === 200) {
+      setIsSnackbarOpen(true);
+      setIsNotificationDialogOpen(false);
+    }
+  };
+
+  return (
+    <>
+      <Drawer
+        sx={{
+          width: drawerWidth,
+          flexShrink: 0,
+          '& .MuiDrawer-paper': {
+            width: drawerWidth,
+            boxSizing: 'border-box',
+            background: (theme) => theme.palette.primary.main,
+            display: 'flex',
+            justifyContent: 'space-between',
+          },
+        }}
+        variant="persistent"
+        anchor="left"
+        open={isOpen}
+      >
+        <DrawerHeader>
+          <IconButton onClick={() => setIsOpen(false)}>
+            <ChevronLeftIcon />
+            {/* {theme.direction === 'ltr' ? (
+                  
+                ) : (
+                  <ChevronRightIcon />
+                )} */}
+          </IconButton>
+        </DrawerHeader>
+        <List>
+          {['Notifications'].map((text) => (
+            <ListItem key={text} disablePadding>
+              <ListItemButton onClick={() => setIsNotificationDialogOpen(true)}>
+                <ListItemIcon>
+                  <MailIcon />
+                </ListItemIcon>
+                <ListItemText primary={text} />
+              </ListItemButton>
+            </ListItem>
+          ))}
+        </List>
+        <List>
+          {!userContext.user ? (
+            <>
+              {MenuItems.map((menuItem) => (
+                <ListItem key={menuItem.name} disablePadding>
+                  <ListItemButton
+                    onClick={() => {
+                      menuItem.handleClick();
+                    }}
+                    alignItems="center"
                   >
-                    Login
-                  </Button>
-                  <Button
-                    variant="contained"
-                    onClick={() => setIsSignupDialogOpen(true)}
-                    // size={theme.breakpoints.down('sm') ? 'small' : 'medium'}
-                  >
-                    Signup
-                  </Button>
-                </>
-              ) : (
-                <Button variant="outlined" onClick={handleLogout}>
-                  Logout
-                </Button>
-              )}
-            </Box>
-          ) : null}
-        </Box>
+                    <ListItemText
+                      primary={menuItem.name}
+                      sx={{ display: 'flex', justifyContent: 'center' }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              ))}
+            </>
+          ) : (
+            <ListItemButton onClick={() => handleLogout()} alignItems="center">
+              <ListItemText
+                primary="Logout"
+                sx={{ display: 'flex', justifyContent: 'center' }}
+              />
+            </ListItemButton>
+          )}
+        </List>
+        <AuthDialog
+          open={isLoginDialogOpen}
+          onClose={() => setIsLoginDialogOpen(false)}
+          onSubmit={handleLoginDialogSubmit}
+          mode="login"
+        />
+        <AuthDialog
+          open={isSignupDialogOpen}
+          onClose={() => setIsSignupDialogOpen(false)}
+          onSubmit={handleSignupDialogSubmit}
+          mode="signup"
+        />
+        <NotificationDialog
+          open={isNotificationDialogOpen}
+          onClose={() => setIsNotificationDialogOpen(false)}
+          onSubmit={handleNotificationSubmit}
+          coins={coins}
+        />
+        <Snackbar
+          open={isSnackbarOpen}
+          autoHideDuration={6000}
+          onClose={() => setIsSnackbarOpen(false)}
+          message="Notification Set"
+        />
       </Drawer>
-      <AuthDialog
-        open={isLoginDialogOpen}
-        onClose={() => setIsLoginDialogOpen(false)}
-        onSubmit={handleLoginDialogSubmit}
-        mode="login"
-      />
-    </Box>
+    </>
   );
 };
 
