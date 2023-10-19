@@ -58,6 +58,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
+  background: 'black',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -101,7 +102,7 @@ function App() {
     <UserProvider>
       <CoinProvider>
         <Box display="flex">
-          <AppBar position="fixed" open={isOpen} sx={{ background: 'black' }}>
+          <AppBar position="fixed" open={isOpen}>
             <Toolbar>
               <IconButton
                 color="inherit"
