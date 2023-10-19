@@ -1,38 +1,27 @@
 import {
   ChangeEvent,
-  useState,
+  Dispatch,
   useContext,
   useMemo,
+  SetStateAction,
   SyntheticEvent,
 } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
-import MenuItem from '@mui/material/MenuItem';
 import SearchIcon from '@mui/icons-material/Search';
 import {
   Autocomplete,
   AutocompleteRenderInputParams,
   Box,
-  Button,
-  Dialog,
-  DialogTitle,
-  FormControl,
-  InputLabel,
-  OutlinedInput,
-  Select,
-  SelectChangeEvent,
-  Snackbar,
   TextField,
   Theme,
   useTheme,
 } from '@mui/material';
 
-import { UserContext } from '../contexts/UserContext';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
-import AuthDialog from './AuthDialog';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -116,100 +105,11 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-export interface NotificationDialogProps {
-  open: boolean;
-  onClose: () => void;
-  onSubmit: ({
-    coin,
-    price,
-  }: {
-    coin: '' | HTMLSelectElement | undefined;
-    price: number;
-  }) => void;
+interface HeaderProps {
+  globalData: any;
+  searchText: string;
+  setSearchText: Dispatch<SetStateAction<string>>;
   coins: Coin[];
-}
-
-function NotificationDialog(props: NotificationDialogProps) {
-  const { onClose, open, onSubmit, coins } = props;
-  const userContext = useContext(UserContext);
-  const [coin, setCoin] = useState<'' | HTMLSelectElement | undefined>('');
-  const [price, setPrice] = useState<number | null>(0);
-
-  const handleClose = () => {
-    onClose();
-  };
-
-  const handleCoinChange = (e: SelectChangeEvent<HTMLSelectElement>) => {
-    setCoin(e.target.value as HTMLSelectElement);
-  };
-
-  const handlePriceChange = (e: ChangeEvent<HTMLInputElement>) => {
-    setPrice(Number(e.target.value));
-  };
-
-  const handleSubmit = () => {
-    if (!price) return;
-    onSubmit({ coin, price });
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle display="flex" flexDirection="column">
-        {!userContext.user ? (
-          <Box>You need to be logged in to set notifications</Box>
-        ) : (
-          <>
-            <Box>
-              {userContext.notifications.map((notification) => {
-                return (
-                  <Typography>
-                    {notification.coin} {notification.price}
-                  </Typography>
-                );
-              })}
-            </Box>
-            <FormControl fullWidth>
-              <InputLabel id="coin-label">Coin</InputLabel>
-              <Select
-                labelId="coin-label"
-                id="coin-label"
-                value={coin}
-                label="Coin"
-                onChange={handleCoinChange}
-              >
-                {coins.map((coin: Coin) => {
-                  return (
-                    <MenuItem value={coin.name} key={coin.name}>
-                      {coin.name}
-                    </MenuItem>
-                  );
-                })}
-              </Select>
-            </FormControl>
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                Price
-              </InputLabel>
-              <OutlinedInput
-                id="outlined-adornment-password"
-                type="number"
-                label="Price"
-                value={price?.toFixed(0)}
-                onChange={handlePriceChange}
-              />
-            </FormControl>
-            <Button
-              variant="contained"
-              onClick={handleSubmit}
-              style={{ marginTop: 15 }}
-            >
-              Set Notification
-            </Button>
-          </>
-        )}
-      </DialogTitle>
-    </Dialog>
-  );
 }
 
 export default function Header({
@@ -217,204 +117,14 @@ export default function Header({
   searchText,
   setSearchText,
   coins,
-}: any) {
-  const userContext = useContext(UserContext);
+}: HeaderProps) {
   const { setSelectedCoin, fetchLiveCoinWatch } = useContext(CoinContext);
-  // const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
-  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState(false);
-  const [isLoginDialogOpen, setIsLoginDialogOpen] = useState(false);
-  const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
-    useState(false);
-  const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
-  // const [mobileMoreAnchorEl, setMobileMoreAnchorEl] =
-  //   useState<null | HTMLElement>(null);
-
-  // const isMenuOpen = Boolean(anchorEl);
-  // const isMobileMenuOpen = Boolean(mobileMoreAnchorEl);
   const theme = useTheme();
-
-  // const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-  //   setAnchorEl(event.currentTarget);
-  // };
-
-  // const handleMobileMenuClose = () => {
-  //   setMobileMoreAnchorEl(null);
-  // };
-
-  // const handleMenuClose = () => {
-  //   setAnchorEl(null);
-  //   handleMobileMenuClose();
-  // };
-
-  // const handleMobileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-  //   setMobileMoreAnchorEl(event.currentTarget);
-  // };
-
-  // const menuId = 'primary-search-account-menu';
-  // const renderMenu = (
-  //   <Menu
-  //     anchorEl={anchorEl}
-  //     anchorOrigin={{
-  //       vertical: 'top',
-  //       horizontal: 'right',
-  //     }}
-  //     id={menuId}
-  //     keepMounted
-  //     transformOrigin={{
-  //       vertical: 'top',
-  //       horizontal: 'right',
-  //     }}
-  //     open={isMenuOpen}
-  //     onClose={handleMenuClose}
-  //   >
-  //     <MenuItem onClick={handleMenuClose}>Profile</MenuItem>
-  //     <MenuItem onClick={handleMenuClose}>My account</MenuItem>
-  //   </Menu>
-  // );
-
-  // const mobileMenuId = 'primary-search-account-menu-mobile';
-  // const renderMobileMenu = (
-  //   <Menu
-  //     anchorEl={mobileMoreAnchorEl}
-  //     anchorOrigin={{
-  //       vertical: 'top',
-  //       horizontal: 'right',
-  //     }}
-  //     id={mobileMenuId}
-  //     keepMounted
-  //     transformOrigin={{
-  //       vertical: 'top',
-  //       horizontal: 'right',
-  //     }}
-  //     open={isMobileMenuOpen}
-  //     onClose={handleMobileMenuClose}
-  //   >
-  //     <MenuItem>
-  //       <IconButton size="large" aria-label="show 4 new mails" color="inherit">
-  //         <Badge badgeContent={4} color="error">
-  //           <MailIcon />
-  //         </Badge>
-  //       </IconButton>
-  //       <p>Messages</p>
-  //     </MenuItem>
-  //     <MenuItem>
-  //       <IconButton
-  //         size="large"
-  //         aria-label="show 17 new notifications"
-  //         color="inherit"
-  //       >
-  //         <Badge badgeContent={17} color="error">
-  //           <NotificationsIcon />
-  //         </Badge>
-  //       </IconButton>
-  //       <p>Notifications</p>
-  //     </MenuItem>
-  //     <MenuItem onClick={handleProfileMenuOpen}>
-  //       <IconButton
-  //         size="large"
-  //         aria-label="account of current user"
-  //         aria-controls="primary-search-account-menu"
-  //         aria-haspopup="true"
-  //         color="inherit"
-  //       >
-  //         <AccountCircle />
-  //       </IconButton>
-  //       <p>Profile</p>
-  //     </MenuItem>
-  //   </Menu>
-  // );
 
   const handleSearch = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
     setSearchText(event.target.value);
-  };
-
-  const handleSignup = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    await fetch('/api/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    // TODO: check res and tell user to check email or login
-  };
-
-  const handleSignupDialogSubmit = ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    handleSignup({ email, password });
-    setIsSignupDialogOpen(false);
-  };
-
-  const handleLogin = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    const res = await fetch('/api/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-
-    const data = await res.json();
-    localStorage.setItem('user', data.data.user.session.access_token);
-    userContext.setUser(data.data.user.session.access_token);
-    const newFavorites = data.data.favorites.map((c: Coin) => c.name);
-    userContext.setFavoriteCoins(newFavorites);
-  };
-
-  const handleLoginDialogSubmit = ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    handleLogin({ email, password });
-    setIsLoginDialogOpen(false);
-  };
-
-  // const handleLogout = async () => {
-  //   localStorage.clear();
-  //   userContext.setUser(null);
-  //   await fetch('/api/logout');
-  // };
-
-  const handleNotificationSubmit = async ({
-    coin,
-    price,
-  }: {
-    coin: '' | HTMLSelectElement | undefined;
-    price: number;
-  }) => {
-    const response = await fetch('/api/add-notification', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ jwt: userContext.user, coin, price }),
-    });
-    if (response.status === 200) {
-      setIsSnackbarOpen(true);
-      setIsNotificationDialogOpen(false);
-    }
   };
 
   const coinNameSuggestions = useMemo(() => {
@@ -432,6 +142,7 @@ export default function Header({
       return;
     }
     const selectedCoin = coins.find((c: Coin) => c.name === value);
+    if (!selectedCoin) return;
     setSelectedCoin(selectedCoin);
     fetchLiveCoinWatch(selectedCoin.symbol, '24hr');
   };
@@ -524,69 +235,8 @@ export default function Header({
               </Box>
             ) : null}
           </Box>
-          {/* <Box display="flex" justifyContent="space-evenly" flex={0.6} gap={1}> */}
-          {/* <Badge
-              color="success"
-              badgeContent={'New'}
-              sx={{ display: { xs: 'none', md: 'flex' } }}
-            > */}
-          {/* <Button
-              onClick={() => setIsNotificationDialogOpen(true)}
-              variant="outlined"
-            >
-              <NotificationsIcon fontSize="small" />
-              <Typography textTransform="capitalize">Notifications</Typography>
-            </Button> */}
-          {/* </Badge> */}
-          {/* {!userContext.user ? (
-              <>
-                <Button
-                  variant="outlined"
-                  onClick={() => setIsLoginDialogOpen(true)}
-                  size={theme.breakpoints.down('sm') ? 'small' : 'medium'}
-                >
-                  Login
-                </Button>
-                <Button
-                  variant="contained"
-                  onClick={() => setIsSignupDialogOpen(true)}
-                  size={theme.breakpoints.down('sm') ? 'small' : 'medium'}
-                >
-                  Signup
-                </Button>
-              </>
-            ) : (
-              <Button variant="outlined" onClick={handleLogout}>
-                Logout
-              </Button>
-            )} */}
-          {/* </Box> */}
         </Toolbar>
       </AppBar>
-      <AuthDialog
-        open={isSignupDialogOpen}
-        onClose={() => setIsSignupDialogOpen(false)}
-        onSubmit={handleSignupDialogSubmit}
-        mode="signup"
-      />
-      <AuthDialog
-        open={isLoginDialogOpen}
-        onClose={() => setIsLoginDialogOpen(false)}
-        onSubmit={handleLoginDialogSubmit}
-        mode="login"
-      />
-      <NotificationDialog
-        open={isNotificationDialogOpen}
-        onClose={() => setIsNotificationDialogOpen(false)}
-        onSubmit={handleNotificationSubmit}
-        coins={coins}
-      />
-      <Snackbar
-        open={isSnackbarOpen}
-        autoHideDuration={6000}
-        onClose={() => setIsSnackbarOpen(false)}
-        message="Notification Set"
-      />
     </Box>
   );
 }
