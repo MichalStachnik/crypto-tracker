@@ -52,6 +52,16 @@ function NotificationDialog(props: NotificationDialogProps) {
     onSubmit({ coin, price });
   };
 
+  const handleNotificationEdit = (notification: any) => {
+    console.log(notification);
+  };
+
+  const handleNotificationDelete = (notification: any) => {
+    console.log(notification);
+  };
+
+  console.log('userContext', userContext);
+
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle display="flex" flexDirection="column">
@@ -62,9 +72,21 @@ function NotificationDialog(props: NotificationDialogProps) {
             <Box>
               {userContext.notifications.map((notification) => {
                 return (
-                  <Typography>
-                    {notification.coin} {notification.price}
-                  </Typography>
+                  <Box>
+                    <Typography>
+                      {notification.coin} {notification.price}
+                    </Typography>
+                    <Button
+                      onClick={() => handleNotificationEdit(notification)}
+                    >
+                      Edit
+                    </Button>
+                    <Button
+                      onClick={() => handleNotificationDelete(notification)}
+                    >
+                      Delete
+                    </Button>
+                  </Box>
                 );
               })}
             </Box>

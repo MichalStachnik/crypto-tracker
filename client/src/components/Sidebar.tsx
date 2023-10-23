@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import {
+  Box,
   Drawer,
   IconButton,
   List,
@@ -7,6 +8,7 @@ import {
   ListItemButton,
   ListItemIcon,
   Snackbar,
+  Typography,
   styled,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
@@ -148,9 +150,10 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            background: (theme) => theme.palette.primary.main,
+            background: 'transparent',
             display: 'flex',
             justifyContent: 'space-between',
+            boxShadow: (theme) => theme.shadows[4],
           },
         }}
         variant="persistent"
@@ -159,7 +162,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
       >
         <DrawerHeader>
           <IconButton onClick={() => setIsOpen(false)}>
-            <ChevronLeftIcon />
+            <ChevronLeftIcon color="primary" />
             {/* {theme.direction === 'ltr' ? (
                   
                 ) : (
@@ -172,9 +175,14 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
             <ListItem key={text} disablePadding>
               <ListItemButton onClick={() => setIsNotificationDialogOpen(true)}>
                 <ListItemIcon>
-                  <MailIcon />
+                  <MailIcon color="primary" />
                 </ListItemIcon>
-                <ListItemText primary={text} />
+                <ListItemText
+                  primary={text}
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
@@ -192,19 +200,51 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
                   >
                     <ListItemText
                       primary={menuItem.name}
-                      sx={{ display: 'flex', justifyContent: 'center' }}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: (theme) => theme.palette.primary.main,
+                      }}
                     />
                   </ListItemButton>
                 </ListItem>
               ))}
             </>
           ) : (
-            <ListItemButton onClick={() => handleLogout()} alignItems="center">
-              <ListItemText
-                primary="Logout"
-                sx={{ display: 'flex', justifyContent: 'center' }}
-              />
-            </ListItemButton>
+            <>
+              <Typography color="palegreen">Favorites</Typography>
+              <Box
+                boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
+                m={2}
+                p={2}
+                flex={1}
+                borderRadius={2}
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+              >
+                {userContext.favoriteCoins.map((coin) => {
+                  return (
+                    <Box>
+                      <Typography color="primary">{coin}</Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+              <ListItemButton
+                onClick={() => handleLogout()}
+                alignItems="center"
+              >
+                <ListItemText
+                  primary="Logout"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    color: (theme) => theme.palette.primary.main,
+                  }}
+                />
+              </ListItemButton>
+            </>
           )}
         </List>
         <AuthDialog

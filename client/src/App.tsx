@@ -36,18 +36,19 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  // padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create(['margin', 'max-width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+  maxWidth: '100vw',
   marginLeft: `-${drawerWidth}px`,
   ...(open && {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create(['margin', 'max-width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
+    maxWidth: `calc(100% - ${drawerWidth}px)`,
   }),
 }));
 
@@ -77,7 +78,7 @@ function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
   const [searchText, setSearchText] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(true);
 
   useEffect(() => {
     fetchGlobal();
