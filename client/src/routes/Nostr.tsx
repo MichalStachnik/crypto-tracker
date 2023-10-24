@@ -82,6 +82,7 @@ const Nostr = () => {
                 marginBottom: 1,
                 borderColor: (theme) => theme.palette.info.dark,
               }}
+              disabled={relay === connectedRelay?.url}
             >
               {relay}
             </Button>
