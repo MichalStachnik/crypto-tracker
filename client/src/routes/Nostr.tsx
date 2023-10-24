@@ -33,11 +33,14 @@ const Nostr = () => {
   useEffect(() => {
     fetch('https://api.nostr.watch/v1/online')
       .then((res) => res.json())
-      .then((res) => setRelays(res))
+      .then((res) => {
+        setRelays(res);
+        handleRelayConnect(res[0]);
+      })
       .catch((err) => console.error('Error', err));
   }, []);
 
-  const handleRelayClick = async (selectedRelay: string) => {
+  const handleRelayConnect = async (selectedRelay: string) => {
     const relay = relayInit(selectedRelay);
     await relay.connect();
 
@@ -73,7 +76,7 @@ const Nostr = () => {
               key={relay}
               fullWidth
               variant="outlined"
-              onClick={() => handleRelayClick(relay)}
+              onClick={() => handleRelayConnect(relay)}
               sx={{
                 textTransform: 'none',
                 marginBottom: 1,

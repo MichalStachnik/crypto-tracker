@@ -31,7 +31,9 @@ import Nostr from './routes/Nostr';
 //   );
 // };
 
-const drawerWidth = 240;
+const innerWidth = window.innerWidth;
+const isMobile = innerWidth <= 375;
+const drawerWidth = isMobile ? innerWidth : 240;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
@@ -43,6 +45,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   }),
   maxWidth: '100vw',
   marginLeft: `-${drawerWidth}px`,
+  overflow: 'hidden',
   ...(open && {
     transition: theme.transitions.create(['margin', 'max-width'], {
       easing: theme.transitions.easing.easeOut,
@@ -79,7 +82,7 @@ function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
   const [searchText, setSearchText] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!isMobile);
 
   useEffect(() => {
     fetchGlobal();
