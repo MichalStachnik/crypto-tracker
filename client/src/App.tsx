@@ -17,6 +17,7 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Sidebar from './components/Sidebar';
+import Nostr from './routes/Nostr';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -78,7 +79,7 @@ function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
   const [searchText, setSearchText] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(true);
+  const [isOpen, setIsOpen] = useState(false);
 
   useEffect(() => {
     fetchGlobal();
@@ -134,6 +135,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home coins={coins} />} />
                 <Route path="/bubbles" element={<Bubbles coins={coins} />} />
+                <Route path="/nostr" element={<Nostr />} />
                 <Route path="/password-reset" element={<PasswordReset />} />
               </Routes>
             </Box>

@@ -60,8 +60,6 @@ function NotificationDialog(props: NotificationDialogProps) {
     console.log(notification);
   };
 
-  console.log('userContext', userContext);
-
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle display="flex" flexDirection="column">

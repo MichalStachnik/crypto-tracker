@@ -1,4 +1,5 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Drawer,
@@ -13,6 +14,7 @@ import {
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MailIcon from '@mui/icons-material/Mail';
+import BoltIcon from '@mui/icons-material/Bolt';
 import ListItemText from '@mui/material/ListItemText';
 import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
@@ -37,6 +39,7 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
   const userContext = useContext(UserContext);
+  const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
@@ -51,6 +54,19 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     {
       name: 'Signup',
       handleClick: () => setIsSignupDialogOpen(true),
+    },
+  ];
+
+  const TopMenuItems = [
+    {
+      name: 'Notifications',
+      handleClick: () => setIsNotificationDialogOpen(true),
+      icon: <MailIcon color="primary" />,
+    },
+    {
+      name: 'Nostr',
+      handleClick: () => navigate('/nostr'),
+      icon: <BoltIcon color="primary" />,
     },
   ];
 
@@ -171,14 +187,16 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
           </IconButton>
         </DrawerHeader>
         <List>
-          {['Notifications'].map((text) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => setIsNotificationDialogOpen(true)}>
-                <ListItemIcon>
-                  <MailIcon color="primary" />
-                </ListItemIcon>
+          {TopMenuItems.map((menuItem) => (
+            <ListItem key={menuItem.name} disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  menuItem.handleClick();
+                }}
+              >
+                <ListItemIcon>{menuItem.icon}</ListItemIcon>
                 <ListItemText
-                  primary={text}
+                  primary={menuItem.name}
                   sx={{
                     color: (theme) => theme.palette.primary.main,
                   }}
