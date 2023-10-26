@@ -17,6 +17,7 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
 import Sidebar from './components/Sidebar';
+import Nostr from './routes/Nostr';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -30,24 +31,28 @@ import Sidebar from './components/Sidebar';
 //   );
 // };
 
-const drawerWidth = 240;
+const innerWidth = window.innerWidth;
+const isMobile = innerWidth <= 375;
+const drawerWidth = isMobile ? innerWidth : 200;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
 }>(({ theme, open }) => ({
   flexGrow: 1,
-  // padding: theme.spacing(3),
-  transition: theme.transitions.create('margin', {
+  transition: theme.transitions.create(['margin', 'max-width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
+  maxWidth: '100vw',
   marginLeft: `-${drawerWidth}px`,
+  overflow: 'hidden',
   ...(open && {
-    transition: theme.transitions.create('margin', {
+    transition: theme.transitions.create(['margin', 'max-width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
     marginLeft: 0,
+    maxWidth: `calc(100% - ${drawerWidth}px)`,
   }),
 }));
 
@@ -58,6 +63,7 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
+  background: 'black',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -76,7 +82,7 @@ function App() {
   const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
   const [searchText, setSearchText] = useState<string>('');
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(!isMobile);
 
   useEffect(() => {
     fetchGlobal();
@@ -101,7 +107,7 @@ function App() {
     <UserProvider>
       <CoinProvider>
         <Box display="flex">
-          <AppBar position="fixed" open={isOpen} sx={{ background: 'black' }}>
+          <AppBar position="fixed" open={isOpen}>
             <Toolbar>
               <IconButton
                 color="inherit"
@@ -132,6 +138,7 @@ function App() {
               <Routes>
                 <Route path="/" element={<Home coins={coins} />} />
                 <Route path="/bubbles" element={<Bubbles coins={coins} />} />
+                <Route path="/nostr" element={<Nostr />} />
                 <Route path="/password-reset" element={<PasswordReset />} />
               </Routes>
             </Box>

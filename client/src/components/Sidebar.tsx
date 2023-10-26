@@ -1,5 +1,7 @@
 import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
+  Box,
   Drawer,
   IconButton,
   List,
@@ -7,10 +9,12 @@ import {
   ListItemButton,
   ListItemIcon,
   Snackbar,
+  Typography,
   styled,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MailIcon from '@mui/icons-material/Mail';
+import BoltIcon from '@mui/icons-material/Bolt';
 import ListItemText from '@mui/material/ListItemText';
 import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
@@ -35,6 +39,7 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
   const userContext = useContext(UserContext);
+  const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
@@ -49,6 +54,19 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     {
       name: 'Signup',
       handleClick: () => setIsSignupDialogOpen(true),
+    },
+  ];
+
+  const TopMenuItems = [
+    {
+      name: 'Notifications',
+      handleClick: () => setIsNotificationDialogOpen(true),
+      icon: <MailIcon color="primary" />,
+    },
+    {
+      name: 'Nostr',
+      handleClick: () => navigate('/nostr'),
+      icon: <BoltIcon color="primary" />,
     },
   ];
 
@@ -148,9 +166,10 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
           '& .MuiDrawer-paper': {
             width: drawerWidth,
             boxSizing: 'border-box',
-            background: (theme) => theme.palette.primary.main,
+            background: 'transparent',
             display: 'flex',
             justifyContent: 'space-between',
+            boxShadow: (theme) => theme.shadows[4],
           },
         }}
         variant="persistent"
@@ -159,7 +178,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
       >
         <DrawerHeader>
           <IconButton onClick={() => setIsOpen(false)}>
-            <ChevronLeftIcon />
+            <ChevronLeftIcon color="primary" />
             {/* {theme.direction === 'ltr' ? (
                   
                 ) : (
@@ -168,13 +187,20 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
           </IconButton>
         </DrawerHeader>
         <List>
-          {['Notifications'].map((text) => (
-            <ListItem key={text} disablePadding>
-              <ListItemButton onClick={() => setIsNotificationDialogOpen(true)}>
-                <ListItemIcon>
-                  <MailIcon />
-                </ListItemIcon>
-                <ListItemText primary={text} />
+          {TopMenuItems.map((menuItem) => (
+            <ListItem key={menuItem.name} disablePadding>
+              <ListItemButton
+                onClick={() => {
+                  menuItem.handleClick();
+                }}
+              >
+                <ListItemIcon>{menuItem.icon}</ListItemIcon>
+                <ListItemText
+                  primary={menuItem.name}
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                  }}
+                />
               </ListItemButton>
             </ListItem>
           ))}
@@ -192,19 +218,51 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
                   >
                     <ListItemText
                       primary={menuItem.name}
-                      sx={{ display: 'flex', justifyContent: 'center' }}
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: (theme) => theme.palette.primary.main,
+                      }}
                     />
                   </ListItemButton>
                 </ListItem>
               ))}
             </>
           ) : (
-            <ListItemButton onClick={() => handleLogout()} alignItems="center">
-              <ListItemText
-                primary="Logout"
-                sx={{ display: 'flex', justifyContent: 'center' }}
-              />
-            </ListItemButton>
+            <>
+              <Typography color="palegreen">Favorites</Typography>
+              <Box
+                boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
+                m={2}
+                p={2}
+                flex={1}
+                borderRadius={2}
+                display="flex"
+                flexDirection="column"
+                justifyContent="space-between"
+              >
+                {userContext.favoriteCoins.map((coin) => {
+                  return (
+                    <Box>
+                      <Typography color="primary">{coin}</Typography>
+                    </Box>
+                  );
+                })}
+              </Box>
+              <ListItemButton
+                onClick={() => handleLogout()}
+                alignItems="center"
+              >
+                <ListItemText
+                  primary="Logout"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    color: (theme) => theme.palette.primary.main,
+                  }}
+                />
+              </ListItemButton>
+            </>
           )}
         </List>
         <AuthDialog

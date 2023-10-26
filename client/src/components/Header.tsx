@@ -22,6 +22,7 @@ import {
 
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
+import { useNavigate } from 'react-router-dom';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -120,6 +121,7 @@ export default function Header({
 }: HeaderProps) {
   const { setSelectedCoin, fetchLiveCoinWatch } = useContext(CoinContext);
   const theme = useTheme();
+  const navigate = useNavigate();
 
   const handleSearch = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -151,7 +153,13 @@ export default function Header({
     <Box flexGrow={1}>
       <AppBar position="static" sx={{ bgcolor: 'black' }}>
         <Toolbar>
-          <StyledLogo variant="h6" noWrap fontWeight="bold">
+          <StyledLogo
+            variant="h6"
+            noWrap
+            fontWeight="bold"
+            onClick={() => navigate('/')}
+            sx={{ cursor: 'pointer' }}
+          >
             wm
           </StyledLogo>
           <Search>
