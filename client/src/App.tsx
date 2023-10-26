@@ -33,7 +33,7 @@ import Nostr from './routes/Nostr';
 
 const innerWidth = window.innerWidth;
 const isMobile = innerWidth <= 375;
-const drawerWidth = isMobile ? innerWidth : 240;
+const drawerWidth = isMobile ? innerWidth : 200;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;

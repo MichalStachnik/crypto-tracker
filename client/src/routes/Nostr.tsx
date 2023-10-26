@@ -4,9 +4,18 @@ import {
   Box,
   Button,
   CircularProgress,
+  TextField,
   Typography,
 } from '@mui/material';
-import { Relay, relayInit } from 'nostr-tools';
+import {
+  Relay,
+  relayInit,
+  Event,
+  generatePrivateKey,
+  getPublicKey,
+  finishEvent,
+} from 'nostr-tools';
+import NostrForm from '../components/NostrForm';
 
 const isJson = (str: string) => {
   try {
@@ -25,10 +34,11 @@ const formatDate = (date: Date) =>
   });
 
 const Nostr = () => {
-  const [relays, setRelays] = useState([]);
+  const [relays, setRelays] = useState<string[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [connectedRelay, setConnectedRelay] = useState<Relay | null>(null);
-  const [events, setEvents] = useState<any>(null);
+  const [events, setEvents] = useState<Event<0 | 1>[] | null>(null);
+  const [privateKey, setPrivateKey] = useState('');
 
   useEffect(() => {
     fetch('https://api.nostr.watch/v1/online')
@@ -51,14 +61,65 @@ const Nostr = () => {
 
     relay.on('error', () => {
       console.error('error');
+      setConnectedRelay(null);
     });
   };
 
   const getEvents = async (relay: Relay) => {
     setIsLoading(true);
-    const events = await relay.list([{ kinds: [0, 1] }]);
+    const events = await relay.list([{ kinds: [1] }]);
     setEvents(events);
     setIsLoading(false);
+  };
+
+  const getMyEvents = async (relay: Relay) => {
+    setIsLoading(true);
+    const publicKey = getPublicKey(privateKey);
+    const events = await relay.list([{ kinds: [0, 1], authors: [publicKey] }]);
+    setEvents(events);
+    setIsLoading(false);
+  };
+
+  const handleGeneratePrivateKey = () => {
+    if (!connectedRelay) return;
+    const pk = generatePrivateKey();
+    setPrivateKey(pk);
+
+    const publicKey = getPublicKey(pk);
+
+    const subscription = connectedRelay.sub([
+      {
+        kinds: [0, 1],
+        authors: [publicKey],
+      },
+    ]);
+
+    subscription.on('event', (event) => {
+      // console.log('got a new event:', event);
+    });
+  };
+
+  const handlePostEvent = async (message: string) => {
+    if (!privateKey || !message || !connectedRelay) return;
+
+    const publicKey = getPublicKey(privateKey);
+    const event = {
+      kind: 1,
+      pubkey: publicKey,
+      created_at: Math.floor(Date.now() / 1000),
+      tags: [],
+      content: message,
+      id: '',
+      sig: '',
+    };
+
+    const signedEvent = finishEvent(event, privateKey);
+    await connectedRelay.publish(signedEvent);
+    getEvents(connectedRelay);
+  };
+
+  const handlePostEventClick = (message: string) => {
+    handlePostEvent(message);
   };
 
   return (
@@ -90,6 +151,32 @@ const Nostr = () => {
         })}
       </Box>
       <Box width="60%">
+        <Box>
+          <TextField
+            placeholder="private key"
+            value={privateKey}
+            onChange={(e) => setPrivateKey(e.target.value)}
+            fullWidth
+            sx={{
+              marginBottom: 2,
+              input: {
+                color: 'white',
+                fontSize: '0.8rem',
+              },
+              fieldset: {
+                borderColor: 'white',
+              },
+            }}
+          />
+          <Button
+            variant="outlined"
+            onClick={handleGeneratePrivateKey}
+            fullWidth
+          >
+            Generate Private Key
+          </Button>
+        </Box>
+        <NostrForm onPostEventClick={handlePostEventClick} />
         {isLoading ? (
           <Box display="flex" justifyContent="center" flex={1}>
             <Typography mt={1} mr={1}>
@@ -109,13 +196,18 @@ const Nostr = () => {
             >
               Refetch
             </Button>
-            {events.map((event: any) => {
-              console.log('the event', event);
-              // console.log(JSON.parse(event.content));
+            <Button
+              variant="outlined"
+              onClick={() => connectedRelay && getMyEvents(connectedRelay)}
+              sx={{ margin: 1 }}
+              disabled={isLoading}
+            >
+              Get My Events
+            </Button>
+            {events.map((event: Event) => {
               const json = isJson(event.content);
               const { created_at, pubkey } = event;
               if (json) {
-                console.log(event.content);
                 const { name, picture, about } = JSON.parse(event.content);
                 return (
                   <Box
@@ -136,7 +228,9 @@ const Nostr = () => {
                       Created At: {formatDate(new Date(created_at * 1000))}
                     </Typography>
                     <Typography align="left">About: {about}</Typography>
-                    <Typography align="left">Public Key: {pubkey}</Typography>
+                    <Typography align="left" fontSize="0.8rem">
+                      Public Key: {pubkey}
+                    </Typography>
                   </Box>
                 );
               } else {
@@ -156,6 +250,13 @@ const Nostr = () => {
                     </Typography>
                     <Typography align="left">
                       Created At: {formatDate(new Date(created_at * 1000))}
+                    </Typography>
+                    <Typography
+                      align="left"
+                      fontSize="0.7rem"
+                      overflow="scroll"
+                    >
+                      Public Key: {pubkey}
                     </Typography>
                   </Box>
                 );
