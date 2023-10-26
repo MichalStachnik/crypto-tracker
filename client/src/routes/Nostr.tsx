@@ -94,7 +94,8 @@ const Nostr = () => {
       },
     ]);
 
-    subscription.on('event', (event) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    subscription.on('event', (_event: Event<0 | 1>) => {
       // console.log('got a new event:', event);
     });
   };
