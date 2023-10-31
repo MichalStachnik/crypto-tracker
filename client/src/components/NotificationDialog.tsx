@@ -70,7 +70,7 @@ function NotificationDialog(props: NotificationDialogProps) {
             <Box>
               {userContext.notifications.map((notification) => {
                 return (
-                  <Box>
+                  <Box key={notification.created_at}>
                     <Typography>
                       {notification.coin} {notification.price}
                     </Typography>

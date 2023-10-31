@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Box, CircularProgress, Skeleton } from '@mui/material';
 import CoinHeader from '../components/CoinHeader';
 import CoinChart from '../components/CoinChart';
@@ -14,21 +14,12 @@ interface HomeProps {
 }
 
 const Home = ({ coins }: HomeProps) => {
-  const {
-    selectedCoin,
-    setSelectedCoin,
-    liveCoinWatchData,
-    fetchLiveCoinWatch,
-  } = useContext(CoinContext);
+  const { selectedCoin, liveCoinWatchData, fetchLiveCoinWatch } =
+    useContext(CoinContext);
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
   const [chartMode, setChartMode] = useState<ChartMode>('price');
 
-  useEffect(() => {
-    fetchLiveCoinWatch('BTC', '24hr');
-  }, []);
-
   const handleCoinClick = (coin: Coin) => {
-    setSelectedCoin(coin);
     fetchLiveCoinWatch(coin.symbol, timeInterval);
   };
 

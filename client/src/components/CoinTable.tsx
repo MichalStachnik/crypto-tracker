@@ -16,6 +16,7 @@ import {
 import { Coin } from '../types/Coin';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { UserContext } from '../contexts/UserContext';
+import { CoinContext } from '../contexts/CoinContext';
 
 const styleCell = (percentChange: number, theme: Theme) => {
   if (percentChange > 0) {
@@ -54,11 +55,11 @@ interface Sort {
 
 export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
   const { user, favoriteCoins, setFavoriteCoins } = useContext(UserContext);
+  const { selectedCoin, setSelectedCoin } = useContext(CoinContext);
   const [sort, setSort] = useState<Sort>({
     sortKey: '',
     sortDirection: 'asc',
   });
-  const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
   const theme = useTheme();
 
   const toggleSort = (sortKey: string) => {

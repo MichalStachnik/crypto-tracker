@@ -2,6 +2,7 @@ import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
+  Button,
   Drawer,
   IconButton,
   List,
@@ -20,6 +21,7 @@ import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
 import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
+import { CoinContext } from '../contexts/CoinContext';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -39,6 +41,12 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
   const userContext = useContext(UserContext);
+  const {
+    selectedCoin,
+    setSelectedCoin,
+    fetchLiveCoinWatch,
+    liveCoinWatchData,
+  } = useContext(CoinContext);
   const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
@@ -157,6 +165,12 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     }
   };
 
+  const handleCoinClick = (_coin: string) => {
+    const [coin] = coins.filter((c) => c.name === _coin);
+    setSelectedCoin(coin);
+    fetchLiveCoinWatch(coin.symbol, '24hr');
+  };
+
   return (
     <>
       <Drawer
@@ -230,7 +244,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
             </>
           ) : (
             <>
-              <Typography color="palegreen">Favorites</Typography>
+              <Typography color="primary">Favorites</Typography>
               <Box
                 boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
                 m={2}
@@ -243,8 +257,19 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
               >
                 {userContext.favoriteCoins.map((coin) => {
                   return (
-                    <Box>
-                      <Typography color="primary">{coin}</Typography>
+                    <Box key={coin} mb={1}>
+                      <Button
+                        color="primary"
+                        onClick={() => handleCoinClick(coin)}
+                        variant="outlined"
+                        fullWidth
+                        disabled={
+                          (!!selectedCoin && selectedCoin.name === coin) ||
+                          liveCoinWatchData?.name === coin
+                        }
+                      >
+                        {coin}
+                      </Button>
                     </Box>
                   );
                 })}
