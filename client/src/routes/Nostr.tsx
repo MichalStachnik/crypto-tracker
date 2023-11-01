@@ -246,10 +246,14 @@ const Nostr = () => {
                     borderRadius={1}
                     borderColor="info.dark"
                   >
-                    <Typography key={event.id} align="left">
-                      {event.content}
+                    <Typography
+                      key={event.id}
+                      align="left"
+                      sx={{ wordWrap: 'break-word' }}
+                    >
+                      Event content: {event.content}
                     </Typography>
-                    <Typography align="left">
+                    <Typography align="left" fontSize="0.7rem">
                       Created At: {formatDate(new Date(created_at * 1000))}
                     </Typography>
                     <Typography

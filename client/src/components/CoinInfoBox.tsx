@@ -30,6 +30,7 @@ import {
   YAxis,
 } from 'recharts';
 import { PieLabelRenderProps } from 'recharts';
+import { BlockProvider } from '../contexts/BlockContext';
 // import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
@@ -257,7 +258,9 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         />
       </Tabs>
       <TabPanel value={activeTab} index={'Blocks'}>
-        <BTCBlockWrapper />
+        <BlockProvider>
+          <BTCBlockWrapper />
+        </BlockProvider>
       </TabPanel>
       <TabPanel value={activeTab} index={'Miners'}>
         <Typography mt={2} fontSize="0.7rem">

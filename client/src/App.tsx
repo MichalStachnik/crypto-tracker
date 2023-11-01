@@ -1,23 +1,24 @@
 import { useEffect, useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Route, Routes } from 'react-router-dom';
-import Home from './routes/Home';
-import Bubbles from './routes/Bubbles';
 import './App.css';
-import Header from './components/Header';
-import NewsFeed from './components/NewsFeed';
 import { UserProvider } from './contexts/UserContext';
 import { CoinProvider } from './contexts/CoinContext';
 import { Coin } from './types/Coin';
-import PasswordReset from './routes/PasswordReset';
 import { Box } from '@mui/material';
 // import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
-import Sidebar from './components/Sidebar';
+import Home from './routes/Home';
+import Bubbles from './routes/Bubbles';
 import Nostr from './routes/Nostr';
+import ExplorerRoute from './routes/ExplorerRoute';
+import PasswordReset from './routes/PasswordReset';
+import Header from './components/Header';
+import NewsFeed from './components/NewsFeed';
+import Sidebar from './components/Sidebar';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -139,6 +140,7 @@ function App() {
                 <Route path="/" element={<Home coins={coins} />} />
                 <Route path="/bubbles" element={<Bubbles coins={coins} />} />
                 <Route path="/nostr" element={<Nostr />} />
+                <Route path="/explorer" element={<ExplorerRoute />} />
                 <Route path="/password-reset" element={<PasswordReset />} />
               </Routes>
             </Box>

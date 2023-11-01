@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Box,
@@ -22,6 +22,7 @@ import AuthDialog from './AuthDialog';
 import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
+import { ViewInAr } from '@mui/icons-material';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -54,29 +55,40 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
-  const MenuItems = [
-    {
-      name: 'Login',
-      handleClick: () => setIsLoginDialogOpen(true),
-    },
-    {
-      name: 'Signup',
-      handleClick: () => setIsSignupDialogOpen(true),
-    },
-  ];
+  const AdminMenuItems = useMemo(
+    () => [
+      {
+        name: 'Login',
+        handleClick: () => setIsLoginDialogOpen(true),
+      },
+      {
+        name: 'Signup',
+        handleClick: () => setIsSignupDialogOpen(true),
+      },
+    ],
+    [setIsSignupDialogOpen]
+  );
 
-  const TopMenuItems = [
-    {
-      name: 'Notifications',
-      handleClick: () => setIsNotificationDialogOpen(true),
-      icon: <MailIcon color="primary" />,
-    },
-    {
-      name: 'Nostr',
-      handleClick: () => navigate('/nostr'),
-      icon: <BoltIcon color="primary" />,
-    },
-  ];
+  const TopMenuItems = useMemo(
+    () => [
+      {
+        name: 'Notifications',
+        handleClick: () => setIsNotificationDialogOpen(true),
+        icon: <MailIcon color="primary" />,
+      },
+      {
+        name: 'Nostr',
+        handleClick: () => navigate('/nostr'),
+        icon: <BoltIcon color="primary" />,
+      },
+      {
+        name: 'Explorer',
+        handleClick: () => navigate('/explorer'),
+        icon: <ViewInAr color="primary" />,
+      },
+    ],
+    [setIsNotificationDialogOpen, navigate]
+  );
 
   const handleLoginDialogSubmit = ({
     email,
@@ -222,7 +234,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
         <List>
           {!userContext.user ? (
             <>
-              {MenuItems.map((menuItem) => (
+              {AdminMenuItems.map((menuItem) => (
                 <ListItem key={menuItem.name} disablePadding>
                   <ListItemButton
                     onClick={() => {
