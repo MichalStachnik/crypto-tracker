@@ -151,7 +151,13 @@ export default function Header({
 
   return (
     <Box flexGrow={1}>
-      <AppBar position="static" sx={{ bgcolor: 'black' }}>
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: 'black',
+        }}
+        elevation={0}
+      >
         <Toolbar>
           <StyledLogo
             variant="h6"

@@ -33,6 +33,7 @@ const Explorer = () => {
       <Button
         onClick={() => getBlockByHash(blocks[0].prev_block)}
         variant="outlined"
+        disabled={isLoading}
       >
         Fetch previous block
       </Button>

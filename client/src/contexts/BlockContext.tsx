@@ -29,13 +29,25 @@ export const BlockProvider = ({ children }: BlockProviderProps) => {
   const [blocks, setBlocks] = useState<Block[]>([]);
 
   useEffect(() => {
-    fetchLatestBlock();
+    fetchFirst2Blocks();
   }, []);
 
-  const fetchLatestBlock = async () => {
-    const res = await fetch('/api/btc/latest-block');
-    const data = await res.json();
-    setBlocks([data]);
+  const fetchFirst2Blocks = async () => {
+    const latestRes = await fetch('/api/btc/latest-block');
+    const latestBlock: Block = await latestRes.json();
+    setBlocks([latestBlock]);
+
+    const blockRes = await fetch('/api/btc/get-block', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ hash: latestBlock.prev_block }),
+    });
+
+    const block: Block = await blockRes.json();
+    setBlocks([block, latestBlock]);
+
     setIsLoading(false);
   };
 

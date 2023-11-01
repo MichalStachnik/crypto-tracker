@@ -40,7 +40,7 @@ const formatDate = (date: Date) =>
 
 const BTCBlockWrapper = () => {
   const { blocks, isLoading, getBlockByHash } = useContext(BlockContext);
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const [activeStep, setActiveStep] = useState<number>(1);
   const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
 
   return (
@@ -55,9 +55,7 @@ const BTCBlockWrapper = () => {
             alignItems="center"
             height={40}
           >
-            <Typography mr={2}>
-              BTC Latest Block{blocks.length > 1 ? 's' : ''}
-            </Typography>
+            <Typography mr={2}>BTC Latest Blocks</Typography>
             {isLoading && <CircularProgress />}
           </Box>
           <Box>
@@ -69,7 +67,7 @@ const BTCBlockWrapper = () => {
               nextButton={
                 <Button
                   onClick={() => setActiveStep(activeStep + 1)}
-                  disabled={activeStep === blocks.length - 1}
+                  disabled={activeStep === blocks.length - 1 || isLoading}
                   sx={{ textTransform: 'capitalize' }}
                   variant="outlined"
                 >
@@ -84,6 +82,7 @@ const BTCBlockWrapper = () => {
                     }
                     sx={{ textTransform: 'capitalize' }}
                     variant="outlined"
+                    disabled={isLoading}
                   >
                     previous block
                   </Button>
@@ -92,6 +91,7 @@ const BTCBlockWrapper = () => {
                     onClick={() => setActiveStep(activeStep - 1)}
                     sx={{ textTransform: 'capitalize' }}
                     variant="outlined"
+                    disabled={isLoading}
                   >
                     previous block
                   </Button>
