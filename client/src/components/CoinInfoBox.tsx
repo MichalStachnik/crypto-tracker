@@ -258,9 +258,7 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         />
       </Tabs>
       <TabPanel value={activeTab} index={'Blocks'}>
-        <BlockProvider>
-          <BTCBlockWrapper />
-        </BlockProvider>
+        <BTCBlockWrapper />
       </TabPanel>
       <TabPanel value={activeTab} index={'Miners'}>
         <Typography mt={2} fontSize="0.7rem">

@@ -1,6 +1,7 @@
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Badge,
   Box,
   Button,
   Drawer,
@@ -85,6 +86,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
         name: 'Explorer',
         handleClick: () => navigate('/explorer'),
         icon: <ViewInAr color="primary" />,
+        isBeta: true,
       },
     ],
     [setIsNotificationDialogOpen, navigate]
@@ -223,12 +225,23 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
                 }}
               >
                 <ListItemIcon>{menuItem.icon}</ListItemIcon>
-                <ListItemText
-                  primary={menuItem.name}
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                  }}
-                />
+                {menuItem.isBeta ? (
+                  <Badge badgeContent="BETA" color="success">
+                    <ListItemText
+                      primary={menuItem.name}
+                      sx={{
+                        color: (theme) => theme.palette.primary.main,
+                      }}
+                    />
+                  </Badge>
+                ) : (
+                  <ListItemText
+                    primary={menuItem.name}
+                    sx={{
+                      color: (theme) => theme.palette.primary.main,
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           ))}

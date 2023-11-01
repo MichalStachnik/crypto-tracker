@@ -19,6 +19,7 @@ import PasswordReset from './routes/PasswordReset';
 import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import Sidebar from './components/Sidebar';
+import { BlockProvider } from './contexts/BlockContext';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -107,45 +108,47 @@ function App() {
   return (
     <UserProvider>
       <CoinProvider>
-        <Box display="flex">
-          <AppBar position="fixed" open={isOpen}>
-            <Toolbar>
-              <IconButton
-                color="inherit"
-                aria-label="open drawer"
-                onClick={() => setIsOpen(true)}
-                edge="start"
-                sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
-              >
-                <MenuIcon />
-              </IconButton>
-              <Header
-                globalData={globalData}
-                searchText={searchText}
-                setSearchText={setSearchText}
-                coins={coins}
-              />
-            </Toolbar>
-          </AppBar>
-          <Sidebar
-            isOpen={isOpen}
-            setIsOpen={setIsOpen}
-            drawerWidth={drawerWidth}
-            coins={coins}
-          />
-          <Main open={isOpen}>
-            <Box display="flex" flexDirection="column" mt={3}>
-              <NewsFeed />
-              <Routes>
-                <Route path="/" element={<Home coins={coins} />} />
-                <Route path="/bubbles" element={<Bubbles coins={coins} />} />
-                <Route path="/nostr" element={<Nostr />} />
-                <Route path="/explorer" element={<ExplorerRoute />} />
-                <Route path="/password-reset" element={<PasswordReset />} />
-              </Routes>
-            </Box>
-          </Main>
-        </Box>
+        <BlockProvider>
+          <Box display="flex">
+            <AppBar position="fixed" open={isOpen}>
+              <Toolbar>
+                <IconButton
+                  color="inherit"
+                  aria-label="open drawer"
+                  onClick={() => setIsOpen(true)}
+                  edge="start"
+                  sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
+                >
+                  <MenuIcon />
+                </IconButton>
+                <Header
+                  globalData={globalData}
+                  searchText={searchText}
+                  setSearchText={setSearchText}
+                  coins={coins}
+                />
+              </Toolbar>
+            </AppBar>
+            <Sidebar
+              isOpen={isOpen}
+              setIsOpen={setIsOpen}
+              drawerWidth={drawerWidth}
+              coins={coins}
+            />
+            <Main open={isOpen}>
+              <Box display="flex" flexDirection="column" mt={3}>
+                <NewsFeed />
+                <Routes>
+                  <Route path="/" element={<Home coins={coins} />} />
+                  <Route path="/bubbles" element={<Bubbles coins={coins} />} />
+                  <Route path="/nostr" element={<Nostr />} />
+                  <Route path="/explorer" element={<ExplorerRoute />} />
+                  <Route path="/password-reset" element={<PasswordReset />} />
+                </Routes>
+              </Box>
+            </Main>
+          </Box>
+        </BlockProvider>
       </CoinProvider>
     </UserProvider>
   );

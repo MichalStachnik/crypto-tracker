@@ -44,7 +44,7 @@ const Explorer = () => {
           {blocks.map((block, index) => {
             const position = new THREE.Vector3(index + 0.1, -0.7, 0);
             return (
-              <group position={position}>
+              <group position={position} key={block.hash}>
                 <Text
                   scale={[0.2, 0.2, 0.2]}
                   color="orange"
@@ -53,7 +53,7 @@ const Explorer = () => {
                 >
                   {block.height}
                 </Text>
-                <Block position={position} key={block.hash} />
+                <Block position={position} />
               </group>
             );
           })}
