@@ -174,6 +174,8 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     if (response.status === 200) {
       setIsSnackbarOpen(true);
       setIsNotificationDialogOpen(false);
+      const loggedInUser = localStorage.getItem('user');
+      userContext.getNotifications(loggedInUser);
     }
   };
 

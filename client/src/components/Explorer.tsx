@@ -20,7 +20,7 @@ function Block(props: ThreeElements['mesh']) {
       onPointerOut={(event) => setHover(false)}
     >
       <boxGeometry args={[1, 1, 1]} />
-      <meshStandardMaterial color={hovered ? 'green' : 'orange'} />
+      <meshStandardMaterial color={hovered ? 'darkgreen' : 'orange'} />
     </mesh>
   );
 }

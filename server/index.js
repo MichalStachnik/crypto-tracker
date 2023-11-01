@@ -385,6 +385,51 @@ app.post('/api/add-notification', async (req, res) => {
   }
 });
 
+app.post('/api/update-notification', async (req, res) => {
+  const { jwt, notification } = req.body;
+  const user = await supabase.auth.getUser(jwt);
+
+  if (user.error) {
+    console.error('user error', userError);
+    res.status(500).json({ message: 'error', error: userError });
+    return;
+  }
+
+  const { error } = await supabase
+    .from('notifications')
+    .update({ price: notification.price })
+    .eq('id', notification.id);
+
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
+});
+
+app.post('/api/delete-notification', async (req, res) => {
+  const { jwt, notification } = req.body;
+  const user = await supabase.auth.getUser(jwt);
+
+  if (user.error) {
+    console.error('user error', userError);
+    res.status(500).json({ message: 'error', error: userError });
+    return;
+  }
+
+  const { error } = await supabase
+    .from('notifications')
+    .delete()
+    .eq('id', notification.id);
+
+  console.log('after delete', error);
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
+});
+
 app.post('/api/get-notifications', async (req, res) => {
   const { jwt } = req.body;
   const user = await supabase.auth.getUser(jwt);

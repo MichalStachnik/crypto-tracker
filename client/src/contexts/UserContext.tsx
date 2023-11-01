@@ -7,6 +7,7 @@ interface UserContextInterface {
   setFavoriteCoins: any;
   notifications: any[];
   setNotifications: any;
+  getNotifications: any;
 }
 
 const initialState: UserContextInterface = {
@@ -16,6 +17,7 @@ const initialState: UserContextInterface = {
   setFavoriteCoins: {},
   notifications: [],
   setNotifications: {},
+  getNotifications: {},
 };
 
 export const UserContext = createContext<UserContextInterface>(initialState);
@@ -101,6 +103,7 @@ export const UserProvider = ({ children }: UserProviderProps) => {
         setFavoriteCoins,
         notifications,
         setNotifications,
+        getNotifications,
       }}
     >
       {children}
