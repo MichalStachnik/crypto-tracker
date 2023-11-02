@@ -10,6 +10,7 @@ import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
 import { Dispatch, SetStateAction } from 'react';
+import Trending from './Trending';
 
 const StyledToggleButton = styled(ToggleButton)(() => ({
   color: 'white',
@@ -38,7 +39,12 @@ const CoinHeader = ({
   setChartMode,
 }: CoinHeaderProps) => {
   return (
-    <Box minHeight="96px" data-testid="coin-header">
+    <Box
+      minHeight="96px"
+      data-testid="coin-header"
+      display="flex"
+      justifyContent="space-around"
+    >
       <Box
         display="flex"
         justifyContent="center"
@@ -121,6 +127,16 @@ const CoinHeader = ({
             {selectedCoin?.name || liveCoinWatchData?.name}
           </Typography>
         </Box>
+      </Box>
+      <Box
+        flex={0.8}
+        sx={{
+          border: (theme) => `1px solid ${theme.palette.primary.main}`,
+        }}
+        borderRadius={1}
+        p={1}
+      >
+        <Trending />
       </Box>
     </Box>
   );
