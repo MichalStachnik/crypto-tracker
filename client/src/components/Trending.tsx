@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { useEffect, useState } from 'react';
 import { Avatar, Box, Typography } from '@mui/material';
 
@@ -12,7 +13,7 @@ const Trending = () => {
 
   return (
     <Box>
-      Top 7 Trending Coins
+      <Typography>Top 7 Trending Coins</Typography>
       <Box display="flex" flexDirection="column">
         {trendingCoins.map((coin: any, index) => {
           return (

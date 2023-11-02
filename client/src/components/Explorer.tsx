@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { useState, useRef, useContext } from 'react';
 import * as THREE from 'three';
 import { Canvas, useFrame, ThreeElements } from '@react-three/fiber';
@@ -6,18 +7,21 @@ import { Box, Button, CircularProgress } from '@mui/material';
 import { BlockContext } from '../contexts/BlockContext';
 
 function Block(props: ThreeElements['mesh']) {
+  // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
   const meshRef = useRef<THREE.Mesh>(null!);
   const [hovered, setHover] = useState(false);
   const [active, setActive] = useState(false);
-  useFrame((state, delta) => (meshRef.current.rotation.y += delta));
+  useFrame((_state, delta) => {
+    return (meshRef.current.rotation.y += delta);
+  });
   return (
     <mesh
       {...props}
       ref={meshRef}
       scale={active ? 1.5 : 1}
-      onClick={(event) => setActive(!active)}
-      onPointerOver={(event) => setHover(true)}
-      onPointerOut={(event) => setHover(false)}
+      onClick={(_event) => setActive(!active)}
+      onPointerOver={(_event) => setHover(true)}
+      onPointerOut={(_event) => setHover(false)}
     >
       <boxGeometry args={[1, 1, 1]} />
       <meshStandardMaterial color={hovered ? 'darkgreen' : 'orange'} />

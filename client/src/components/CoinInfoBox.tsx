@@ -30,8 +30,6 @@ import {
   YAxis,
 } from 'recharts';
 import { PieLabelRenderProps } from 'recharts';
-import { BlockProvider } from '../contexts/BlockContext';
-// import BTCMempoolWrapper from './BTCMempoolWrapper';
 
 interface CoinInfoBoxProps {
   liveCoinWatchData: LiveCoinWatchData;

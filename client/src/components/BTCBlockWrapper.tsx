@@ -1,3 +1,4 @@
+import { useContext, useState } from 'react';
 import {
   Box,
   Button,
@@ -10,7 +11,6 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { useContext, useEffect, useState } from 'react';
 import { Block } from '../types/Block';
 import { Transaction } from '../types/Transaction';
 import CloseIcon from '@mui/icons-material/Close';
