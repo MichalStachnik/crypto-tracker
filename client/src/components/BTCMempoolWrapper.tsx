@@ -19,14 +19,14 @@ const BTCMempoolWrapper = () => {
   }, []);
 
   return (
-    <Box>
+    <Box component="div">
       {isLoading ? (
-        <Box display="flex" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between" component="div">
           <Typography>Loading mempool...</Typography>
           <CircularProgress />
         </Box>
       ) : (
-        <Box display="flex" justifyContent="space-between">
+        <Box display="flex" justifyContent="space-between" component="div">
           <Typography>current mempool size</Typography>
           <Typography color="#fa9e32">{mempoolLength}</Typography>
         </Box>

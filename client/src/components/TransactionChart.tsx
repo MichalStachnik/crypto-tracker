@@ -26,6 +26,7 @@ function ChartTooltip({
         display="flex"
         flexDirection="column"
         width="200px"
+        component="div"
       >
         <Typography>{`${payload[0].value} Transactions`}</Typography>
         <Typography>{label}</Typography>

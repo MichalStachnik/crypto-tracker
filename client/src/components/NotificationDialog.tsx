@@ -90,10 +90,12 @@ function NotificationDialog(props: NotificationDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle display="flex" flexDirection="column">
         {!user ? (
-          <Box>You need to be logged in to set notifications</Box>
+          <Box component="div">
+            You need to be logged in to set notifications
+          </Box>
         ) : (
           <>
-            <Box width={300}>
+            <Box width={300} component="div">
               {notifications.map((notification) => {
                 return (
                   <NotificationItem

@@ -95,7 +95,7 @@ const Bubbles = ({ coins }: BubblesProps) => {
   }, [coins]);
 
   return (
-    <Box width="100%" height="100%">
+    <Box width="100%" height="100%" component="div">
       <canvas ref={canvasRef} style={{ width: '100%', height: '100%' }} />
     </Box>
   );

@@ -109,7 +109,7 @@ function App() {
     <UserProvider>
       <CoinProvider>
         <BlockProvider>
-          <Box display="flex">
+          <Box display="flex" component="div">
             <AppBar position="fixed" open={isOpen}>
               <Toolbar>
                 <IconButton
@@ -136,7 +136,7 @@ function App() {
               coins={coins}
             />
             <Main open={isOpen}>
-              <Box display="flex" flexDirection="column" mt={3}>
+              <Box display="flex" flexDirection="column" mt={3} component="div">
                 <NewsFeed />
                 <Routes>
                   <Route path="/" element={<Home coins={coins} />} />

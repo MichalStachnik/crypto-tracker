@@ -32,7 +32,7 @@ function Block(props: ThreeElements['mesh']) {
 const Explorer = () => {
   const { blocks, getBlockByHash, isLoading } = useContext(BlockContext);
   return (
-    <Box>
+    <Box component="div">
       {isLoading && <CircularProgress />}
       <Button
         onClick={() => getBlockByHash(blocks[0].prev_block)}
@@ -41,7 +41,7 @@ const Explorer = () => {
       >
         Fetch previous block
       </Button>
-      <Box width="100vw" height="100vh">
+      <Box width="100vw" height="100vh" component="div">
         <Canvas>
           <ambientLight />
           <pointLight position={[10, 10, 10]} />

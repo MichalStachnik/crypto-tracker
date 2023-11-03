@@ -30,7 +30,13 @@ const Home = ({ coins }: HomeProps) => {
 
   if (!coins.length) {
     return (
-      <Box mx={2} display="flex" justifyContent="space-between" gap={2}>
+      <Box
+        mx={2}
+        display="flex"
+        justifyContent="space-between"
+        gap={2}
+        component="div"
+      >
         <Skeleton width="100%" height="100vh" />
         <Skeleton width="340px" height="100vh" />
       </Box>
@@ -38,8 +44,8 @@ const Home = ({ coins }: HomeProps) => {
   }
 
   return (
-    <Box display="flex" flexDirection="column">
-      <Box>
+    <Box display="flex" flexDirection="column" component="div">
+      <Box component="div">
         <CoinHeader
           selectedCoin={selectedCoin}
           liveCoinWatchData={liveCoinWatchData}
@@ -56,6 +62,7 @@ const Home = ({ coins }: HomeProps) => {
                 m: { xs: 0, md: 1 },
                 flexDirection: { xs: 'column', md: 'row' },
               }}
+              component="div"
             >
               <CoinChart
                 liveCoinWatchData={liveCoinWatchData}
@@ -69,7 +76,7 @@ const Home = ({ coins }: HomeProps) => {
           <CircularProgress />
         )}
       </Box>
-      <Box p={2}>
+      <Box p={2} component="div">
         <CoinTable coins={coins} onCoinClick={handleCoinClick} />
       </Box>
     </Box>

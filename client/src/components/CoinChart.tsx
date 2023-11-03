@@ -29,6 +29,7 @@ function ChartTooltip({
         display="flex"
         flexDirection="column"
         width="200px"
+        component="div"
       >
         <Typography>{`${Number(
           payload[0].value

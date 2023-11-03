@@ -55,13 +55,20 @@ const PasswordReset = () => {
   };
 
   return (
-    <Box display="flex" flexDirection="column" width="50%" margin="0 auto">
+    <Box
+      display="flex"
+      flexDirection="column"
+      width="50%"
+      margin="0 auto"
+      component="div"
+    >
       <Box
         bgcolor={theme.palette.background.paper}
         display="flex"
         flexDirection="column"
         p={2}
         mt={10}
+        component="div"
       >
         <FormControl sx={{ m: 1 }} variant="outlined">
           <InputLabel htmlFor="outlined-adornment-password">

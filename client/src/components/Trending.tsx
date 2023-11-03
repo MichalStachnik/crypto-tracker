@@ -12,15 +12,16 @@ const Trending = () => {
   }, []);
 
   return (
-    <Box>
+    <Box component="div">
       <Typography>Top 7 Trending Coins</Typography>
-      <Box display="flex" flexDirection="column">
+      <Box display="flex" flexDirection="column" component="div">
         {trendingCoins.map((coin: any, index) => {
           return (
             <Box
               key={coin.item.id}
               display="flex"
               justifyContent="space-around"
+              component="div"
             >
               <Typography>{index + 1}</Typography>
               <Avatar src={coin.item.thumb} sx={{ width: 20, height: 20 }} />

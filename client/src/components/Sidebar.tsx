@@ -281,10 +281,11 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-between"
+                component="div"
               >
                 {userContext.favoriteCoins.map((coin) => {
                   return (
-                    <Box key={coin} mb={1}>
+                    <Box key={coin} mb={1} component="div">
                       <Button
                         color="primary"
                         onClick={() => handleCoinClick(coin)}

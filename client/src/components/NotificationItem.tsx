@@ -45,8 +45,9 @@ const NotificationItem = ({
       display="flex"
       justifyContent="space-between"
       alignItems="center"
+      component="div"
     >
-      <Box display="flex" alignItems="center">
+      <Box display="flex" alignItems="center" component="div">
         <Typography mr={1}>{notification.coin}</Typography>
         {isEditing ? (
           <FormControl fullWidth sx={{ my: 2 }}>
@@ -63,7 +64,7 @@ const NotificationItem = ({
           <Typography ml={1}>{notification.price}</Typography>
         )}
       </Box>
-      <Box display="flex">
+      <Box display="flex" component="div">
         {isEditing ? (
           <>
             <Button onClick={() => handleSave()}>Save</Button>

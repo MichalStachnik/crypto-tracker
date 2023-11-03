@@ -194,10 +194,16 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       flexDirection="column"
       justifyContent="space-between"
       minWidth={340}
+      component="div"
     >
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" justifyContent="space-between" component="div">
         <Avatar alt={liveCoinWatchData.name} src={liveCoinWatchData.png64} />
-        <Box display="flex" flexDirection="column" alignItems="flex-end">
+        <Box
+          display="flex"
+          flexDirection="column"
+          alignItems="flex-end"
+          component="div"
+        >
           <Link
             href={liveCoinWatchData.links.website}
             target="_blank"
@@ -230,11 +236,11 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
           </Link>
         </Box>
       </Box>
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" justifyContent="space-between" component="div">
         <Typography># of Markets</Typography>
         <Typography>{liveCoinWatchData.markets}</Typography>
       </Box>
-      <Box display="flex" justifyContent="space-between">
+      <Box display="flex" justifyContent="space-between" component="div">
         <Typography># of Pairs</Typography>
         <Typography>{liveCoinWatchData.pairs}</Typography>
       </Box>
@@ -314,7 +320,12 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         <Typography mt={2} fontSize="0.7rem">
           {hashRateResponse?.description}
         </Typography>
-        <Box display="flex" justifyContent="space-evenly" my={2}>
+        <Box
+          display="flex"
+          justifyContent="space-evenly"
+          my={2}
+          component="div"
+        >
           <Button
             variant={
               hashRateTimeInterval === '4weeks' ? 'contained' : 'outlined'

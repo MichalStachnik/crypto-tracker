@@ -124,12 +124,12 @@ const Nostr = () => {
   };
 
   return (
-    <Box display="flex" width="80%" margin="0 auto" gap="20px">
-      <Box width="40%">
+    <Box display="flex" width="80%" margin="0 auto" gap="20px" component="div">
+      <Box width="40%" component="div">
         {connectedRelay ? (
-          <Box>Connected to {connectedRelay.url}</Box>
+          <Box component="div">Connected to {connectedRelay.url}</Box>
         ) : (
-          <Box>Not connected</Box>
+          <Box component="div">Not connected</Box>
         )}
         <Typography>Available Relays</Typography>
         {relays.map((relay) => {
@@ -151,8 +151,8 @@ const Nostr = () => {
           );
         })}
       </Box>
-      <Box width="60%">
-        <Box>
+      <Box width="60%" component="div">
+        <Box component="div">
           <TextField
             placeholder="private key"
             value={privateKey}
@@ -179,7 +179,7 @@ const Nostr = () => {
         </Box>
         <NostrForm onPostEventClick={handlePostEventClick} />
         {isLoading ? (
-          <Box display="flex" justifyContent="center" flex={1}>
+          <Box display="flex" justifyContent="center" flex={1} component="div">
             <Typography mt={1} mr={1}>
               Fetching events...
             </Typography>
@@ -220,8 +220,9 @@ const Nostr = () => {
                     border={1}
                     borderRadius={1}
                     borderColor="info.dark"
+                    component="div"
                   >
-                    <Box display="flex" alignItems="center">
+                    <Box display="flex" alignItems="center" component="div">
                       <Avatar src={picture} />
                       <Typography ml={1}>{name}</Typography>
                     </Box>
@@ -245,6 +246,7 @@ const Nostr = () => {
                     border={1}
                     borderRadius={1}
                     borderColor="info.dark"
+                    component="div"
                   >
                     <Typography
                       key={event.id}

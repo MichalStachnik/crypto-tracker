@@ -44,7 +44,7 @@ const BTCBlockWrapper = () => {
   const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
 
   return (
-    <Box mt={2}>
+    <Box mt={2} component="div">
       {!blocks.length ? (
         <Skeleton variant="rounded" width={340} height={262} />
       ) : (
@@ -54,11 +54,12 @@ const BTCBlockWrapper = () => {
             justifyContent="center"
             alignItems="center"
             height={40}
+            component="div"
           >
             <Typography mr={2}>BTC Latest Blocks</Typography>
             {isLoading && <CircularProgress />}
           </Box>
-          <Box>
+          <Box component="div">
             <MobileStepper
               variant="dots"
               steps={blocks.length}
@@ -105,6 +106,7 @@ const BTCBlockWrapper = () => {
             sx={{
               overflowX: 'hidden',
             }}
+            component="div"
           >
             <Box
               display="flex"
@@ -113,6 +115,7 @@ const BTCBlockWrapper = () => {
                 transform: `translate(-${activeStep * 360}px)`,
                 transition: '0.3s transform ease-in-out',
               }}
+              component="div"
             >
               {blocks.map((block) => {
                 return (
@@ -121,6 +124,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Typography>Height</Typography>
                       <Typography>{block.height}</Typography>
@@ -128,7 +132,8 @@ const BTCBlockWrapper = () => {
                     <Box
                       display="flex"
                       justifyContent="space-between"
-                      width="100% "
+                      width="100%"
+                      component="div"
                     >
                       <Typography>Time</Typography>
                       <Typography>
@@ -139,6 +144,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Tooltip title="Bitcoin's block size is capped at 1MB but can go higher due to SegWit">
                         <Typography>Size (in bytes)</Typography>
@@ -149,6 +155,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Typography>Weight</Typography>
                       <Typography>{block.weight.toLocaleString()}</Typography>
@@ -157,6 +164,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Typography>Transactions</Typography>
                       <Button
@@ -190,8 +198,8 @@ const BTCBlockWrapper = () => {
         open={!!selectedBlock}
         onClose={() => setSelectedBlock(null)}
       >
-        <Box bgcolor="black">
-          <Box display="flex" justifyContent="flex-end">
+        <Box bgcolor="black" component="div">
+          <Box display="flex" justifyContent="flex-end" component="div">
             <IconButton onClick={() => setSelectedBlock(null)}>
               <CloseIcon color="primary" />
             </IconButton>
@@ -199,7 +207,7 @@ const BTCBlockWrapper = () => {
           {selectedBlock &&
             selectedBlock.tx.map((tx: Transaction) => {
               return (
-                <Box key={tx.hash}>
+                <Box key={tx.hash} component="div">
                   <Typography fontSize="0.8rem" mx={2} my={1} color="primary">
                     hash: {tx.hash}
                   </Typography>

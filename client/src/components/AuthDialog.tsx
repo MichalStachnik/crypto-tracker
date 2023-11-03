@@ -112,7 +112,7 @@ export function AuthDialog(props: AuthDialogProps) {
             onChange={handlePasswordChange}
           />
           {mode === 'login' ? (
-            <Box display="flex">
+            <Box display="flex" component="div">
               {resetPasswordSent ? (
                 <FormHelperText>Sent, please check your email</FormHelperText>
               ) : (

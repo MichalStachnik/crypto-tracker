@@ -3,7 +3,7 @@ import Explorer from '../components/Explorer';
 
 const ExplorerRoute = () => {
   return (
-    <Box>
+    <Box component="div">
       <Explorer />
     </Box>
   );
