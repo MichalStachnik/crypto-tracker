@@ -1,3 +1,4 @@
+import { useContext, useState } from 'react';
 import {
   Box,
   Button,
@@ -10,10 +11,10 @@ import {
   Typography,
   styled,
 } from '@mui/material';
-import { useEffect, useState } from 'react';
 import { Block } from '../types/Block';
 import { Transaction } from '../types/Transaction';
 import CloseIcon from '@mui/icons-material/Close';
+import { BlockContext } from '../contexts/BlockContext';
 
 const StyledBlock = styled(Box)(() => ({
   width: '320px',
@@ -38,68 +39,13 @@ const formatDate = (date: Date) =>
   });
 
 const BTCBlockWrapper = () => {
-  // const ws = useRef<WebSocket | null>(null);
-  const [blocks, setBlocks] = useState<Block[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoadingPrevious, setIsLoadingPrevious] = useState<boolean>(false);
-  const [activeStep, setActiveStep] = useState<number>(0);
+  const { blocks, isLoading, getBlockByHash } = useContext(BlockContext);
+  const [activeStep, setActiveStep] = useState<number>(1);
   const [selectedBlock, setSelectedBlock] = useState<Block | null>(null);
 
-  const fetchLatestBlock = async () => {
-    const res = await fetch('/api/btc/latest-block');
-    const data = await res.json();
-    setBlocks([data]);
-    setIsLoading(false);
-  };
-
-  // const handleSocketOpen = () => {
-  //   if (!ws.current) return;
-  //   // All new blocks
-  //   const op = { op: 'blocks_sub' };
-  //   ws.current.send(JSON.stringify(op));
-  // };
-
-  useEffect(() => {
-    // ws.current = new WebSocket('wss://ws.blockchain.info/inv');
-    // ws.current.onopen = () => handleSocketOpen();
-    // ws.current.onclose = () => console.log('ws closed');
-
-    // TODO: fix
-    // ws.current.onmessage = (e) => {
-    // console.log('new block', e);
-    // console.log('e.data', e.data);
-    // const message = JSON.parse(e.data);
-    // console.log('message', message);
-    // setBlocks([...blocks, message.x]);
-    // };
-
-    // const wsCurrent = ws.current;
-
-    fetchLatestBlock();
-    // return () => {
-    //   wsCurrent.close();
-    // };
-  }, []);
-
-  const handleGetPreviousBlock = async (hash: string) => {
-    const foundBlock = blocks.find((b) => b.hash === hash);
-    if (foundBlock) return;
-    setIsLoadingPrevious(true);
-    const res = await fetch('/api/btc/get-block', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ hash }),
-    });
-    const block = await res.json();
-    setBlocks([block, ...blocks]);
-    setIsLoadingPrevious(false);
-  };
-
   return (
-    <Box mt={2}>
-      {isLoading ? (
+    <Box mt={2} component="div">
+      {!blocks.length ? (
         <Skeleton variant="rounded" width={340} height={262} />
       ) : (
         <>
@@ -108,13 +54,12 @@ const BTCBlockWrapper = () => {
             justifyContent="center"
             alignItems="center"
             height={40}
+            component="div"
           >
-            <Typography mr={2}>
-              BTC Latest Block{blocks.length > 1 ? 's' : ''}
-            </Typography>
-            {isLoadingPrevious && <CircularProgress />}
+            <Typography mr={2}>BTC Latest Blocks</Typography>
+            {isLoading && <CircularProgress />}
           </Box>
-          <Box>
+          <Box component="div">
             <MobileStepper
               variant="dots"
               steps={blocks.length}
@@ -123,7 +68,7 @@ const BTCBlockWrapper = () => {
               nextButton={
                 <Button
                   onClick={() => setActiveStep(activeStep + 1)}
-                  disabled={activeStep === blocks.length - 1}
+                  disabled={activeStep === blocks.length - 1 || isLoading}
                   sx={{ textTransform: 'capitalize' }}
                   variant="outlined"
                 >
@@ -134,10 +79,11 @@ const BTCBlockWrapper = () => {
                 activeStep === 0 ? (
                   <Button
                     onClick={() =>
-                      handleGetPreviousBlock(blocks[activeStep].prev_block)
+                      getBlockByHash(blocks[activeStep].prev_block)
                     }
                     sx={{ textTransform: 'capitalize' }}
                     variant="outlined"
+                    disabled={isLoading}
                   >
                     previous block
                   </Button>
@@ -146,6 +92,7 @@ const BTCBlockWrapper = () => {
                     onClick={() => setActiveStep(activeStep - 1)}
                     sx={{ textTransform: 'capitalize' }}
                     variant="outlined"
+                    disabled={isLoading}
                   >
                     previous block
                   </Button>
@@ -159,6 +106,7 @@ const BTCBlockWrapper = () => {
             sx={{
               overflowX: 'hidden',
             }}
+            component="div"
           >
             <Box
               display="flex"
@@ -167,6 +115,7 @@ const BTCBlockWrapper = () => {
                 transform: `translate(-${activeStep * 360}px)`,
                 transition: '0.3s transform ease-in-out',
               }}
+              component="div"
             >
               {blocks.map((block) => {
                 return (
@@ -175,6 +124,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Typography>Height</Typography>
                       <Typography>{block.height}</Typography>
@@ -182,7 +132,8 @@ const BTCBlockWrapper = () => {
                     <Box
                       display="flex"
                       justifyContent="space-between"
-                      width="100% "
+                      width="100%"
+                      component="div"
                     >
                       <Typography>Time</Typography>
                       <Typography>
@@ -193,6 +144,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Tooltip title="Bitcoin's block size is capped at 1MB but can go higher due to SegWit">
                         <Typography>Size (in bytes)</Typography>
@@ -203,6 +155,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Typography>Weight</Typography>
                       <Typography>{block.weight.toLocaleString()}</Typography>
@@ -211,6 +164,7 @@ const BTCBlockWrapper = () => {
                       display="flex"
                       justifyContent="space-between"
                       width="100%"
+                      component="div"
                     >
                       <Typography>Transactions</Typography>
                       <Button
@@ -244,8 +198,8 @@ const BTCBlockWrapper = () => {
         open={!!selectedBlock}
         onClose={() => setSelectedBlock(null)}
       >
-        <Box bgcolor="black">
-          <Box display="flex" justifyContent="flex-end">
+        <Box bgcolor="black" component="div">
+          <Box display="flex" justifyContent="flex-end" component="div">
             <IconButton onClick={() => setSelectedBlock(null)}>
               <CloseIcon color="primary" />
             </IconButton>
@@ -253,7 +207,7 @@ const BTCBlockWrapper = () => {
           {selectedBlock &&
             selectedBlock.tx.map((tx: Transaction) => {
               return (
-                <Box key={tx.hash}>
+                <Box key={tx.hash} component="div">
                   <Typography fontSize="0.8rem" mx={2} my={1} color="primary">
                     hash: {tx.hash}
                   </Typography>

@@ -12,8 +12,11 @@ const PAPRIKA_BASE_URL = 'https://api.coinpaprika.com/v1/';
 const CMC_BASE_URL = 'https://pro-api.coinmarketcap.com';
 const COIN_API_BASE_URL = 'https://rest.coinapi.io';
 const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
+const COIN_GECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
 
 app.use(express.json());
+
+const FIVE_MINUTES = 60 * 5;
 
 let redisClient;
 
@@ -43,7 +46,7 @@ app.get('/api/global', async (req, res) => {
 
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
-  redisClient.setEx('globalData', 60 * 5, JSON.stringify(json));
+  redisClient.setEx('globalData', FIVE_MINUTES, JSON.stringify(json));
   res.json(json);
 });
 
@@ -82,10 +85,25 @@ app.get('/api/cmc', async (req, res) => {
     return;
   }
   const data = await fetch(
-    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&limit=500`
+    `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&limit=1000`
   );
   const json = await data.json();
-  redisClient.setEx('cmcData', 60 * 5, JSON.stringify(json));
+  redisClient.setEx('cmcData', FIVE_MINUTES, JSON.stringify(json));
+  res.json(json);
+});
+
+app.get('/api/trending', async (req, res) => {
+  const cacheValue = await redisClient.get('trending');
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
+    return;
+  }
+  const data = await fetch(
+    `${COIN_GECKO_BASE_URL}/search/trending?x_cg_demo_api_key=${process.env.COIN_GECKO_API_KEY}`
+  );
+
+  const json = await data.json();
+  redisClient.setEx('trending', FIVE_MINUTES, JSON.stringify(json));
   res.json(json);
 });
 
@@ -139,7 +157,11 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
     }),
   });
   const json = await data.json();
-  redisClient.setEx(`${symbol}:${interval}`, 60 * 5, JSON.stringify(json));
+  redisClient.setEx(
+    `${symbol}:${interval}`,
+    FIVE_MINUTES,
+    JSON.stringify(json)
+  );
   res.json(json);
 });
 
@@ -154,7 +176,7 @@ app.get('/api/btc/latest-block', async (req, res) => {
   const { hash } = json;
   const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
   const blockData = await rawBlockData.json();
-  redisClient.setEx('latestBlock', 60 * 5, JSON.stringify(blockData));
+  redisClient.setEx('latestBlock', FIVE_MINUTES, JSON.stringify(blockData));
   res.json(blockData);
 });
 
@@ -167,7 +189,7 @@ app.post('/api/btc/get-block', async (req, res) => {
   }
   const rawBlockData = await fetch(`https://blockchain.info/rawblock/${hash}`);
   const blockData = await rawBlockData.json();
-  redisClient.setEx(hash, 60 * 5, JSON.stringify(blockData));
+  redisClient.setEx(hash, FIVE_MINUTES, JSON.stringify(blockData));
   res.json(blockData);
 });
 
@@ -385,6 +407,51 @@ app.post('/api/add-notification', async (req, res) => {
   }
 });
 
+app.post('/api/update-notification', async (req, res) => {
+  const { jwt, notification } = req.body;
+  const user = await supabase.auth.getUser(jwt);
+
+  if (user.error) {
+    console.error('user error', userError);
+    res.status(500).json({ message: 'error', error: userError });
+    return;
+  }
+
+  const { error } = await supabase
+    .from('notifications')
+    .update({ price: notification.price })
+    .eq('id', notification.id);
+
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
+});
+
+app.post('/api/delete-notification', async (req, res) => {
+  const { jwt, notification } = req.body;
+  const user = await supabase.auth.getUser(jwt);
+
+  if (user.error) {
+    console.error('user error', userError);
+    res.status(500).json({ message: 'error', error: userError });
+    return;
+  }
+
+  const { error } = await supabase
+    .from('notifications')
+    .delete()
+    .eq('id', notification.id);
+
+  console.log('after delete', error);
+  if (error) {
+    res.status(500).json({ error });
+  } else {
+    res.status(200).json({ message: 'success' });
+  }
+});
+
 app.post('/api/get-notifications', async (req, res) => {
   const { jwt } = req.body;
   const user = await supabase.auth.getUser(jwt);
@@ -449,7 +516,7 @@ app.get('/api/news/:query', async (req, res) => {
         `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
       );
       cmcData = await data.json();
-      redisClient.setEx('cmcData', 60 * 5, JSON.stringify(cmcData));
+      redisClient.setEx('cmcData', FIVE_MINUTES, JSON.stringify(cmcData));
     }
 
     // For each notification data check if the corresponding cmcData price is greater

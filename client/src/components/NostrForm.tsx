@@ -14,7 +14,7 @@ const NostrForm = ({ onPostEventClick }: NostrFormProps) => {
   };
 
   return (
-    <Box my={2}>
+    <Box my={2} component="div">
       <FormControl fullWidth>
         <TextField
           placeholder="your message to the nostr network"

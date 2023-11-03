@@ -1,5 +1,4 @@
 import { ChangeEvent, useState, useContext } from 'react';
-import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import {
   Box,
@@ -15,6 +14,7 @@ import {
 
 import { UserContext } from '../contexts/UserContext';
 import { Coin } from '../types/Coin';
+import NotificationItem from './NotificationItem';
 
 export interface NotificationDialogProps {
   open: boolean;
@@ -31,7 +31,7 @@ export interface NotificationDialogProps {
 
 function NotificationDialog(props: NotificationDialogProps) {
   const { onClose, open, onSubmit, coins } = props;
-  const userContext = useContext(UserContext);
+  const { user, notifications, getNotifications } = useContext(UserContext);
   const [coin, setCoin] = useState<'' | HTMLSelectElement | undefined>('');
   const [price, setPrice] = useState<number | null>(0);
 
@@ -50,45 +50,64 @@ function NotificationDialog(props: NotificationDialogProps) {
   const handleSubmit = () => {
     if (!price) return;
     onSubmit({ coin, price });
+    setCoin('');
+    setPrice(0);
   };
 
-  const handleNotificationEdit = (notification: any) => {
-    console.log(notification);
+  const handleNotificationSave = async (notification: any) => {
+    const response = await fetch('/api/update-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: user, notification }),
+    });
+
+    if (response.status === 200) {
+      const loggedInUser = localStorage.getItem('user');
+      getNotifications(loggedInUser);
+    }
   };
 
-  const handleNotificationDelete = (notification: any) => {
-    console.log(notification);
+  const handleNotificationDelete = async (notification: any) => {
+    console.log('deleting', notification);
+
+    const response = await fetch('/api/delete-notification', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ jwt: user, notification }),
+    });
+
+    if (response.status === 200) {
+      const loggedInUser = localStorage.getItem('user');
+      getNotifications(loggedInUser);
+    }
   };
 
   return (
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle display="flex" flexDirection="column">
-        {!userContext.user ? (
-          <Box>You need to be logged in to set notifications</Box>
+        {!user ? (
+          <Box component="div">
+            You need to be logged in to set notifications
+          </Box>
         ) : (
           <>
-            <Box>
-              {userContext.notifications.map((notification) => {
+            <Box width={300} component="div">
+              {notifications.map((notification) => {
                 return (
-                  <Box>
-                    <Typography>
-                      {notification.coin} {notification.price}
-                    </Typography>
-                    <Button
-                      onClick={() => handleNotificationEdit(notification)}
-                    >
-                      Edit
-                    </Button>
-                    <Button
-                      onClick={() => handleNotificationDelete(notification)}
-                    >
-                      Delete
-                    </Button>
-                  </Box>
+                  <NotificationItem
+                    key={notification.id}
+                    notification={notification}
+                    onNotificationSave={handleNotificationSave}
+                    onNotificationDelete={handleNotificationDelete}
+                  />
                 );
               })}
             </Box>
-            <FormControl fullWidth>
+            <FormControl fullWidth sx={{ my: 2 }}>
               <InputLabel id="coin-label">Coin</InputLabel>
               <Select
                 labelId="coin-label"
@@ -106,12 +125,10 @@ function NotificationDialog(props: NotificationDialogProps) {
                 })}
               </Select>
             </FormControl>
-            <FormControl sx={{ m: 1, width: '25ch' }} variant="outlined">
-              <InputLabel htmlFor="outlined-adornment-password">
-                Price
-              </InputLabel>
+            <FormControl fullWidth sx={{ my: 2 }}>
+              <InputLabel htmlFor="outlined-adornment-price">Price</InputLabel>
               <OutlinedInput
-                id="outlined-adornment-password"
+                id="outlined-adornment-price"
                 type="number"
                 label="Price"
                 value={price?.toFixed(0)}

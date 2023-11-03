@@ -78,9 +78,9 @@ const BTCTransactionWrapper = () => {
     return sum / sizes.length;
   }, [sizes]);
   return (
-    <Box>
+    <Box component="div">
       {transactions ? (
-        <Box display="flex" flexDirection="column">
+        <Box display="flex" flexDirection="column" component="div">
           {/* <Box display="flex" justifyContent="flex-end">
             {isConnected ? (
               <LinearProgress color="success" sx={{ width: 40 }} />
@@ -95,26 +95,28 @@ const BTCTransactionWrapper = () => {
             justifyContent="space-between"
             alignItems="center"
             mt={2}
+            component="div"
           >
             <Typography># of transactions broadcast in last 2s</Typography>
             <Typography ml={5} color="#fa9e32">
               {transactions.size}
             </Typography>
           </Box>
-          <Box>
+          <Box component="div">
             <TransactionChart sizes={sizes} />
           </Box>
           <Box
             display="flex"
             justifyContent="space-between"
             alignItems="center"
+            component="div"
           >
             <Typography align="left">average # of transactions</Typography>
             <Typography ml={5} color="#fa9e32">
               {Math.floor(average)}
             </Typography>
           </Box>
-          <Box>
+          <Box component="div">
             <AverageTransactionChart sizes={sizes} />
           </Box>
         </Box>

@@ -150,8 +150,14 @@ export default function Header({
   };
 
   return (
-    <Box flexGrow={1}>
-      <AppBar position="static" sx={{ bgcolor: 'black' }}>
+    <Box flexGrow={1} component="div">
+      <AppBar
+        position="static"
+        sx={{
+          bgcolor: 'black',
+        }}
+        elevation={0}
+      >
         <Toolbar>
           <StyledLogo
             variant="h6"
@@ -181,13 +187,14 @@ export default function Header({
               )}
             />
           </Search>
-          <Box flex={1}>
+          <Box flex={1} component="div">
             {Object.keys(globalData).length && !globalData['error'] ? (
               <Box
                 display="flex"
                 justifyContent="flex-end"
                 alignItems="center"
                 gap={1}
+                component="div"
               >
                 <Box
                   flexDirection="column"
@@ -198,6 +205,7 @@ export default function Header({
                   sx={{
                     display: { xs: 'none', md: 'flex' },
                   }}
+                  component="div"
                 >
                   <Typography fontSize="0.8rem">Bitcoin dominance</Typography>
                   <Typography>
@@ -214,6 +222,7 @@ export default function Header({
                   sx={{
                     display: { xs: 'none', md: 'flex' },
                   }}
+                  component="div"
                 >
                   <Typography fontSize="0.8rem">Market cap</Typography>
                   <Typography fontSize="0.8rem">
@@ -229,6 +238,7 @@ export default function Header({
                   sx={{
                     display: { xs: 'none', md: 'flex' },
                   }}
+                  component="div"
                 >
                   <Typography fontSize="0.8rem">
                     Market cap &Delta; 24hr

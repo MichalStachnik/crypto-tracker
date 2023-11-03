@@ -10,6 +10,7 @@ import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
 import { Dispatch, SetStateAction } from 'react';
+import Trending from './Trending';
 
 const StyledToggleButton = styled(ToggleButton)(() => ({
   color: 'white',
@@ -38,15 +39,22 @@ const CoinHeader = ({
   setChartMode,
 }: CoinHeaderProps) => {
   return (
-    <Box minHeight="96px" data-testid="coin-header">
+    <Box
+      minHeight="96px"
+      data-testid="coin-header"
+      display="flex"
+      justifyContent="space-around"
+      component="div"
+    >
       <Box
         display="flex"
         justifyContent="center"
         alignItems="center"
         sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
+        component="div"
       >
-        <Box display="flex">
-          <Box display="flex" flexDirection="column">
+        <Box display="flex" component="div">
+          <Box display="flex" flexDirection="column" component="div">
             <ToggleButtonGroup
               color="primary"
               exclusive
@@ -76,7 +84,7 @@ const CoinHeader = ({
               </StyledToggleButton>
             </ToggleButtonGroup>
           </Box>
-          <Box ml={2}>
+          <Box ml={2} component="div">
             <ToggleButtonGroup
               color="primary"
               orientation="vertical"
@@ -111,7 +119,13 @@ const CoinHeader = ({
           data for
         </Typography>
         &nbsp;
-        <Box bgcolor="white" display="inline" p="8px" borderRadius="4px">
+        <Box
+          bgcolor="white"
+          display="inline"
+          p="8px"
+          borderRadius="4px"
+          component="div"
+        >
           <Typography
             display="inline"
             fontWeight="bold"
@@ -121,6 +135,17 @@ const CoinHeader = ({
             {selectedCoin?.name || liveCoinWatchData?.name}
           </Typography>
         </Box>
+      </Box>
+      <Box
+        flex={0.8}
+        sx={{
+          border: (theme) => `1px solid ${theme.palette.primary.main}`,
+        }}
+        borderRadius={1}
+        p={1}
+        component="div"
+      >
+        <Trending />
       </Box>
     </Box>
   );

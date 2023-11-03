@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction, useContext, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
+  Badge,
   Box,
+  Button,
   Drawer,
   IconButton,
   List,
@@ -20,6 +22,8 @@ import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
 import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
+import { CoinContext } from '../contexts/CoinContext';
+import { ViewInAr } from '@mui/icons-material';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -39,6 +43,12 @@ interface SidebarProps {
 
 const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
   const userContext = useContext(UserContext);
+  const {
+    selectedCoin,
+    setSelectedCoin,
+    fetchLiveCoinWatch,
+    liveCoinWatchData,
+  } = useContext(CoinContext);
   const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
   const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
@@ -46,29 +56,41 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
-  const MenuItems = [
-    {
-      name: 'Login',
-      handleClick: () => setIsLoginDialogOpen(true),
-    },
-    {
-      name: 'Signup',
-      handleClick: () => setIsSignupDialogOpen(true),
-    },
-  ];
+  const AdminMenuItems = useMemo(
+    () => [
+      {
+        name: 'Login',
+        handleClick: () => setIsLoginDialogOpen(true),
+      },
+      {
+        name: 'Signup',
+        handleClick: () => setIsSignupDialogOpen(true),
+      },
+    ],
+    [setIsSignupDialogOpen]
+  );
 
-  const TopMenuItems = [
-    {
-      name: 'Notifications',
-      handleClick: () => setIsNotificationDialogOpen(true),
-      icon: <MailIcon color="primary" />,
-    },
-    {
-      name: 'Nostr',
-      handleClick: () => navigate('/nostr'),
-      icon: <BoltIcon color="primary" />,
-    },
-  ];
+  const TopMenuItems = useMemo(
+    () => [
+      {
+        name: 'Notifications',
+        handleClick: () => setIsNotificationDialogOpen(true),
+        icon: <MailIcon color="primary" />,
+      },
+      {
+        name: 'Nostr',
+        handleClick: () => navigate('/nostr'),
+        icon: <BoltIcon color="primary" />,
+      },
+      {
+        name: 'Explorer',
+        handleClick: () => navigate('/explorer'),
+        icon: <ViewInAr color="primary" />,
+        isBeta: true,
+      },
+    ],
+    [setIsNotificationDialogOpen, navigate]
+  );
 
   const handleLoginDialogSubmit = ({
     email,
@@ -154,7 +176,15 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
     if (response.status === 200) {
       setIsSnackbarOpen(true);
       setIsNotificationDialogOpen(false);
+      const loggedInUser = localStorage.getItem('user');
+      userContext.getNotifications(loggedInUser);
     }
+  };
+
+  const handleCoinClick = (_coin: string) => {
+    const [coin] = coins.filter((c) => c.name === _coin);
+    setSelectedCoin(coin);
+    fetchLiveCoinWatch(coin.symbol, '24hr');
   };
 
   return (
@@ -195,12 +225,23 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
                 }}
               >
                 <ListItemIcon>{menuItem.icon}</ListItemIcon>
-                <ListItemText
-                  primary={menuItem.name}
-                  sx={{
-                    color: (theme) => theme.palette.primary.main,
-                  }}
-                />
+                {menuItem.isBeta ? (
+                  <Badge badgeContent="BETA" color="success">
+                    <ListItemText
+                      primary={menuItem.name}
+                      sx={{
+                        color: (theme) => theme.palette.primary.main,
+                      }}
+                    />
+                  </Badge>
+                ) : (
+                  <ListItemText
+                    primary={menuItem.name}
+                    sx={{
+                      color: (theme) => theme.palette.primary.main,
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           ))}
@@ -208,7 +249,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
         <List>
           {!userContext.user ? (
             <>
-              {MenuItems.map((menuItem) => (
+              {AdminMenuItems.map((menuItem) => (
                 <ListItem key={menuItem.name} disablePadding>
                   <ListItemButton
                     onClick={() => {
@@ -230,7 +271,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
             </>
           ) : (
             <>
-              <Typography color="palegreen">Favorites</Typography>
+              <Typography color="primary">Favorites</Typography>
               <Box
                 boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
                 m={2}
@@ -240,11 +281,23 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
                 display="flex"
                 flexDirection="column"
                 justifyContent="space-between"
+                component="div"
               >
                 {userContext.favoriteCoins.map((coin) => {
                   return (
-                    <Box>
-                      <Typography color="primary">{coin}</Typography>
+                    <Box key={coin} mb={1} component="div">
+                      <Button
+                        color="primary"
+                        onClick={() => handleCoinClick(coin)}
+                        variant="outlined"
+                        fullWidth
+                        disabled={
+                          (!!selectedCoin && selectedCoin.name === coin) ||
+                          liveCoinWatchData?.name === coin
+                        }
+                      >
+                        {coin}
+                      </Button>
                     </Box>
                   );
                 })}

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useState } from 'react';
 import { Box, CircularProgress, Skeleton } from '@mui/material';
 import CoinHeader from '../components/CoinHeader';
 import CoinChart from '../components/CoinChart';
@@ -14,21 +14,12 @@ interface HomeProps {
 }
 
 const Home = ({ coins }: HomeProps) => {
-  const {
-    selectedCoin,
-    setSelectedCoin,
-    liveCoinWatchData,
-    fetchLiveCoinWatch,
-  } = useContext(CoinContext);
+  const { selectedCoin, liveCoinWatchData, fetchLiveCoinWatch } =
+    useContext(CoinContext);
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
   const [chartMode, setChartMode] = useState<ChartMode>('price');
 
-  useEffect(() => {
-    fetchLiveCoinWatch('BTC', '24hr');
-  }, []);
-
   const handleCoinClick = (coin: Coin) => {
-    setSelectedCoin(coin);
     fetchLiveCoinWatch(coin.symbol, timeInterval);
   };
 
@@ -39,7 +30,13 @@ const Home = ({ coins }: HomeProps) => {
 
   if (!coins.length) {
     return (
-      <Box mx={2} display="flex" justifyContent="space-between" gap={2}>
+      <Box
+        mx={2}
+        display="flex"
+        justifyContent="space-between"
+        gap={2}
+        component="div"
+      >
         <Skeleton width="100%" height="100vh" />
         <Skeleton width="340px" height="100vh" />
       </Box>
@@ -47,8 +44,8 @@ const Home = ({ coins }: HomeProps) => {
   }
 
   return (
-    <Box display="flex" flexDirection="column">
-      <Box>
+    <Box display="flex" flexDirection="column" component="div">
+      <Box component="div">
         <CoinHeader
           selectedCoin={selectedCoin}
           liveCoinWatchData={liveCoinWatchData}
@@ -65,6 +62,7 @@ const Home = ({ coins }: HomeProps) => {
                 m: { xs: 0, md: 1 },
                 flexDirection: { xs: 'column', md: 'row' },
               }}
+              component="div"
             >
               <CoinChart
                 liveCoinWatchData={liveCoinWatchData}
@@ -78,7 +76,7 @@ const Home = ({ coins }: HomeProps) => {
           <CircularProgress />
         )}
       </Box>
-      <Box p={2}>
+      <Box p={2} component="div">
         <CoinTable coins={coins} onCoinClick={handleCoinClick} />
       </Box>
     </Box>
