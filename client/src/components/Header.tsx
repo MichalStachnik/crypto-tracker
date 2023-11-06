@@ -110,16 +110,15 @@ interface HeaderProps {
   globalData: any;
   searchText: string;
   setSearchText: Dispatch<SetStateAction<string>>;
-  coins: Coin[];
 }
 
 export default function Header({
   globalData,
   searchText,
   setSearchText,
-  coins,
 }: HeaderProps) {
-  const { setSelectedCoin, fetchLiveCoinWatch } = useContext(CoinContext);
+  const { coins, setSelectedCoin, fetchLiveCoinWatch } =
+    useContext(CoinContext);
   const theme = useTheme();
   const navigate = useNavigate();
 

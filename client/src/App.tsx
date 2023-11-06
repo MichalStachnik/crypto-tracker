@@ -4,7 +4,6 @@ import { Route, Routes } from 'react-router-dom';
 import './App.css';
 import { UserProvider } from './contexts/UserContext';
 import { CoinProvider } from './contexts/CoinContext';
-import { Coin } from './types/Coin';
 import { Box } from '@mui/material';
 // import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
@@ -81,27 +80,18 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function App() {
-  const [coins, setCoins] = useState<Coin[]>([]);
   const [globalData, setGlobalData] = useState({});
   const [searchText, setSearchText] = useState<string>('');
   const [isOpen, setIsOpen] = useState(!isMobile);
 
   useEffect(() => {
     fetchGlobal();
-    fetchCMC();
   }, []);
 
   const fetchGlobal = () => {
     fetch('/api/global')
       .then((res) => res.json())
       .then((res) => setGlobalData(res))
-      .catch((err) => console.error('Error', err));
-  };
-
-  const fetchCMC = () => {
-    fetch('/api/cmc')
-      .then((res) => res.json())
-      .then((res) => setCoins(res.data))
       .catch((err) => console.error('Error', err));
   };
 
@@ -125,7 +115,6 @@ function App() {
                   globalData={globalData}
                   searchText={searchText}
                   setSearchText={setSearchText}
-                  coins={coins}
                 />
               </Toolbar>
             </AppBar>
@@ -133,14 +122,13 @@ function App() {
               isOpen={isOpen}
               setIsOpen={setIsOpen}
               drawerWidth={drawerWidth}
-              coins={coins}
             />
             <Main open={isOpen}>
               <Box display="flex" flexDirection="column" mt={3} component="div">
                 <NewsFeed />
                 <Routes>
-                  <Route path="/" element={<Home coins={coins} />} />
-                  <Route path="/bubbles" element={<Bubbles coins={coins} />} />
+                  <Route path="/" element={<Home />} />
+                  <Route path="/bubbles" element={<Bubbles />} />
                   <Route path="/nostr" element={<Nostr />} />
                   <Route path="/explorer" element={<ExplorerRoute />} />
                   <Route path="/password-reset" element={<PasswordReset />} />

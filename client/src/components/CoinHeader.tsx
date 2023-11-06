@@ -40,11 +40,12 @@ const CoinHeader = ({
 }: CoinHeaderProps) => {
   return (
     <Box
-      minHeight="96px"
+      minHeight="294px"
       data-testid="coin-header"
       display="flex"
-      justifyContent="space-around"
+      justifyContent="space-between"
       component="div"
+      mx={1}
     >
       <Box
         display="flex"
