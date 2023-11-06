@@ -30,7 +30,7 @@ const Trending = () => {
         <Typography ml={1}>Top 7 Trending Coins</Typography>
       </Box>
       <Box display="flex" flexDirection="column" component="div">
-        {trendingCoins.length
+        {trendingCoins && trendingCoins.length
           ? trendingCoins.map((coin: any, index) => {
               return (
                 <Button
