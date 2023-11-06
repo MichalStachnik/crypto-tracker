@@ -4,6 +4,8 @@ import { TimeInterval } from '../types/TimeInterval';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 
 interface CoinContextInterface {
+  coins: Coin[];
+  setCoins: Dispatch<React.SetStateAction<Coin[]>>;
   selectedCoin: Coin | null;
   setSelectedCoin: Dispatch<React.SetStateAction<Coin | null>>;
   liveCoinWatchData: LiveCoinWatchData | null;
@@ -11,6 +13,9 @@ interface CoinContextInterface {
 }
 
 const initialState: CoinContextInterface = {
+  coins: [],
+  // eslint-disable-next-line @typescript-eslint/no-empty-function
+  setCoins: () => {},
   selectedCoin: null,
   // eslint-disable-next-line @typescript-eslint/no-empty-function
   setSelectedCoin: () => {},
@@ -28,6 +33,7 @@ interface CoinProviderProps {
 }
 
 export const CoinProvider = ({ children }: CoinProviderProps) => {
+  const [coins, setCoins] = useState<Coin[]>([]);
   const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
   const [liveCoinWatchData, setLiveCoinWatchData] =
     useState<LiveCoinWatchData | null>(null);
@@ -39,13 +45,23 @@ export const CoinProvider = ({ children }: CoinProviderProps) => {
       .catch((err) => console.error('Error', err));
   };
 
+  const fetchCMC = () => {
+    fetch('/api/cmc')
+      .then((res) => res.json())
+      .then((res) => setCoins(res.data))
+      .catch((err) => console.error('Error', err));
+  };
+
   useEffect(() => {
     fetchLiveCoinWatch('BTC', '24hr');
+    fetchCMC();
   }, []);
 
   return (
     <CoinContext.Provider
       value={{
+        coins,
+        setCoins,
         selectedCoin,
         setSelectedCoin,
         liveCoinWatchData,

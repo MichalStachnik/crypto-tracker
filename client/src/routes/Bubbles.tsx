@@ -1,6 +1,7 @@
 import { Box } from '@mui/material';
 import { Coin } from '../types/Coin';
-import { useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
+import { CoinContext } from '../contexts/CoinContext';
 
 class Bubble {
   context: CanvasRenderingContext2D;
@@ -56,11 +57,8 @@ const createBubbles = (context: CanvasRenderingContext2D, coins: Coin[]) => {
   });
 };
 
-interface BubblesProps {
-  coins: Coin[];
-}
-
-const Bubbles = ({ coins }: BubblesProps) => {
+const Bubbles = () => {
+  const { coins } = useContext(CoinContext);
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
 
   useEffect(() => {

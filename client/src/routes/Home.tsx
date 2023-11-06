@@ -9,12 +9,8 @@ import { Coin } from '../types/Coin';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
 
-interface HomeProps {
-  coins: Coin[];
-}
-
-const Home = ({ coins }: HomeProps) => {
-  const { selectedCoin, liveCoinWatchData, fetchLiveCoinWatch } =
+const Home = () => {
+  const { coins, selectedCoin, liveCoinWatchData, fetchLiveCoinWatch } =
     useContext(CoinContext);
   const [timeInterval, setTimeInterval] = useState<TimeInterval>('24hr');
   const [chartMode, setChartMode] = useState<ChartMode>('price');

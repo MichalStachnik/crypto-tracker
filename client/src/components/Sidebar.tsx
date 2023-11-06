@@ -38,12 +38,12 @@ interface SidebarProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
   drawerWidth: number;
-  coins: Coin[];
 }
 
-const Sidebar = ({ isOpen, setIsOpen, drawerWidth, coins }: SidebarProps) => {
+const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
   const userContext = useContext(UserContext);
   const {
+    coins,
     selectedCoin,
     setSelectedCoin,
     fetchLiveCoinWatch,
