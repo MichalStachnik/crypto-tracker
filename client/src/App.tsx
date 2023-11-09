@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { styled } from '@mui/material/styles';
 import { Route, Routes } from 'react-router-dom';
 import './App.css';
@@ -80,21 +80,7 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function App() {
-  const [globalData, setGlobalData] = useState({});
-  const [searchText, setSearchText] = useState<string>('');
   const [isOpen, setIsOpen] = useState(!isMobile);
-
-  useEffect(() => {
-    fetchGlobal();
-  }, []);
-
-  const fetchGlobal = () => {
-    fetch('/api/global')
-      .then((res) => res.json())
-      .then((res) => setGlobalData(res))
-      .catch((err) => console.error('Error', err));
-  };
-
   return (
     <UserProvider>
       <CoinProvider>
@@ -111,11 +97,7 @@ function App() {
                 >
                   <MenuIcon />
                 </IconButton>
-                <Header
-                  globalData={globalData}
-                  searchText={searchText}
-                  setSearchText={setSearchText}
-                />
+                <Header />
               </Toolbar>
             </AppBar>
             <Sidebar

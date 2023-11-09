@@ -1,10 +1,10 @@
 import {
   ChangeEvent,
-  Dispatch,
   useContext,
   useMemo,
-  SetStateAction,
   SyntheticEvent,
+  useState,
+  useEffect,
 } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -106,21 +106,29 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
-interface HeaderProps {
-  globalData: any;
-  searchText: string;
-  setSearchText: Dispatch<SetStateAction<string>>;
+interface GlobalData {
+  [key: string]: any;
+  error?: string;
 }
 
-export default function Header({
-  globalData,
-  searchText,
-  setSearchText,
-}: HeaderProps) {
+export default function Header() {
   const { coins, setSelectedCoin, fetchLiveCoinWatch } =
     useContext(CoinContext);
   const theme = useTheme();
   const navigate = useNavigate();
+  const [globalData, setGlobalData] = useState<GlobalData>({});
+  const [searchText, setSearchText] = useState<string>('');
+
+  const fetchGlobal = () => {
+    fetch('/api/global')
+      .then((res) => res.json())
+      .then((res) => setGlobalData(res))
+      .catch((err) => console.error('Error', err));
+  };
+
+  useEffect(() => {
+    fetchGlobal();
+  }, []);
 
   const handleSearch = (
     event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
