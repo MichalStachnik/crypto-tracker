@@ -92,6 +92,22 @@ app.get('/api/cmc', async (req, res) => {
   res.json(json);
 });
 
+app.get('/api/cmc/metadata', async (req, res) => {
+  const cacheValue = await redisClient.get('metadata');
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
+    return;
+  }
+
+  const data = await fetch(
+    `${CMC_BASE_URL}/v2/cryptocurrency/info?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&symbol=BTC,ETH,USDT,ADA,BNB,SOL,LINK,MATIC`
+  );
+
+  const json = await data.json();
+  redisClient.setEx('metadata', FIVE_MINUTES, JSON.stringify(json));
+  res.json(json);
+});
+
 app.get('/api/trending', async (req, res) => {
   const cacheValue = await redisClient.get('trending');
   if (cacheValue) {
