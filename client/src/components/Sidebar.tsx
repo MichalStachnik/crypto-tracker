@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Badge,
-  Dialog,
-  DialogTitle,
   Drawer,
   IconButton,
   List,
@@ -25,7 +24,6 @@ import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
 import { ViewInAr } from '@mui/icons-material';
-import { WalletOption } from '@swapkit/sdk';
 import { connectChains, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
@@ -50,10 +48,10 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
   const userContext = useContext(UserContext);
   const {
     coins,
-    selectedCoin,
-    setSelectedCoin,
-    fetchLiveCoinWatch,
-    liveCoinWatchData,
+    // selectedCoin,
+    // setSelectedCoin,
+    // fetchLiveCoinWatch,
+    // liveCoinWatchData,
   } = useContext(CoinContext);
   const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
@@ -187,11 +185,11 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
     }
   };
 
-  const handleCoinClick = (_coin: string) => {
-    const [coin] = coins.filter((c) => c.name === _coin);
-    setSelectedCoin(coin);
-    fetchLiveCoinWatch(coin.symbol, '24hr');
-  };
+  // const handleCoinClick = (_coin: string) => {
+  //   const [coin] = coins.filter((c) => c.name === _coin);
+  //   setSelectedCoin(coin);
+  //   fetchLiveCoinWatch(coin.symbol, '24hr');
+  // };
 
   const handleDisconnect = async () => {
     connectChains.map((chain) => swapKitClient.disconnectChain(chain));
@@ -276,7 +274,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                   sx={[
                     {
                       background: (theme) => theme.palette.primary.dark,
-                      border: (theme) => `1px solid white`,
+                      border: (_theme) => `1px solid white`,
                       borderRadius: 2,
                       m: 1,
                     },
@@ -310,7 +308,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                     sx={[
                       {
                         background: (theme) => theme.palette.primary.dark,
-                        border: (theme) => `1px solid white`,
+                        border: (_theme) => `1px solid white`,
                         borderRadius: 2,
                         m: 1,
                       },

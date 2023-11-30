@@ -218,7 +218,7 @@ const Swap = () => {
   const [outputAmount, setOutputAmount] = useState<number | string>('');
   const [inputToken, setInputToken] = useState<Token>(tokens[0]);
   const [outputToken, setOutputToken] = useState<Token>(tokens[1]);
-  const [prices, setPrices] = useState<Prices>({
+  const [prices] = useState<Prices>({
     token1: null,
     token2: null,
   });

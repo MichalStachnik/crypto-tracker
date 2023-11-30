@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { createContext, Dispatch, ReactNode, useEffect, useState } from 'react';
 import { Coin } from '../types/Coin';
 import { TimeInterval } from '../types/TimeInterval';
@@ -37,7 +38,7 @@ export const CoinProvider = ({ children }: CoinProviderProps) => {
   const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
   const [liveCoinWatchData, setLiveCoinWatchData] =
     useState<LiveCoinWatchData | null>(null);
-  const [metaData, setMetaData] = useState<any>(null);
+  const [setMetaData] = useState<any>(null);
 
   const fetchLiveCoinWatch = (symbol: string, interval: TimeInterval) => {
     fetch(`/api/livecoinwatch/${symbol}/${interval}`)
