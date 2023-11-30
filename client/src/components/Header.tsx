@@ -161,7 +161,7 @@ export default function Header() {
       <AppBar
         position="static"
         sx={{
-          bgcolor: 'black',
+          background: 'transparent',
         }}
         elevation={0}
       >

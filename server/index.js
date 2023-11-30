@@ -4,6 +4,9 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import redis from 'redis';
+import { createClient } from '@supabase/supabase-js';
+import moralis from 'moralis';
+
 const app = express();
 
 dotenv.config();
@@ -13,10 +16,11 @@ const CMC_BASE_URL = 'https://pro-api.coinmarketcap.com';
 const COIN_API_BASE_URL = 'https://rest.coinapi.io';
 const LIVE_COIN_WATCH_BASE_URL = 'https://api.livecoinwatch.com';
 const COIN_GECKO_BASE_URL = 'https://api.coingecko.com/api/v3';
+const FIVE_MINUTES = 60 * 5;
 
 app.use(express.json());
 
-const FIVE_MINUTES = 60 * 5;
+// app.use('/api/swap', swap);
 
 let redisClient;
 
@@ -37,6 +41,24 @@ let redisClient;
   }
 })();
 
+const supabase = createClient(
+  process.env.SUPABASE_PROJECT_URL,
+  process.env.SUPABASE_API_KEY,
+  {
+    auth: {
+      persistSession: false,
+    },
+  }
+);
+
+const startMoralis = async () => {
+  await moralis.start({
+    apiKey: process.env.MORALIS_KEY,
+  });
+};
+
+startMoralis();
+
 app.get('/api/global', async (req, res) => {
   const cacheValue = await redisClient.get('globalData');
   if (cacheValue) {
@@ -47,12 +69,6 @@ app.get('/api/global', async (req, res) => {
   const data = await fetch(`${PAPRIKA_BASE_URL}/global`);
   const json = await data.json();
   redisClient.setEx('globalData', FIVE_MINUTES, JSON.stringify(json));
-  res.json(json);
-});
-
-app.get('/coins', async (req, res) => {
-  const data = await fetch(`${PAPRIKA_BASE_URL}/coins`);
-  const json = await data.json();
   res.json(json);
 });
 
@@ -98,12 +114,14 @@ app.get('/api/cmc/metadata', async (req, res) => {
     res.json(JSON.parse(cacheValue));
     return;
   }
+  // console.log('cached value', cacheValue);
 
   const data = await fetch(
     `${CMC_BASE_URL}/v2/cryptocurrency/info?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&symbol=BTC,ETH,USDT,ADA,BNB,SOL,LINK,MATIC`
   );
 
   const json = await data.json();
+  // console.log('setting with', json);
   redisClient.setEx('metadata', FIVE_MINUTES, JSON.stringify(json));
   res.json(json);
 });
@@ -181,6 +199,74 @@ app.get('/api/livecoinwatch/:symbol/:interval', async (req, res) => {
   res.json(json);
 });
 
+app.get('/api/tokens-price/:address1/:address2', async (req, res) => {
+  const { address1, address2 } = req.params;
+
+  const cacheValue = await redisClient.get(`price-${address1}-${address2}`);
+  if (cacheValue) {
+    res.json(JSON.parse(cacheValue));
+    return;
+  }
+
+  const price1 = await moralis.EvmApi.token.getTokenPrice({
+    address: address1,
+  });
+
+  const price2 = await moralis.EvmApi.token.getTokenPrice({
+    address: address2,
+  });
+
+  const prices = {
+    token1: price1.raw.usdPrice,
+    token2: price2.raw.usdPrice,
+  };
+
+  redisClient.setEx(
+    `price-${address1}-${address2}`,
+    FIVE_MINUTES,
+    JSON.stringify(prices)
+  );
+
+  res.json(prices);
+});
+
+app.get('/api/get-allowance/:tokenAddress/:walletAddress', async (req, res) => {
+  const { tokenAddress, walletAddress } = req.params;
+
+  const headers = {
+    Authorization: `Bearer ${process.env.ONEINCH_KEY}`,
+    accept: 'application/json',
+  };
+
+  const data = await fetch(
+    `https://api.1inch.dev/swap/v5.2/1/approve/allowance?tokenAddress=${tokenAddress}&walletAddress=${walletAddress}`,
+    {
+      headers,
+    }
+  );
+
+  const json = await data.json();
+  res.json(json);
+});
+
+app.get('/api/approve-transaction/:tokenAddress/:amount', async (req, res) => {
+  const { tokenAddress, amount } = req.params;
+
+  const headers = {
+    Authorization: `Bearer ${process.env.ONEINCH_KEY}`,
+    accept: 'application/json',
+  };
+
+  const transaction = await fetch(
+    `https://api.1inch.dev/swap/v5.2/1/approve/transaction?tokenAddress=${tokenAddress}&amount=${amount}`,
+    {
+      headers,
+    }
+  );
+  const json = await transaction.json();
+  res.json(json);
+});
+
 app.get('/api/btc/latest-block', async (req, res) => {
   const cacheValue = await redisClient.get('latestBlock');
   if (cacheValue) {
@@ -208,18 +294,6 @@ app.post('/api/btc/get-block', async (req, res) => {
   redisClient.setEx(hash, FIVE_MINUTES, JSON.stringify(blockData));
   res.json(blockData);
 });
-
-import { createClient } from '@supabase/supabase-js';
-
-const supabase = createClient(
-  process.env.SUPABASE_PROJECT_URL,
-  process.env.SUPABASE_API_KEY,
-  {
-    auth: {
-      persistSession: false,
-    },
-  }
-);
 
 app.post('/api/signup', async (req, res) => {
   const { data, error } = await supabase.auth.signUp({

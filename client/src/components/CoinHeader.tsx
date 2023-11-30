@@ -43,9 +43,10 @@ const CoinHeader = ({
       minHeight="294px"
       data-testid="coin-header"
       display="flex"
-      justifyContent="space-between"
+      justifyContent="space-evenly"
       component="div"
       mx={1}
+      sx={{ flexDirection: { sm: 'column-reverse', md: 'row' } }}
     >
       <Box
         display="flex"
@@ -53,6 +54,7 @@ const CoinHeader = ({
         alignItems="center"
         sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
         component="div"
+        my={2}
       >
         <Box display="flex" component="div">
           <Box display="flex" flexDirection="column" component="div">

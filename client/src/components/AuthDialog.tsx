@@ -12,10 +12,48 @@ import {
   OutlinedInput,
 } from '@mui/material';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
+import { WalletOption } from '@swapkit/sdk';
+import { connectWallet } from '../utils/swapKit';
+import LoadingButton from '@mui/lab/LoadingButton';
+
+const XDefiWalletLogo = () => {
+  return (
+    <svg
+      width="1em"
+      height="1em"
+      viewBox="0 0 24 24"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="transition-all box-content animate-none"
+      // size="24"
+      style={{ width: '24px', height: '24px' }}
+    >
+      <path
+        d="M13.1306 23C27.7227 20.381 25.0855 1 12.0758 1C-0.933958 1 -3.92269 20.5556 15.0645 14.0952"
+        stroke="#355DFF"
+        strokeWidth="2"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M1 17.238C4.10593 18.6348 12.4583 18.8749 17.5259 15.3174"
+        stroke="#355DFF"
+        strokeWidth="2"
+        strokeLinecap="round"
+      ></path>
+      <path
+        d="M5.58301 21.1668C9.27496 21.1668 15.208 20.7084 19.6353 16.7144"
+        stroke="#355DFF"
+        strokeWidth="2"
+        strokeLinecap="round"
+      ></path>
+      <circle cx="18.875" cy="10.625" r="1.375" fill="#355DFF"></circle>
+    </svg>
+  );
+};
 
 export interface AuthDialogProps {
   open: boolean;
-  onClose: () => void;
+  onClose: (isConnected: boolean | null) => void;
   onSubmit: ({ email, password }: { email: string; password: string }) => void;
   mode: 'login' | 'signup';
 }
@@ -25,9 +63,23 @@ export function AuthDialog(props: AuthDialogProps) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [resetPasswordSent, setResetPasswordSent] = useState(false);
+  const [selectedWallet, setSelectedWallet] = useState<WalletOption | null>(
+    null
+  );
+  const [isWalletConnecting, setIsWalletConnecting] = useState(false);
+
+  const handleConnect = async () => {
+    setIsWalletConnecting(true);
+    if (!selectedWallet) return;
+    const isConnected = await connectWallet(selectedWallet);
+    setIsWalletConnecting(false);
+    if (isConnected) {
+      onClose(true);
+    }
+  };
 
   const handleClose = () => {
-    onClose();
+    onClose(null);
   };
 
   const handleEmailChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -138,6 +190,25 @@ export function AuthDialog(props: AuthDialogProps) {
         >
           {mode === 'signup' ? 'Sign Up' : 'Login'}
         </Button>
+        <Button
+          onClick={() => setSelectedWallet(WalletOption.XDEFI)}
+          component="label"
+          variant="contained"
+          startIcon={<XDefiWalletLogo />}
+          style={{ marginTop: 15 }}
+          disabled={!!selectedWallet && selectedWallet === WalletOption.XDEFI}
+        >
+          XDefi Wallet
+        </Button>
+        <LoadingButton
+          loading={isWalletConnecting}
+          variant="contained"
+          onClick={handleConnect}
+          style={{ marginTop: 15 }}
+          disabled={!selectedWallet}
+        >
+          Connect Wallet
+        </LoadingButton>
       </DialogTitle>
     </Dialog>
   );
