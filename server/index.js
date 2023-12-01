@@ -114,14 +114,12 @@ app.get('/api/cmc/metadata', async (req, res) => {
     res.json(JSON.parse(cacheValue));
     return;
   }
-  // console.log('cached value', cacheValue);
 
   const data = await fetch(
     `${CMC_BASE_URL}/v2/cryptocurrency/info?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}&symbol=BTC,ETH,USDT,ADA,BNB,SOL,LINK,MATIC`
   );
 
   const json = await data.json();
-  // console.log('setting with', json);
   redisClient.setEx('metadata', FIVE_MINUTES, JSON.stringify(json));
   res.json(json);
 });

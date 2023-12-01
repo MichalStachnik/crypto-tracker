@@ -101,7 +101,6 @@ const AppBar = styled(MuiAppBar, {
 
 function App() {
   const [isOpen, setIsOpen] = useState(!isMobile);
-  console.log(import.meta.env.VITE_BLOCKCHAIR_KEY);
   return (
     <ThemeProvider theme={theme}>
       <WalletProvider>

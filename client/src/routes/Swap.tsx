@@ -452,8 +452,6 @@ const Swap = () => {
     return 'Swap';
   }, [isWalletConnected, isInsufficientBalance]);
 
-  console.log('best route', bestRoute);
-
   return (
     <Box component="div" mt={6}>
       <Card
