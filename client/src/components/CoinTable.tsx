@@ -111,9 +111,9 @@ export default function CoinTable({ coins, onCoinClick }: CoinTableProps) {
 
   if (!coins.length) return null;
   return (
-    <TableContainer component={Paper}>
+    <TableContainer component={Paper} sx={{ background: 'transparent' }}>
       <Table
-        sx={{ minWidth: 650, background: '#2d2d2d' }}
+        sx={{ minWidth: 650, background: 'transparent' }}
         aria-label="coin table"
       >
         <TableHead>

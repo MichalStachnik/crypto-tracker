@@ -26,7 +26,7 @@ const Trending = () => {
   return (
     <Box component="div">
       <Box display="flex" justifyContent="center" component="div" mb={1}>
-        <WhatshotIcon />
+        <WhatshotIcon color="warning" />
         <Typography ml={1}>Top 7 Trending Coins</Typography>
       </Box>
       <Box display="flex" flexDirection="column" component="div">
@@ -45,13 +45,13 @@ const Trending = () => {
                     justifyContent="space-around"
                     component="div"
                   >
-                    <Typography>{index + 1}</Typography>
+                    <Typography flex={1}>{index + 1}</Typography>
                     <Avatar
                       src={coin.item.thumb}
                       sx={{ width: 20, height: 20 }}
                     />
-                    <Typography>{coin.item.name}</Typography>
-                    <Typography bgcolor="secondary">
+                    <Typography flex={1}>{coin.item.name}</Typography>
+                    <Typography bgcolor="secondary" flex={1}>
                       #{coin.item.market_cap_rank}
                     </Typography>
                   </Box>

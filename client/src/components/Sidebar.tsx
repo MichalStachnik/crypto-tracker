@@ -1,9 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Badge,
-  Box,
-  Button,
   Drawer,
   IconButton,
   List,
@@ -11,12 +10,13 @@ import {
   ListItemButton,
   ListItemIcon,
   Snackbar,
-  Typography,
   styled,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
 import MailIcon from '@mui/icons-material/Mail';
 import BoltIcon from '@mui/icons-material/Bolt';
+import SwapVertIcon from '@mui/icons-material/SwapVert';
+import TimelineIcon from '@mui/icons-material/Timeline';
 import ListItemText from '@mui/material/ListItemText';
 import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
@@ -24,6 +24,8 @@ import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
 import { ViewInAr } from '@mui/icons-material';
+import { connectChains, swapKitClient } from '../utils/swapKit';
+import { WalletContext } from '../contexts/WalletContext';
 
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
@@ -41,52 +43,54 @@ interface SidebarProps {
 }
 
 const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
+  const { isWalletConnected, setIsWalletConnected } = useContext(WalletContext);
+  const { pathname } = useLocation();
   const userContext = useContext(UserContext);
   const {
     coins,
-    selectedCoin,
-    setSelectedCoin,
-    fetchLiveCoinWatch,
-    liveCoinWatchData,
+    // selectedCoin,
+    // setSelectedCoin,
+    // fetchLiveCoinWatch,
+    // liveCoinWatchData,
   } = useContext(CoinContext);
   const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
-  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
+  // const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
     useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
 
-  const AdminMenuItems = useMemo(
-    () => [
-      {
-        name: 'Login',
-        handleClick: () => setIsLoginDialogOpen(true),
-      },
-      {
-        name: 'Signup',
-        handleClick: () => setIsSignupDialogOpen(true),
-      },
-    ],
-    [setIsSignupDialogOpen]
-  );
-
   const TopMenuItems = useMemo(
     () => [
       {
-        name: 'Notifications',
-        handleClick: () => setIsNotificationDialogOpen(true),
-        icon: <MailIcon color="primary" />,
+        name: 'Dashboard',
+        handleClick: () => navigate('/'),
+        icon: <TimelineIcon color="primary" />,
+        path: '/',
+      },
+      {
+        name: 'Swap',
+        handleClick: () => navigate('/swap'),
+        icon: <SwapVertIcon color="primary" />,
+        path: '/swap',
       },
       {
         name: 'Nostr',
         handleClick: () => navigate('/nostr'),
         icon: <BoltIcon color="primary" />,
+        path: '/nostr',
       },
       {
         name: 'Explorer',
         handleClick: () => navigate('/explorer'),
         icon: <ViewInAr color="primary" />,
+        path: '/explorer',
         isBeta: true,
+      },
+      {
+        name: 'Notifications',
+        handleClick: () => setIsNotificationDialogOpen(true),
+        icon: <MailIcon color="primary" />,
       },
     ],
     [setIsNotificationDialogOpen, navigate]
@@ -125,39 +129,39 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
     userContext.setFavoriteCoins(newFavorites);
   };
 
-  const handleSignupDialogSubmit = ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    handleSignup({ email, password });
-    setIsSignupDialogOpen(false);
-  };
+  // const handleSignupDialogSubmit = ({
+  //   email,
+  //   password,
+  // }: {
+  //   email: string;
+  //   password: string;
+  // }) => {
+  //   handleSignup({ email, password });
+  //   setIsSignupDialogOpen(false);
+  // };
 
-  const handleSignup = async ({
-    email,
-    password,
-  }: {
-    email: string;
-    password: string;
-  }) => {
-    await fetch('/api/signup', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email, password }),
-    });
-    // TODO: check res and tell user to check email or login
-  };
+  // const handleSignup = async ({
+  //   email,
+  //   password,
+  // }: {
+  //   email: string;
+  //   password: string;
+  // }) => {
+  //   await fetch('/api/signup', {
+  //     method: 'POST',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //     },
+  //     body: JSON.stringify({ email, password }),
+  //   });
+  //   // TODO: check res and tell user to check email or login
+  // };
 
-  const handleLogout = async () => {
-    localStorage.clear();
-    userContext.setUser(null);
-    await fetch('/api/logout');
-  };
+  // const handleLogout = async () => {
+  //   localStorage.clear();
+  //   userContext.setUser(null);
+  //   await fetch('/api/logout');
+  // };
 
   const handleNotificationSubmit = async ({
     coin,
@@ -181,10 +185,23 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
     }
   };
 
-  const handleCoinClick = (_coin: string) => {
-    const [coin] = coins.filter((c) => c.name === _coin);
-    setSelectedCoin(coin);
-    fetchLiveCoinWatch(coin.symbol, '24hr');
+  // const handleCoinClick = (_coin: string) => {
+  //   const [coin] = coins.filter((c) => c.name === _coin);
+  //   setSelectedCoin(coin);
+  //   fetchLiveCoinWatch(coin.symbol, '24hr');
+  // };
+
+  const handleDisconnect = async () => {
+    connectChains.map((chain) => swapKitClient.disconnectChain(chain));
+    localStorage.clear();
+    userContext.setUser(null);
+    await fetch('/api/logout');
+    setIsWalletConnected(false);
+  };
+
+  const handleAuthDialogClose = (isConnected: boolean | null) => {
+    setIsLoginDialogOpen(false);
+    if (isConnected) setIsWalletConnected(isConnected);
   };
 
   return (
@@ -223,6 +240,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                 onClick={() => {
                   menuItem.handleClick();
                 }}
+                selected={pathname === menuItem.path}
               >
                 <ListItemIcon>{menuItem.icon}</ListItemIcon>
                 {menuItem.isBeta ? (
@@ -247,89 +265,133 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
           ))}
         </List>
         <List>
-          {!userContext.user ? (
+          {isWalletConnected || userContext.user ? (
             <>
-              {AdminMenuItems.map((menuItem) => (
-                <ListItem key={menuItem.name} disablePadding>
-                  <ListItemButton
-                    onClick={() => {
-                      menuItem.handleClick();
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={handleDisconnect}
+                  alignItems="center"
+                  sx={[
+                    {
+                      background: (theme) => theme.palette.primary.dark,
+                      border: (_theme) => `1px solid white`,
+                      borderRadius: 2,
+                      m: 1,
+                    },
+                    {
+                      '&:hover': {
+                        border: (theme) =>
+                          `1px solid ${theme.palette.primary.dark}`,
+                      },
+                    },
+                  ]}
+                >
+                  <ListItemText
+                    primary="Disconnect"
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      color: 'white',
                     }}
+                  />
+                </ListItemButton>
+              </ListItem>
+            </>
+          ) : null}
+          {
+            !userContext.user && !isWalletConnected ? (
+              <>
+                <ListItem disablePadding>
+                  <ListItemButton
+                    onClick={() => setIsLoginDialogOpen(true)}
                     alignItems="center"
+                    sx={[
+                      {
+                        background: (theme) => theme.palette.primary.dark,
+                        border: (_theme) => `1px solid white`,
+                        borderRadius: 2,
+                        m: 1,
+                      },
+                      {
+                        '&:hover': {
+                          border: (theme) =>
+                            `1px solid ${theme.palette.primary.dark}`,
+                        },
+                      },
+                    ]}
                   >
                     <ListItemText
-                      primary={menuItem.name}
+                      primary="Sign In"
                       sx={{
                         display: 'flex',
                         justifyContent: 'center',
-                        color: (theme) => theme.palette.primary.main,
+                        color: 'white',
                       }}
                     />
                   </ListItemButton>
                 </ListItem>
-              ))}
-            </>
-          ) : (
-            <>
-              <Typography color="primary">Favorites</Typography>
-              <Box
-                boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
-                m={2}
-                p={2}
-                flex={1}
-                borderRadius={2}
-                display="flex"
-                flexDirection="column"
-                justifyContent="space-between"
-                component="div"
-              >
-                {userContext.favoriteCoins.map((coin) => {
-                  return (
-                    <Box key={coin} mb={1} component="div">
-                      <Button
-                        color="primary"
-                        onClick={() => handleCoinClick(coin)}
-                        variant="outlined"
-                        fullWidth
-                        disabled={
-                          (!!selectedCoin && selectedCoin.name === coin) ||
-                          liveCoinWatchData?.name === coin
-                        }
-                      >
-                        {coin}
-                      </Button>
-                    </Box>
-                  );
-                })}
-              </Box>
-              <ListItemButton
-                onClick={() => handleLogout()}
-                alignItems="center"
-              >
-                <ListItemText
-                  primary="Logout"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    color: (theme) => theme.palette.primary.main,
-                  }}
-                />
-              </ListItemButton>
-            </>
-          )}
+              </>
+            ) : null
+            // <>
+            //   <Typography color="primary">Favorites</Typography>
+            //   <Box
+            //     boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
+            //     m={2}
+            //     p={2}
+            //     flex={1}
+            //     borderRadius={2}
+            //     display="flex"
+            //     flexDirection="column"
+            //     justifyContent="space-between"
+            //     component="div"
+            //   >
+            //     {userContext.favoriteCoins.map((coin) => {
+            //       return (
+            //         <Box key={coin} mb={1} component="div">
+            //           <Button
+            //             color="primary"
+            //             onClick={() => handleCoinClick(coin)}
+            //             variant="outlined"
+            //             fullWidth
+            //             disabled={
+            //               (!!selectedCoin && selectedCoin.name === coin) ||
+            //               liveCoinWatchData?.name === coin
+            //             }
+            //           >
+            //             {coin}
+            //           </Button>
+            //         </Box>
+            //       );
+            //     })}
+            //   </Box>
+            //   <ListItemButton
+            //     onClick={() => handleLogout()}
+            //     alignItems="center"
+            //   >
+            //     <ListItemText
+            //       primary={(isConnected && address) || 'Sign Out'}
+            //       sx={{
+            //         display: 'flex',
+            //         justifyContent: 'center',
+            //         color: (theme) => theme.palette.primary.main,
+            //       }}
+            //     />
+            //   </ListItemButton>
+            // </>
+          }
         </List>
         <AuthDialog
           open={isLoginDialogOpen}
-          onClose={() => setIsLoginDialogOpen(false)}
+          onClose={handleAuthDialogClose}
           onSubmit={handleLoginDialogSubmit}
           mode="login"
         />
-        <AuthDialog
+        {/* <AuthDialog
           open={isSignupDialogOpen}
           onClose={() => setIsSignupDialogOpen(false)}
           onSubmit={handleSignupDialogSubmit}
           mode="signup"
-        />
+        /> */}
         <NotificationDialog
           open={isNotificationDialogOpen}
           onClose={() => setIsNotificationDialogOpen(false)}

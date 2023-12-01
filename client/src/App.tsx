@@ -1,24 +1,27 @@
-import { useEffect, useState } from 'react';
-import { styled } from '@mui/material/styles';
+import { useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
-import './App.css';
-import { UserProvider } from './contexts/UserContext';
-import { CoinProvider } from './contexts/CoinContext';
 import { Box } from '@mui/material';
+import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
+import './App.css';
 // import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import MenuIcon from '@mui/icons-material/Menu';
+import { BlockProvider } from './contexts/BlockContext';
+import { CoinProvider } from './contexts/CoinContext';
+import { UserProvider } from './contexts/UserContext';
+import { WalletProvider } from './contexts/WalletContext';
 import Home from './routes/Home';
 import Bubbles from './routes/Bubbles';
 import Nostr from './routes/Nostr';
 import ExplorerRoute from './routes/ExplorerRoute';
 import PasswordReset from './routes/PasswordReset';
+import Swap from './routes/Swap';
 import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import Sidebar from './components/Sidebar';
-import { BlockProvider } from './contexts/BlockContext';
+import { blueGrey } from '@mui/material/colors';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -31,6 +34,21 @@ import { BlockProvider } from './contexts/BlockContext';
 //     </Suspense>
 //   );
 // };
+
+const theme = createTheme({
+  components: {
+    MuiButton: {
+      styleOverrides: {
+        root: {
+          '&.Mui-disabled': {
+            background: blueGrey[800],
+            color: blueGrey[400],
+          },
+        },
+      },
+    },
+  },
+});
 
 const innerWidth = window.innerWidth;
 const isMobile = innerWidth <= 375;
@@ -45,6 +63,7 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     duration: theme.transitions.duration.leavingScreen,
   }),
   maxWidth: '100vw',
+  minHeight: '100vh',
   marginLeft: `-${drawerWidth}px`,
   overflow: 'hidden',
   ...(open && {
@@ -64,7 +83,8 @@ interface AppBarProps extends MuiAppBarProps {
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })<AppBarProps>(({ theme, open }) => ({
-  background: 'black',
+  background: 'transparent',
+  backdropFilter: 'blur(15px)',
   transition: theme.transitions.create(['margin', 'width'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -80,65 +100,66 @@ const AppBar = styled(MuiAppBar, {
 }));
 
 function App() {
-  const [globalData, setGlobalData] = useState({});
-  const [searchText, setSearchText] = useState<string>('');
   const [isOpen, setIsOpen] = useState(!isMobile);
-
-  useEffect(() => {
-    fetchGlobal();
-  }, []);
-
-  const fetchGlobal = () => {
-    fetch('/api/global')
-      .then((res) => res.json())
-      .then((res) => setGlobalData(res))
-      .catch((err) => console.error('Error', err));
-  };
-
   return (
-    <UserProvider>
-      <CoinProvider>
-        <BlockProvider>
-          <Box display="flex" component="div">
-            <AppBar position="fixed" open={isOpen}>
-              <Toolbar>
-                <IconButton
-                  color="inherit"
-                  aria-label="open drawer"
-                  onClick={() => setIsOpen(true)}
-                  edge="start"
-                  sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
-                >
-                  <MenuIcon />
-                </IconButton>
-                <Header
-                  globalData={globalData}
-                  searchText={searchText}
-                  setSearchText={setSearchText}
+    <ThemeProvider theme={theme}>
+      <WalletProvider>
+        <UserProvider>
+          <CoinProvider>
+            <BlockProvider>
+              <Box
+                display="flex"
+                component="div"
+                sx={{
+                  background: 'linear-gradient(0deg, #a7ffaa -200%, #242424)',
+                }}
+              >
+                <AppBar position="fixed" open={isOpen}>
+                  <Toolbar>
+                    <IconButton
+                      color="inherit"
+                      aria-label="open drawer"
+                      onClick={() => setIsOpen(true)}
+                      edge="start"
+                      sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
+                    >
+                      <MenuIcon />
+                    </IconButton>
+                    <Header />
+                  </Toolbar>
+                </AppBar>
+                <Sidebar
+                  isOpen={isOpen}
+                  setIsOpen={setIsOpen}
+                  drawerWidth={drawerWidth}
                 />
-              </Toolbar>
-            </AppBar>
-            <Sidebar
-              isOpen={isOpen}
-              setIsOpen={setIsOpen}
-              drawerWidth={drawerWidth}
-            />
-            <Main open={isOpen}>
-              <Box display="flex" flexDirection="column" mt={3} component="div">
-                <NewsFeed />
-                <Routes>
-                  <Route path="/" element={<Home />} />
-                  <Route path="/bubbles" element={<Bubbles />} />
-                  <Route path="/nostr" element={<Nostr />} />
-                  <Route path="/explorer" element={<ExplorerRoute />} />
-                  <Route path="/password-reset" element={<PasswordReset />} />
-                </Routes>
+                <Main open={isOpen}>
+                  <Box
+                    display="flex"
+                    flexDirection="column"
+                    mt={3}
+                    component="div"
+                  >
+                    <NewsFeed />
+                    <Routes>
+                      <Route path="/" element={<Home />} />
+                      <Route path="/bubbles" element={<Bubbles />} />
+                      <Route path="/nostr" element={<Nostr />} />
+                      <Route path="/explorer" element={<ExplorerRoute />} />
+                      <Route path="/swap" element={<Swap />} />
+                      <Route
+                        path="/password-reset"
+                        element={<PasswordReset />}
+                      />
+                    </Routes>
+                  </Box>
+                </Main>
               </Box>
-            </Main>
-          </Box>
-        </BlockProvider>
-      </CoinProvider>
-    </UserProvider>
+            </BlockProvider>
+          </CoinProvider>
+        </UserProvider>
+      </WalletProvider>
+    </ThemeProvider>
   );
 }
 
