@@ -17,6 +17,7 @@ import {
   Box,
   TextField,
   Theme,
+  Tooltip,
   useTheme,
 } from '@mui/material';
 
@@ -231,7 +232,9 @@ export default function Header() {
                   }}
                   component="div"
                 >
-                  <Typography fontSize="0.8rem">Market cap</Typography>
+                  <Tooltip title="Market Cap is calculated by multiplying the last traded price of a coin by the circulating supply. In this case it is the sum of all coin's individual market caps.">
+                    <Typography fontSize="0.8rem">Market cap</Typography>
+                  </Tooltip>
                   <Typography fontSize="0.8rem">
                     {USDollar.format(globalData.market_cap_usd)}
                   </Typography>
