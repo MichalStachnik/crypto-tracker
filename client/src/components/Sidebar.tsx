@@ -55,7 +55,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
   } = useContext(CoinContext);
   const navigate = useNavigate();
   const [isLoginDialogOpen, setIsLoginDialogOpen] = useState<boolean>(false);
-  // const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
+  const [isSignupDialogOpen, setIsSignupDialogOpen] = useState<boolean>(false);
   const [isNotificationDialogOpen, setIsNotificationDialogOpen] =
     useState(false);
   const [isSnackbarOpen, setIsSnackbarOpen] = useState(false);
@@ -129,40 +129,34 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
     userContext.setFavoriteCoins(newFavorites);
   };
 
-  // const handleSignupDialogSubmit = ({
-  //   email,
-  //   password,
-  // }: {
-  //   email: string;
-  //   password: string;
-  // }) => {
-  //   handleSignup({ email, password });
-  //   setIsSignupDialogOpen(false);
-  // };
+  const handleSignupDialogSubmit = ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    handleSignup({ email, password });
+    setIsSignupDialogOpen(false);
+  };
 
-  // const handleSignup = async ({
-  //   email,
-  //   password,
-  // }: {
-  //   email: string;
-  //   password: string;
-  // }) => {
-  //   await fetch('/api/signup', {
-  //     method: 'POST',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //     },
-  //     body: JSON.stringify({ email, password }),
-  //   });
-  //   // TODO: check res and tell user to check email or login
-  // };
-
-  // const handleLogout = async () => {
-  //   localStorage.clear();
-  //   userContext.setUser(null);
-  //   await fetch('/api/logout');
-  // };
-
+  const handleSignup = async ({
+    email,
+    password,
+  }: {
+    email: string;
+    password: string;
+  }) => {
+    await fetch('/api/signup', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    });
+    // TODO: check res and tell user to check email or login
+  };
+  
   const handleNotificationSubmit = async ({
     coin,
     price,
@@ -192,7 +186,9 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
   // };
 
   const handleDisconnect = async () => {
-    connectChains.map((chain) => swapKitClient.disconnectChain(chain));
+    if (isWalletConnected) {
+      connectChains.map((chain) => swapKitClient.disconnectChain(chain));
+    }
     localStorage.clear();
     userContext.setUser(null);
     await fetch('/api/logout');
@@ -303,6 +299,35 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
               <>
                 <ListItem disablePadding>
                   <ListItemButton
+                    onClick={() => setIsSignupDialogOpen(true)}
+                    alignItems="center"
+                    sx={[
+                      {
+                        background: (theme) => theme.palette.common.black,
+                        border: (_theme) => `1px solid white`,
+                        borderRadius: 2,
+                        m: 1,
+                      },
+                      {
+                        '&:hover': {
+                          border: (theme) =>
+                            `1px solid ${theme.palette.primary.dark}`,
+                        },
+                      },
+                    ]}
+                  >
+                    <ListItemText
+                      primary="Sign Up"
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: 'white',
+                      }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+                <ListItem disablePadding>
+                  <ListItemButton
                     onClick={() => setIsLoginDialogOpen(true)}
                     alignItems="center"
                     sx={[
@@ -386,12 +411,12 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
           onSubmit={handleLoginDialogSubmit}
           mode="login"
         />
-        {/* <AuthDialog
+        <AuthDialog
           open={isSignupDialogOpen}
           onClose={() => setIsSignupDialogOpen(false)}
           onSubmit={handleSignupDialogSubmit}
           mode="signup"
-        /> */}
+        />
         <NotificationDialog
           open={isNotificationDialogOpen}
           onClose={() => setIsNotificationDialogOpen(false)}
