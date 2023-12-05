@@ -22,6 +22,7 @@ import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import Sidebar from './components/Sidebar';
 import { blueGrey } from '@mui/material/colors';
+import WelcomeRoute from './routes/Welcome';
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(
@@ -151,6 +152,7 @@ function App() {
                         path="/password-reset"
                         element={<PasswordReset />}
                       />
+                      <Route path="/welcome" element={<WelcomeRoute />} />
                     </Routes>
                   </Box>
                 </Main>

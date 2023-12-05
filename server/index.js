@@ -6,6 +6,7 @@ import { fileURLToPath } from 'url';
 import redis from 'redis';
 import { createClient } from '@supabase/supabase-js';
 import moralis from 'moralis';
+import * as jose from 'jose';
 
 const app = express();
 
@@ -335,6 +336,48 @@ app.post('/api/login', async (req, res) => {
   }
 
   res.json({ message: 'success', data });
+});
+
+app.get('/api/login/google', async (req, res) => {
+  const redirectTo =
+    process.env.NODE_ENV === 'production'
+      ? 'https://wenmewn.app/welcome/'
+      : 'http://localhost:5173/welcome/';
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: {
+      queryParams: {
+        access_type: 'offline',
+        prompt: 'consent',
+      },
+      redirectTo,
+    },
+  });
+
+  if (error) {
+    res.json({ message: 'error', error });
+    return;
+  }
+
+  res.json(data);
+});
+
+app.get('/api/verify/google/:token', async (req, res) => {
+  const { token } = req.params;
+
+  const secret = new TextEncoder().encode(process.env.SUPABASE_JWT_SECRET);
+  const { payload } = await jose.jwtVerify(token, secret);
+
+  if (payload.role === 'authenticated') {
+    const data = {
+      token,
+      email: payload.email,
+    };
+    res.json({ message: 'success', data });
+  } else {
+    res.json({ message: 'error' });
+  }
 });
 
 app.get('/api/logout', async (req, res) => {

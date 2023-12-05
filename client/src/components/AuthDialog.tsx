@@ -1,4 +1,5 @@
 import { ChangeEvent, MouseEvent, useState } from 'react';
+import { WalletOption } from '@swapkit/sdk';
 import {
   Box,
   Button,
@@ -10,11 +11,14 @@ import {
   InputAdornment,
   InputLabel,
   OutlinedInput,
+  Typography,
 } from '@mui/material';
-import { Visibility, VisibilityOff } from '@mui/icons-material';
-import { WalletOption } from '@swapkit/sdk';
-import { connectWallet } from '../utils/swapKit';
 import LoadingButton from '@mui/lab/LoadingButton';
+import { Visibility, VisibilityOff } from '@mui/icons-material';
+import GoogleIcon from '@mui/icons-material/Google';
+import TwitterIcon from '@mui/icons-material/Twitter';
+import GitHubIcon from '@mui/icons-material/GitHub';
+import { connectWallet } from '../utils/swapKit';
 
 const XDefiWalletLogo = () => {
   return (
@@ -67,6 +71,9 @@ export function AuthDialog(props: AuthDialogProps) {
     null
   );
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
+  const [isGoogleLoading, setIsGoogleLoading] = useState(false);
+  const [isTwitterLoading, setIsTwitterLoading] = useState(false);
+  const [isGitHubLoading, setIsGitHubLoading] = useState(false);
 
   const handleConnect = async () => {
     setIsWalletConnecting(true);
@@ -119,6 +126,42 @@ export function AuthDialog(props: AuthDialogProps) {
     } else {
       // Add toast
       console.log(data.message);
+    }
+  };
+
+  const handleGoogleClick = async () => {
+    setIsGoogleLoading(true);
+    try {
+      const data = await fetch('/api/login/google');
+      const json = await data.json();
+      window.location.replace(json.url);
+    } catch (error) {
+      console.error('error', error);
+      setIsGoogleLoading(false);
+    }
+  };
+
+  const handleTwitterClick = async () => {
+    setIsTwitterLoading(true);
+    try {
+      const data = await fetch('/api/login/google');
+      const json = await data.json();
+      window.location.replace(json.url);
+    } catch (error) {
+      console.error('error', error);
+      setIsTwitterLoading(false);
+    }
+  };
+
+  const handleGitHubClick = async () => {
+    setIsGitHubLoading(true);
+    try {
+      const data = await fetch('/api/login/google');
+      const json = await data.json();
+      window.location.replace(json.url);
+    } catch (error) {
+      console.error('error', error);
+      setIsGitHubLoading(false);
     }
   };
 
@@ -190,6 +233,37 @@ export function AuthDialog(props: AuthDialogProps) {
         >
           {mode === 'signup' ? 'Sign Up' : 'Login'}
         </Button>
+        <Typography align="center" mt={2}>
+          Or continue with:
+        </Typography>
+        <Box
+          component="div"
+          display="flex"
+          justifyContent="space-around"
+          mt={2}
+        >
+          <LoadingButton
+            loading={isGoogleLoading}
+            variant="outlined"
+            onClick={handleGoogleClick}
+          >
+            <GoogleIcon />
+          </LoadingButton>
+          <LoadingButton
+            loading={isTwitterLoading}
+            variant="outlined"
+            onClick={handleTwitterClick}
+          >
+            <TwitterIcon />
+          </LoadingButton>
+          <LoadingButton
+            loading={isGitHubLoading}
+            variant="outlined"
+            onClick={handleGitHubClick}
+          >
+            <GitHubIcon />
+          </LoadingButton>
+        </Box>
         <Button
           onClick={() => setSelectedWallet(WalletOption.XDEFI)}
           component="label"

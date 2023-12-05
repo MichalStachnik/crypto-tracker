@@ -11,6 +11,7 @@ interface CoinContextInterface {
   setSelectedCoin: Dispatch<React.SetStateAction<Coin | null>>;
   liveCoinWatchData: LiveCoinWatchData | null;
   fetchLiveCoinWatch: any;
+  metaData: any;
 }
 
 const initialState: CoinContextInterface = {
@@ -22,6 +23,7 @@ const initialState: CoinContextInterface = {
   setSelectedCoin: () => {},
   liveCoinWatchData: null,
   fetchLiveCoinWatch: null,
+  metaData: null,
 };
 
 export const CoinContext = createContext<CoinContextInterface>(initialState);
@@ -38,7 +40,7 @@ export const CoinProvider = ({ children }: CoinProviderProps) => {
   const [selectedCoin, setSelectedCoin] = useState<Coin | null>(null);
   const [liveCoinWatchData, setLiveCoinWatchData] =
     useState<LiveCoinWatchData | null>(null);
-  const [setMetaData] = useState<any>(null);
+  const [metaData, setMetaData] = useState<any>(null);
 
   const fetchLiveCoinWatch = (symbol: string, interval: TimeInterval) => {
     fetch(`/api/livecoinwatch/${symbol}/${interval}`)
@@ -76,6 +78,7 @@ export const CoinProvider = ({ children }: CoinProviderProps) => {
         setSelectedCoin,
         liveCoinWatchData,
         fetchLiveCoinWatch,
+        metaData,
       }}
     >
       {children}

@@ -46,7 +46,13 @@ const CoinHeader = ({
       justifyContent="space-evenly"
       component="div"
       mx={1}
-      sx={{ flexDirection: { sm: 'column-reverse', md: 'row' } }}
+      sx={{
+        flexDirection: {
+          xs: 'column-reverse',
+          sm: 'column-reverse',
+          md: 'row',
+        },
+      }}
     >
       <Box
         display="flex"
