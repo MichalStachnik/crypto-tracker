@@ -1,9 +1,10 @@
 import { useContext, useEffect, useState } from 'react';
-import { redirect, useLocation } from 'react-router-dom';
-import { Box, Typography } from '@mui/material';
+import { redirect, useLocation, useNavigate } from 'react-router-dom';
+import { Box, Button, Typography } from '@mui/material';
 import { UserContext } from '../contexts/UserContext';
 
 const WelcomeRoute = () => {
+  const navigate = useNavigate();
   const location = useLocation();
   const { setUser } = useContext(UserContext);
   const [userEmail, setUserEmail] = useState('');
@@ -13,7 +14,7 @@ const WelcomeRoute = () => {
     const andHash = location.hash.indexOf('&');
     const jwt = location.hash.substring(equalHash + 1, andHash);
 
-    const res = await fetch(`/api/verify/google/${jwt}`);
+    const res = await fetch(`/api/login/verify/${jwt}`);
 
     const { data, message } = await res.json();
 
@@ -32,7 +33,10 @@ const WelcomeRoute = () => {
 
   return (
     <Box component="div">
-      <Typography>Welcome {userEmail}</Typography>
+      <Typography mb={2}>Welcome {userEmail}</Typography>
+      <Button variant="outlined" onClick={() => navigate('/')}>
+        Start Exploring
+      </Button>
     </Box>
   );
 };

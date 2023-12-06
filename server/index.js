@@ -363,7 +363,49 @@ app.get('/api/login/google', async (req, res) => {
   res.json(data);
 });
 
-app.get('/api/verify/google/:token', async (req, res) => {
+app.get('/api/login/twitter', async (req, res) => {
+  const redirectTo =
+    process.env.NODE_ENV === 'production'
+      ? 'https://wenmewn.app/welcome/'
+      : 'https://localhost:5173/welcome/';
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'twitter',
+    options: {
+      redirectTo,
+    },
+  });
+
+  if (error) {
+    res.json({ message: 'error', error });
+    return;
+  }
+
+  res.json(data);
+});
+
+app.get('/api/login/github', async (req, res) => {
+  const redirectTo =
+    process.env.NODE_ENV === 'production'
+      ? 'https://wenmewn.app/welcome/'
+      : 'http://localhost:5173/welcome/';
+
+  const { data, error } = await supabase.auth.signInWithOAuth({
+    provider: 'github',
+    options: {
+      redirectTo,
+    },
+  });
+
+  if (error) {
+    res.json({ message: 'error', error });
+    return;
+  }
+
+  res.json(data);
+});
+
+app.get('/api/login/verify/:token', async (req, res) => {
   const { token } = req.params;
 
   const secret = new TextEncoder().encode(process.env.SUPABASE_JWT_SECRET);

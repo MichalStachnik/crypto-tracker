@@ -144,7 +144,7 @@ export function AuthDialog(props: AuthDialogProps) {
   const handleTwitterClick = async () => {
     setIsTwitterLoading(true);
     try {
-      const data = await fetch('/api/login/google');
+      const data = await fetch('/api/login/twitter');
       const json = await data.json();
       window.location.replace(json.url);
     } catch (error) {
@@ -156,7 +156,7 @@ export function AuthDialog(props: AuthDialogProps) {
   const handleGitHubClick = async () => {
     setIsGitHubLoading(true);
     try {
-      const data = await fetch('/api/login/google');
+      const data = await fetch('/api/login/github');
       const json = await data.json();
       window.location.replace(json.url);
     } catch (error) {
@@ -249,13 +249,13 @@ export function AuthDialog(props: AuthDialogProps) {
           >
             <GoogleIcon />
           </LoadingButton>
-          <LoadingButton
+          {/* <LoadingButton
             loading={isTwitterLoading}
             variant="outlined"
             onClick={handleTwitterClick}
           >
             <TwitterIcon />
-          </LoadingButton>
+          </LoadingButton> */}
           <LoadingButton
             loading={isGitHubLoading}
             variant="outlined"

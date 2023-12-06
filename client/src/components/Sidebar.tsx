@@ -18,6 +18,8 @@ import BoltIcon from '@mui/icons-material/Bolt';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
 import TimelineIcon from '@mui/icons-material/Timeline';
 import ListItemText from '@mui/material/ListItemText';
+import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
+import LoginIcon from '@mui/icons-material/Login';
 import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
 import NotificationDialog from './NotificationDialog';
@@ -156,7 +158,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
     });
     // TODO: check res and tell user to check email or login
   };
-  
+
   const handleNotificationSubmit = async ({
     coin,
     price,
@@ -303,7 +305,7 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                     alignItems="center"
                     sx={[
                       {
-                        background: (theme) => theme.palette.common.black,
+                        background: 'transparent',
                         border: (_theme) => `1px solid white`,
                         borderRadius: 2,
                         m: 1,
@@ -316,6 +318,9 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                       },
                     ]}
                   >
+                    <ListItemIcon>
+                      <PersonAddAlt1Icon htmlColor="white" />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Sign Up"
                       sx={{
@@ -345,6 +350,9 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                       },
                     ]}
                   >
+                    <ListItemIcon>
+                      <LoginIcon htmlColor="white" />
+                    </ListItemIcon>
                     <ListItemText
                       primary="Sign In"
                       sx={{
