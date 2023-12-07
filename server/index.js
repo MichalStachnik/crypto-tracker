@@ -29,6 +29,7 @@ let redisClient;
   try {
     redisClient = redis.createClient({
       url: process.env.REDIS_URL,
+      legacyMode: true,
     });
 
     redisClient.on('error', async (error) => {

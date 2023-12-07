@@ -1,9 +1,8 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { Dispatch, SetStateAction, useContext, useMemo, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Badge,
-  Drawer,
+  Drawer as MuiDrawer,
   IconButton,
   List,
   ListItem,
@@ -11,8 +10,11 @@ import {
   ListItemIcon,
   Snackbar,
   styled,
+  Theme,
+  CSSObject,
 } from '@mui/material';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 import MailIcon from '@mui/icons-material/Mail';
 import BoltIcon from '@mui/icons-material/Bolt';
 import SwapVertIcon from '@mui/icons-material/SwapVert';
@@ -29,22 +31,67 @@ import { ViewInAr } from '@mui/icons-material';
 import { connectChains, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
+const drawerWidth = 240;
+
+const openedMixin = (theme: Theme): CSSObject => ({
+  width: drawerWidth,
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.enteringScreen,
+  }),
+  overflowX: 'hidden',
+});
+
+const closedMixin = (theme: Theme): CSSObject => ({
+  transition: theme.transitions.create('width', {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  overflowX: 'hidden',
+  width: `calc(${theme.spacing(7)} + 1px)`,
+  [theme.breakpoints.up('sm')]: {
+    width: `calc(${theme.spacing(8)} + 1px)`,
+  },
+});
+
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
+  justifyContent: 'flex-end',
   padding: theme.spacing(0, 1),
   // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-  justifyContent: 'flex-end',
+}));
+
+const Drawer = styled(MuiDrawer, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})(({ theme, open }) => ({
+  width: drawerWidth,
+  flexShrink: 0,
+  whiteSpace: 'nowrap',
+  boxSizing: 'border-box',
+  '& .MuiPaper-root': {
+    background: 'transparent',
+    height: '100vh',
+    display: 'flex',
+    justifyContent: 'space-between',
+  },
+  ...(open && {
+    ...openedMixin(theme),
+    '& .MuiDrawer-paper': openedMixin(theme),
+  }),
+  ...(!open && {
+    ...closedMixin(theme),
+    '& .MuiDrawer-paper': closedMixin(theme),
+  }),
 }));
 
 interface SidebarProps {
   isOpen: boolean;
   setIsOpen: Dispatch<SetStateAction<boolean>>;
-  drawerWidth: number;
 }
 
-const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
+const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   const { isWalletConnected, setIsWalletConnected } = useContext(WalletContext);
   const { pathname } = useLocation();
   const userContext = useContext(UserContext);
@@ -203,71 +250,121 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
   };
 
   return (
-    <>
-      <Drawer
-        sx={{
-          width: drawerWidth,
-          flexShrink: 0,
-          '& .MuiDrawer-paper': {
-            width: drawerWidth,
-            boxSizing: 'border-box',
-            background: 'transparent',
-            display: 'flex',
-            justifyContent: 'space-between',
-            boxShadow: (theme) => theme.shadows[4],
-          },
-        }}
-        variant="persistent"
-        anchor="left"
-        open={isOpen}
-      >
-        <DrawerHeader>
-          <IconButton onClick={() => setIsOpen(false)}>
+    <Drawer variant="permanent" open={isOpen}>
+      <DrawerHeader>
+        <IconButton onClick={() => setIsOpen(!isOpen)}>
+          {!isOpen ? (
+            <ChevronRightIcon color="primary" />
+          ) : (
             <ChevronLeftIcon color="primary" />
-            {/* {theme.direction === 'ltr' ? (
-                  
-                ) : (
-                  <ChevronRightIcon />
-                )} */}
-          </IconButton>
-        </DrawerHeader>
-        <List>
-          {TopMenuItems.map((menuItem) => (
-            <ListItem key={menuItem.name} disablePadding>
-              <ListItemButton
-                onClick={() => {
-                  menuItem.handleClick();
-                }}
-                selected={pathname === menuItem.path}
-              >
-                <ListItemIcon>{menuItem.icon}</ListItemIcon>
-                {menuItem.isBeta ? (
-                  <Badge badgeContent="BETA" color="success">
-                    <ListItemText
-                      primary={menuItem.name}
-                      sx={{
-                        color: (theme) => theme.palette.primary.main,
-                      }}
-                    />
-                  </Badge>
-                ) : (
+          )}
+        </IconButton>
+      </DrawerHeader>
+      <List>
+        {TopMenuItems.map((menuItem) => (
+          <ListItem key={menuItem.name} disablePadding>
+            <ListItemButton
+              onClick={() => {
+                menuItem.handleClick();
+              }}
+              selected={pathname === menuItem.path}
+            >
+              <ListItemIcon>{menuItem.icon}</ListItemIcon>
+              {menuItem.isBeta ? (
+                <Badge badgeContent="BETA" color="success">
                   <ListItemText
                     primary={menuItem.name}
                     sx={{
                       color: (theme) => theme.palette.primary.main,
                     }}
                   />
-                )}
+                </Badge>
+              ) : (
+                <ListItemText
+                  primary={menuItem.name}
+                  sx={{
+                    color: (theme) => theme.palette.primary.main,
+                  }}
+                />
+              )}
+            </ListItemButton>
+          </ListItem>
+        ))}
+      </List>
+      <List>
+        {isWalletConnected || userContext.user ? (
+          <>
+            <ListItem disablePadding>
+              <ListItemButton
+                onClick={handleDisconnect}
+                alignItems="center"
+                sx={[
+                  {
+                    background: (theme) => theme.palette.primary.dark,
+                    border: (_theme) => `1px solid white`,
+                    borderRadius: 2,
+                    m: 1,
+                  },
+                  {
+                    '&:hover': {
+                      border: (theme) =>
+                        `1px solid ${theme.palette.primary.dark}`,
+                    },
+                  },
+                ]}
+              >
+                <ListItemText
+                  primary="Disconnect"
+                  sx={{
+                    display: 'flex',
+                    justifyContent: 'center',
+                    color: 'white',
+                  }}
+                />
               </ListItemButton>
             </ListItem>
-          ))}
-        </List>
-        <List>
-          {isWalletConnected || userContext.user ? (
+          </>
+        ) : null}
+        {
+          !userContext.user && !isWalletConnected ? (
             <>
               <ListItem disablePadding>
                 <ListItemButton
-                  onClick={handleDisconnect}
+                  onClick={() => setIsSignupDialogOpen(true)}
+                  alignItems="center"
+                  sx={[
+                    {
+                      background: 'transparent',
+                      border: (_theme) => `1px solid white`,
+                      borderRadius: 2,
+                      m: 1,
+                    },
+                    {
+                      '&:hover': {
+                        border: (theme) =>
+                          `1px solid ${theme.palette.primary.dark}`,
+                      },
+                    },
+                  ]}
+                >
+                  <ListItemIcon>
+                    <PersonAddAlt1Icon htmlColor="white" />
+                  </ListItemIcon>
+                  {isOpen && (
+                    <ListItemText
+                      primary="Sign Up"
+                      sx={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        color: 'white',
+                      }}
+                    />
+                  )}
+                </ListItemButton>
+              </ListItem>
+              <ListItem disablePadding>
+                <ListItemButton
+                  onClick={() => setIsLoginDialogOpen(true)}
                   alignItems="center"
                   sx={[
                     {
@@ -284,75 +381,10 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                     },
                   ]}
                 >
-                  <ListItemText
-                    primary="Disconnect"
-                    sx={{
-                      display: 'flex',
-                      justifyContent: 'center',
-                      color: 'white',
-                    }}
-                  />
-                </ListItemButton>
-              </ListItem>
-            </>
-          ) : null}
-          {
-            !userContext.user && !isWalletConnected ? (
-              <>
-                <ListItem disablePadding>
-                  <ListItemButton
-                    onClick={() => setIsSignupDialogOpen(true)}
-                    alignItems="center"
-                    sx={[
-                      {
-                        background: 'transparent',
-                        border: (_theme) => `1px solid white`,
-                        borderRadius: 2,
-                        m: 1,
-                      },
-                      {
-                        '&:hover': {
-                          border: (theme) =>
-                            `1px solid ${theme.palette.primary.dark}`,
-                        },
-                      },
-                    ]}
-                  >
-                    <ListItemIcon>
-                      <PersonAddAlt1Icon htmlColor="white" />
-                    </ListItemIcon>
-                    <ListItemText
-                      primary="Sign Up"
-                      sx={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        color: 'white',
-                      }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-                <ListItem disablePadding>
-                  <ListItemButton
-                    onClick={() => setIsLoginDialogOpen(true)}
-                    alignItems="center"
-                    sx={[
-                      {
-                        background: (theme) => theme.palette.primary.dark,
-                        border: (_theme) => `1px solid white`,
-                        borderRadius: 2,
-                        m: 1,
-                      },
-                      {
-                        '&:hover': {
-                          border: (theme) =>
-                            `1px solid ${theme.palette.primary.dark}`,
-                        },
-                      },
-                    ]}
-                  >
-                    <ListItemIcon>
-                      <LoginIcon htmlColor="white" />
-                    </ListItemIcon>
+                  <ListItemIcon>
+                    <LoginIcon htmlColor="white" />
+                  </ListItemIcon>
+                  {isOpen && (
                     <ListItemText
                       primary="Sign In"
                       sx={{
@@ -361,84 +393,84 @@ const Sidebar = ({ isOpen, setIsOpen, drawerWidth }: SidebarProps) => {
                         color: 'white',
                       }}
                     />
-                  </ListItemButton>
-                </ListItem>
-              </>
-            ) : null
-            // <>
-            //   <Typography color="primary">Favorites</Typography>
-            //   <Box
-            //     boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
-            //     m={2}
-            //     p={2}
-            //     flex={1}
-            //     borderRadius={2}
-            //     display="flex"
-            //     flexDirection="column"
-            //     justifyContent="space-between"
-            //     component="div"
-            //   >
-            //     {userContext.favoriteCoins.map((coin) => {
-            //       return (
-            //         <Box key={coin} mb={1} component="div">
-            //           <Button
-            //             color="primary"
-            //             onClick={() => handleCoinClick(coin)}
-            //             variant="outlined"
-            //             fullWidth
-            //             disabled={
-            //               (!!selectedCoin && selectedCoin.name === coin) ||
-            //               liveCoinWatchData?.name === coin
-            //             }
-            //           >
-            //             {coin}
-            //           </Button>
-            //         </Box>
-            //       );
-            //     })}
-            //   </Box>
-            //   <ListItemButton
-            //     onClick={() => handleLogout()}
-            //     alignItems="center"
-            //   >
-            //     <ListItemText
-            //       primary={(isConnected && address) || 'Sign Out'}
-            //       sx={{
-            //         display: 'flex',
-            //         justifyContent: 'center',
-            //         color: (theme) => theme.palette.primary.main,
-            //       }}
-            //     />
-            //   </ListItemButton>
-            // </>
-          }
-        </List>
-        <AuthDialog
-          open={isLoginDialogOpen}
-          onClose={handleAuthDialogClose}
-          onSubmit={handleLoginDialogSubmit}
-          mode="login"
-        />
-        <AuthDialog
-          open={isSignupDialogOpen}
-          onClose={() => setIsSignupDialogOpen(false)}
-          onSubmit={handleSignupDialogSubmit}
-          mode="signup"
-        />
-        <NotificationDialog
-          open={isNotificationDialogOpen}
-          onClose={() => setIsNotificationDialogOpen(false)}
-          onSubmit={handleNotificationSubmit}
-          coins={coins}
-        />
-        <Snackbar
-          open={isSnackbarOpen}
-          autoHideDuration={6000}
-          onClose={() => setIsSnackbarOpen(false)}
-          message="Notification Set"
-        />
-      </Drawer>
-    </>
+                  )}
+                </ListItemButton>
+              </ListItem>
+            </>
+          ) : null
+          // <>
+          //   <Typography color="primary">Favorites</Typography>
+          //   <Box
+          //     boxShadow="inset 0 0 15px rgba(0,0,0,0.5)"
+          //     m={2}
+          //     p={2}
+          //     flex={1}
+          //     borderRadius={2}
+          //     display="flex"
+          //     flexDirection="column"
+          //     justifyContent="space-between"
+          //     component="div"
+          //   >
+          //     {userContext.favoriteCoins.map((coin) => {
+          //       return (
+          //         <Box key={coin} mb={1} component="div">
+          //           <Button
+          //             color="primary"
+          //             onClick={() => handleCoinClick(coin)}
+          //             variant="outlined"
+          //             fullWidth
+          //             disabled={
+          //               (!!selectedCoin && selectedCoin.name === coin) ||
+          //               liveCoinWatchData?.name === coin
+          //             }
+          //           >
+          //             {coin}
+          //           </Button>
+          //         </Box>
+          //       );
+          //     })}
+          //   </Box>
+          //   <ListItemButton
+          //     onClick={() => handleLogout()}
+          //     alignItems="center"
+          //   >
+          //     <ListItemText
+          //       primary={(isConnected && address) || 'Sign Out'}
+          //       sx={{
+          //         display: 'flex',
+          //         justifyContent: 'center',
+          //         color: (theme) => theme.palette.primary.main,
+          //       }}
+          //     />
+          //   </ListItemButton>
+          // </>
+        }
+      </List>
+      <AuthDialog
+        open={isLoginDialogOpen}
+        onClose={handleAuthDialogClose}
+        onSubmit={handleLoginDialogSubmit}
+        mode="login"
+      />
+      <AuthDialog
+        open={isSignupDialogOpen}
+        onClose={() => setIsSignupDialogOpen(false)}
+        onSubmit={handleSignupDialogSubmit}
+        mode="signup"
+      />
+      <NotificationDialog
+        open={isNotificationDialogOpen}
+        onClose={() => setIsNotificationDialogOpen(false)}
+        onSubmit={handleNotificationSubmit}
+        coins={coins}
+      />
+      <Snackbar
+        open={isSnackbarOpen}
+        autoHideDuration={6000}
+        onClose={() => setIsSnackbarOpen(false)}
+        message="Notification Set"
+      />
+    </Drawer>
   );
 };
 

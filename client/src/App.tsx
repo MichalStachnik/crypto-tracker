@@ -5,9 +5,6 @@ import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import './App.css';
 // import CssBaseline from '@mui/material/CssBaseline';
 import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
-import Toolbar from '@mui/material/Toolbar';
-import IconButton from '@mui/material/IconButton';
-import MenuIcon from '@mui/icons-material/Menu';
 import { blueGrey } from '@mui/material/colors';
 import { BlockProvider } from './contexts/BlockContext';
 import { CoinProvider } from './contexts/CoinContext';
@@ -55,7 +52,8 @@ const theme = createTheme({
 
 const innerWidth = window.innerWidth;
 const isMobile = innerWidth <= 375;
-const drawerWidth = isMobile ? innerWidth : 200;
+export const drawerWidth = isMobile ? innerWidth : 240;
+export const closedDrawerWidth = 65;
 
 const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
   open?: boolean;
@@ -65,16 +63,14 @@ const Main = styled('main', { shouldForwardProp: (prop) => prop !== 'open' })<{
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
   }),
-  maxWidth: '100vw',
+  width: `calc(100vw - ${closedDrawerWidth}px)`,
   minHeight: '100vh',
-  marginLeft: `-${drawerWidth}px`,
   overflow: 'hidden',
   ...(open && {
     transition: theme.transitions.create(['margin', 'max-width'], {
       easing: theme.transitions.easing.easeOut,
       duration: theme.transitions.duration.enteringScreen,
     }),
-    marginLeft: 0,
     maxWidth: `calc(100% - ${drawerWidth}px)`,
   }),
 }));
@@ -119,25 +115,8 @@ function App() {
                     background: 'linear-gradient(0deg, #a7ffaa -200%, #242424)',
                   }}
                 >
-                  <AppBar position="fixed" open={isOpen}>
-                    <Toolbar>
-                      <IconButton
-                        color="inherit"
-                        aria-label="open drawer"
-                        onClick={() => setIsOpen(true)}
-                        edge="start"
-                        sx={{ mr: 2, ...(isOpen && { display: 'none' }) }}
-                      >
-                        <MenuIcon />
-                      </IconButton>
-                      <Header />
-                    </Toolbar>
-                  </AppBar>
-                  <Sidebar
-                    isOpen={isOpen}
-                    setIsOpen={setIsOpen}
-                    drawerWidth={drawerWidth}
-                  />
+                  <Header open={isOpen} />
+                  <Sidebar isOpen={isOpen} setIsOpen={setIsOpen} />
                   <Main open={isOpen}>
                     <Box
                       display="flex"

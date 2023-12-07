@@ -7,7 +7,7 @@ import {
   useEffect,
 } from 'react';
 import { styled, alpha } from '@mui/material/styles';
-import AppBar from '@mui/material/AppBar';
+import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import Typography from '@mui/material/Typography';
 import SearchIcon from '@mui/icons-material/Search';
@@ -24,6 +24,7 @@ import {
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
 import { useNavigate } from 'react-router-dom';
+import { closedDrawerWidth, drawerWidth } from '../App';
 
 const USDollar = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -107,12 +108,32 @@ const StyledTextField = styled(TextField)(({ theme }) => ({
   },
 }));
 
+const AppBar = styled(MuiAppBar, {
+  shouldForwardProp: (prop) => prop !== 'open',
+})<MuiAppBarProps & { open?: boolean }>(({ theme, open }) => ({
+  background: 'transparent',
+  backdropFilter: 'blur(15px)',
+  width: `calc(100% - ${closedDrawerWidth}px)`,
+  transition: theme.transitions.create(['margin', 'width'], {
+    easing: theme.transitions.easing.sharp,
+    duration: theme.transitions.duration.leavingScreen,
+  }),
+  ...(open && {
+    width: `calc(100% - ${drawerWidth}px)`,
+    marginLeft: `${drawerWidth}px`,
+    transition: theme.transitions.create(['margin', 'width'], {
+      easing: theme.transitions.easing.easeOut,
+      duration: theme.transitions.duration.enteringScreen,
+    }),
+  }),
+}));
+
 interface GlobalData {
   [key: string]: any;
   error?: string;
 }
 
-export default function Header() {
+export default function Header({ open }: { open: boolean }) {
   const { coins, setSelectedCoin, fetchLiveCoinWatch } =
     useContext(CoinContext);
   const theme = useTheme();
@@ -159,13 +180,7 @@ export default function Header() {
 
   return (
     <Box flexGrow={1} component="div">
-      <AppBar
-        position="static"
-        sx={{
-          background: 'transparent',
-        }}
-        elevation={0}
-      >
+      <AppBar position="fixed" elevation={0} open={open}>
         <Toolbar>
           <StyledLogo
             variant="h6"

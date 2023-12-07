@@ -27,37 +27,39 @@ const Trending = () => {
     <Box component="div">
       <Box display="flex" justifyContent="center" component="div" mb={1}>
         <WhatshotIcon color="warning" />
-        <Typography ml={1}>Top 7 Trending Coins</Typography>
+        <Typography ml={1}>Top 10 Trending Coins</Typography>
       </Box>
       <Box display="flex" flexDirection="column" component="div">
         {trendingCoins && trendingCoins.length
-          ? trendingCoins.map((coin: any, index) => {
-              return (
-                <Button
-                  key={coin.item.id}
-                  onClick={() => handleCoinClick(coin)}
-                  sx={{ textTransform: 'none' }}
-                  disabled={coin.item.symbol === selectedCoin?.symbol}
-                >
-                  <Box
-                    width="100%"
-                    display="flex"
-                    justifyContent="space-around"
-                    component="div"
+          ? trendingCoins
+              .filter((_, index) => index < 10)
+              .map((coin: any, index) => {
+                return (
+                  <Button
+                    key={coin.item.id}
+                    onClick={() => handleCoinClick(coin)}
+                    sx={{ textTransform: 'none' }}
+                    disabled={coin.item.symbol === selectedCoin?.symbol}
                   >
-                    <Typography flex={1}>{index + 1}</Typography>
-                    <Avatar
-                      src={coin.item.thumb}
-                      sx={{ width: 20, height: 20 }}
-                    />
-                    <Typography flex={1}>{coin.item.name}</Typography>
-                    <Typography bgcolor="secondary" flex={1}>
-                      #{coin.item.market_cap_rank}
-                    </Typography>
-                  </Box>
-                </Button>
-              );
-            })
+                    <Box
+                      width="100%"
+                      display="flex"
+                      justifyContent="space-around"
+                      component="div"
+                    >
+                      <Typography flex={1}>{index + 1}</Typography>
+                      <Avatar
+                        src={coin.item.thumb}
+                        sx={{ width: 20, height: 20 }}
+                      />
+                      <Typography flex={1}>{coin.item.name}</Typography>
+                      <Typography bgcolor="secondary" flex={1}>
+                        #{coin.item.market_cap_rank}
+                      </Typography>
+                    </Box>
+                  </Button>
+                );
+              })
           : null}
       </Box>
     </Box>
