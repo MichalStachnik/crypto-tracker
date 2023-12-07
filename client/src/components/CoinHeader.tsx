@@ -1,3 +1,4 @@
+import { Dispatch, SetStateAction } from 'react';
 import {
   Box,
   ToggleButton,
@@ -5,12 +6,11 @@ import {
   Typography,
   styled,
 } from '@mui/material';
+import Trending from './Trending';
 import { Coin } from '../types/Coin';
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import { TimeInterval } from '../types/TimeInterval';
 import { ChartMode } from '../types/ChartMode';
-import { Dispatch, SetStateAction } from 'react';
-import Trending from './Trending';
 
 const StyledToggleButton = styled(ToggleButton)(() => ({
   color: 'white',
@@ -43,7 +43,7 @@ const CoinHeader = ({
       minHeight="294px"
       data-testid="coin-header"
       display="flex"
-      justifyContent="space-evenly"
+      justifyContent="space-between"
       component="div"
       mx={1}
       sx={{
@@ -61,6 +61,7 @@ const CoinHeader = ({
         sx={{ flexDirection: { xs: 'column', sm: 'row' } }}
         component="div"
         my={2}
+        flex={1}
       >
         <Box display="flex" component="div">
           <Box display="flex" flexDirection="column" component="div">
