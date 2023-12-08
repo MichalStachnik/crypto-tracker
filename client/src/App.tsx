@@ -4,7 +4,6 @@ import { Box } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
 import './App.css';
 // import CssBaseline from '@mui/material/CssBaseline';
-import MuiAppBar, { AppBarProps as MuiAppBarProps } from '@mui/material/AppBar';
 import { blueGrey } from '@mui/material/colors';
 import { BlockProvider } from './contexts/BlockContext';
 import { CoinProvider } from './contexts/CoinContext';
