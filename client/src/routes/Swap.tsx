@@ -9,6 +9,7 @@ import {
   QuoteRoute,
   AssetValue,
   formatBigIntToSafeValue,
+  SwapKitValueType,
 } from '@swapkit/sdk';
 import {
   Avatar,
@@ -76,10 +77,11 @@ const BalanceBox = ({
 };
 
 interface Token {
+  chain: string;
   ticker: string;
   img: string;
   name: string;
-  address: string;
+  address?: string;
   decimals: number;
 }
 
@@ -104,7 +106,7 @@ function TokensDialog(props: TokensDialogProps) {
       <DialogTitle>Choose a token</DialogTitle>
       <List sx={{ pt: 0 }}>
         {tokens
-          .filter((_, index) => index >= 1)
+          .filter((_, index) => index <= 2)
           .map((token) => (
             <ListItem disableGutters key={token.ticker}>
               <ListItemButton onClick={() => handleListItemClick(token)}>
@@ -238,18 +240,63 @@ const Swap = () => {
 
   const [bestRoute, setBestRoute] = useState<QuoteRoute | null>(null);
 
+  const getWalletAddressForToken = (token: Token): string => {
+    if (token.chain === 'BTC') {
+      return swapKitClient.getAddress(Chain.Bitcoin);
+    }
+    if (token.chain === 'ETH') {
+      return swapKitClient.getAddress(Chain.Ethereum);
+    }
+    return '';
+  };
+
+  const isEVMToken = (token: Token) => {
+    if (token.chain === 'ETH' && token.address) {
+      return true;
+    } else {
+      return false;
+    }
+  };
+
   const createQuoteParams = () => {
-    const btcAddress = swapKitClient.getAddress(Chain.Bitcoin);
-    const ethAddress = swapKitClient.getAddress(Chain.Ethereum);
+    const formattedSellAsset = isEVMToken(inputToken)
+      ? `${inputToken.chain}.${inputToken.ticker}-${inputToken.address}`
+      : `${inputToken.chain}.${inputToken.ticker}`;
+
+    const formattedBuyAsset = isEVMToken(outputToken)
+      ? `${outputToken.chain}.${outputToken.ticker}-${outputToken.address}`
+      : `${outputToken.chain}.${outputToken.ticker}`;
+
     return {
-      sellAsset: `${inputToken.ticker}.${inputToken.ticker}`, // must be in the form 'chain.ticker' ex: 'BTC.BTC' | 'ETH.ETH'
+      sellAsset: formattedSellAsset, // must be in the form 'chain.ticker' ex: 'BTC.BTC' | 'ETH.ETH'
       sellAmount: inputAmount.toString(),
-      buyAsset: `${outputToken.ticker}.${outputToken.ticker}`,
-      senderAddress: inputToken.ticker === 'BTC' ? btcAddress : ethAddress, // wallet to send sell asset
-      recipientAddress: outputToken.ticker === 'ETH' ? ethAddress : btcAddress, // wallet to receive buy asset
+      buyAsset: formattedBuyAsset,
+      senderAddress: getWalletAddressForToken(inputToken), // wallet to send sell asset
+      recipientAddress: getWalletAddressForToken(outputToken), // wallet to receive buy asset
       slippage: '3',
     };
   };
+
+  const getAssetValue = (token: Token): AssetValue => {
+    const assetValue = new AssetValue({
+      decimal: token.decimals,
+      value: inputAmount as SwapKitValueType,
+      identifier: token.ticker,
+    });
+    return assetValue;
+  };
+
+  const isTokenApproved = async (token: Token) => {
+    const isApproved = await swapKitClient.isAssetValueApproved(
+      getAssetValue(token)
+    );
+    return isApproved;
+  };
+
+  useEffect(() => {
+    isTokenApproved(inputToken);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [inputToken]);
 
   const getBestRoute = async () => {
     const quoteParams = createQuoteParams();
@@ -257,6 +304,14 @@ const Swap = () => {
     const bestRoute = routes.find(({ optimal }) => optimal);
     return bestRoute;
   };
+
+  const isEVMSwap = useMemo(() => {
+    if (inputToken.chain === 'ETH' && outputToken.chain === 'ETH') {
+      return true;
+    } else {
+      return false;
+    }
+  }, [inputToken, outputToken]);
 
   useEffect(() => {
     if (inputAmount) {
@@ -302,12 +357,12 @@ const Swap = () => {
   };
 
   const handleChangeInputToken = () => {
-    // setIsTokensDialogOpen(true);
+    setIsTokensDialogOpen(true);
     setMode('input');
   };
 
   const handleChangeOutputToken = () => {
-    // setIsTokensDialogOpen(true);
+    setIsTokensDialogOpen(true);
     setMode('output');
   };
 
@@ -549,7 +604,9 @@ const Swap = () => {
               !outputAmount ||
               !isWalletConnected ||
               isFetchingQuote ||
-              isInsufficientBalance
+              isInsufficientBalance ||
+              isEVMSwap ||
+              !isTokenApproved
             }
             fullWidth
             variant="outlined"

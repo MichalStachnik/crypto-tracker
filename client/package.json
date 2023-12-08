@@ -19,7 +19,7 @@
     "@mui/material": "^5.14.16",
     "@react-three/drei": "^9.88.10",
     "@react-three/fiber": "^8.15.9",
-    "@swapkit/sdk": "^1.0.0-rc.45",
+    "@swapkit/sdk": "^1.0.0-rc.73",
     "@types/recharts": "^1.8.24",
     "@types/three": "^0.158.1",
     "nostr-tools": "^1.17.0",
