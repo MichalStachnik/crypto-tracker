@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ChangeEvent, MouseEvent, useState } from 'react';
 import { WalletOption } from '@swapkit/sdk';
 import {
@@ -16,7 +17,7 @@ import {
 import LoadingButton from '@mui/lab/LoadingButton';
 import { Visibility, VisibilityOff } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
-import TwitterIcon from '@mui/icons-material/Twitter';
+// import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import { connectWallet } from '../utils/swapKit';
 
@@ -72,7 +73,7 @@ export function AuthDialog(props: AuthDialogProps) {
   );
   const [isWalletConnecting, setIsWalletConnecting] = useState(false);
   const [isGoogleLoading, setIsGoogleLoading] = useState(false);
-  const [isTwitterLoading, setIsTwitterLoading] = useState(false);
+  // const [isTwitterLoading, setIsTwitterLoading] = useState(false);
   const [isGitHubLoading, setIsGitHubLoading] = useState(false);
 
   const handleConnect = async () => {
@@ -141,17 +142,17 @@ export function AuthDialog(props: AuthDialogProps) {
     }
   };
 
-  const handleTwitterClick = async () => {
-    setIsTwitterLoading(true);
-    try {
-      const data = await fetch('/api/login/twitter');
-      const json = await data.json();
-      window.location.replace(json.url);
-    } catch (error) {
-      console.error('error', error);
-      setIsTwitterLoading(false);
-    }
-  };
+  // const handleTwitterClick = async () => {
+  //   setIsTwitterLoading(true);
+  //   try {
+  //     const data = await fetch('/api/login/twitter');
+  //     const json = await data.json();
+  //     window.location.replace(json.url);
+  //   } catch (error) {
+  //     console.error('error', error);
+  //     setIsTwitterLoading(false);
+  //   }
+  // };
 
   const handleGitHubClick = async () => {
     setIsGitHubLoading(true);
