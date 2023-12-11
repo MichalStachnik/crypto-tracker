@@ -11,7 +11,6 @@ import {
 import { LiveCoinWatchData } from '../types/LiveCoinWatchData';
 import BTCBlockWrapper from './BTCBlockWrapper';
 import BTCTransactionWrapper from './BTCTransactionWrapper';
-import { Timeline } from 'react-twitter-widgets';
 import ArticleIcon from '@mui/icons-material/Article';
 import LaunchIcon from '@mui/icons-material/Launch';
 import PublicIcon from '@mui/icons-material/Public';
@@ -395,17 +394,6 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
       <BTCTransactionWrapper />
       {/* TODO: fetch with jwt */}
       {/* <BTCMempoolWrapper /> */}
-      {liveCoinWatchData.links.twitter && (
-        <Timeline
-          dataSource={{
-            sourceType: 'profile',
-            screenName: `${liveCoinWatchData.links.twitter.split('.com/')[1]}`,
-          }}
-          options={{
-            height: '200',
-          }}
-        />
-      )}
     </Box>
   );
 };
