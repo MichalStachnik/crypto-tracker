@@ -1,4 +1,5 @@
-import { Chain, WalletOption, createSwapKit } from '@swapkit/sdk';
+import { Chain, WalletOption, createSwapKit, SwapKitCore } from '@swapkit/sdk';
+import { xdefiWallet } from '@swapkit/wallet-xdefi';
 
 export const swapKitClient = createSwapKit({
   config: {
@@ -32,4 +33,25 @@ export const connectWallet = (walletOption: WalletOption, phrase?: string) => {
     default:
       break;
   }
+};
+
+export const client = new SwapKitCore();
+client.extend({
+  wallets: [xdefiWallet],
+  config: {
+    ethplorerApiKey: import.meta.env.VITE_ETHPLORER_KEY,
+    blockchairApiKey: import.meta.env.VITE_BLOCKCHAIR_KEY,
+  },
+});
+
+export const connectXDEFI = async () => {
+  const res = await client.connectXDEFI(connectChains);
+  return res;
+};
+
+export const fetchWalletBalances = async () => {
+  const wallets = await Promise.all(
+    connectChains.map((chain) => client.getWalletByChain(chain))
+  );
+  return wallets;
 };
