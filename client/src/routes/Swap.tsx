@@ -38,7 +38,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import tokens from '../utils/tokens.json';
-import { connectChains, swapKitClient } from '../utils/swapKit';
+import { client, fetchWalletBalances, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
 const BalanceBox = ({
@@ -50,7 +50,7 @@ const BalanceBox = ({
 }) => {
   const userBalance = useMemo(() => {
     const chain = Chain[token.name as keyof typeof Chain];
-    const address = swapKitClient.getAddress(chain);
+    const address = client.getAddress(chain);
     const wallet = userWallets.find(
       (wallet: any) => wallet?.address === address
     );
@@ -376,16 +376,14 @@ const Swap = () => {
     }
   };
 
-  const fetchWalletBalances = async () => {
-    const wallets = await Promise.all(
-      connectChains.map((chain) => swapKitClient.getWalletByChain(chain))
-    );
+  const getWalletBalances = async () => {
+    const wallets = await fetchWalletBalances();
     setUserWallets(wallets);
   };
 
   useEffect(() => {
     if (!isWalletConnected) return;
-    fetchWalletBalances();
+    getWalletBalances();
   }, [isWalletConnected]);
 
   // TODO: add 1inch back in
