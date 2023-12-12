@@ -19,7 +19,7 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 // import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { connectWallet, connectXDEFI } from '../utils/swapKit';
+import { connectXDEFI } from '../utils/swapKit';
 
 const XDefiWalletLogo = () => {
   return (
