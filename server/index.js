@@ -684,13 +684,15 @@ app.get('/api/news/:query', async (req, res) => {
 
     // Check and get cmcData cache value
     const cacheValue = await redisClient.get('cmcData');
-    let cmcData = JSON.parse(cacheValue);
-    if (!cmcData) {
+    let cmcData;
+    if (!cacheValue) {
       const data = await fetch(
         `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
       );
       cmcData = await data.json();
       redisClient.setEx('cmcData', FIVE_MINUTES, JSON.stringify(cmcData));
+    } else {
+      cmcData = JSON.parse(cacheValue);
     }
 
     // For each notification data check if the corresponding cmcData price is greater
