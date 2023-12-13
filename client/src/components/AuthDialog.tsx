@@ -19,7 +19,6 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import GoogleIcon from '@mui/icons-material/Google';
 // import TwitterIcon from '@mui/icons-material/Twitter';
 import GitHubIcon from '@mui/icons-material/GitHub';
-import { connectXDEFI } from '../utils/swapKit';
 
 const XDefiWalletLogo = () => {
   return (
@@ -80,7 +79,8 @@ export function AuthDialog(props: AuthDialogProps) {
     setIsWalletConnecting(true);
     if (!selectedWallet) return;
     // const isConnected = await connectWallet(selectedWallet);
-    await connectXDEFI();
+    const swapkitImport = await import('../utils/swapKit');
+    await swapkitImport.connectXDEFI();
     setIsWalletConnecting(false);
     onClose(true);
   };
