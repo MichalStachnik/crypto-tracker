@@ -1,39 +1,41 @@
-import { Chain, WalletOption, createSwapKit, SwapKitCore } from '@swapkit/sdk';
+// import { Chain, WalletOption, createSwapKit, SwapKitCore } from '@swapkit/sdk';
+// import { Chain } from '@swapkit/sdk';
+import { Chain, SwapKitCore } from '@swapkit/core';
 import { xdefiWallet } from '@swapkit/wallet-xdefi';
 
-export const swapKitClient = createSwapKit({
-  config: {
-    ethplorerApiKey: import.meta.env.VITE_ETHPLORER_KEY,
-    blockchairApiKey: import.meta.env.VITE_BLOCKCHAIR_KEY,
-  },
-});
+// export const swapKitClient = createSwapKit({
+//   config: {
+//     ethplorerApiKey: import.meta.env.VITE_ETHPLORER_KEY,
+//     blockchairApiKey: import.meta.env.VITE_BLOCKCHAIR_KEY,
+//   },
+// });
 
 // const connectChains = [Chain.Ethereum, Chain.Bitcoin, Chain.THORChain];
 export const connectChains = [Chain.Ethereum, Chain.Bitcoin];
 export const connectEVMChains = [Chain.Ethereum];
 
-export const connectWallet = (walletOption: WalletOption, phrase?: string) => {
-  switch (walletOption) {
-    case WalletOption.KEYSTORE: {
-      return swapKitClient.connectKeystore(connectChains, phrase || '');
-    }
+// export const connectWallet = (walletOption: WalletOption, phrase?: string) => {
+//   switch (walletOption) {
+//     case WalletOption.KEYSTORE: {
+//       return swapKitClient.connectKeystore(connectChains, phrase || '');
+//     }
 
-    case WalletOption.XDEFI:
-      return swapKitClient.connectXDEFI(connectChains);
+//     case WalletOption.XDEFI:
+//       return swapKitClient.connectXDEFI(connectChains);
 
-    case WalletOption.WALLETCONNECT:
-      return swapKitClient.connectWalletconnect(connectChains);
+//     case WalletOption.WALLETCONNECT:
+//       return swapKitClient.connectWalletconnect(connectChains);
 
-    case WalletOption.METAMASK:
-      return swapKitClient.connectEVMWallet(
-        connectEVMChains,
-        WalletOption.METAMASK
-      );
+//     case WalletOption.METAMASK:
+//       return swapKitClient.connectEVMWallet(
+//         connectEVMChains,
+//         WalletOption.METAMASK
+//       );
 
-    default:
-      break;
-  }
-};
+//     default:
+//       break;
+//   }
+// };
 
 export const client = new SwapKitCore();
 client.extend({

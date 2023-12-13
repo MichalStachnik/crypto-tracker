@@ -17,18 +17,14 @@
     "@mui/icons-material": "^5.11.16",
     "@mui/lab": "^5.0.0-alpha.153",
     "@mui/material": "^5.14.16",
-    "@react-three/drei": "^9.88.10",
-    "@react-three/fiber": "^8.15.9",
-    "@swapkit/sdk": "^1.0.0-rc.77",
+    "@swapkit/sdk": "^1.0.0-rc.80",
     "@types/recharts": "^1.8.24",
-    "@types/three": "^0.158.1",
     "nostr-tools": "^1.17.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-ga4": "^2.1.0",
     "react-router-dom": "^6.13.0",
-    "recharts": "^2.6.2",
-    "three": "^0.158.0"
+    "recharts": "^2.6.2"
   },
   "devDependencies": {
     "@testing-library/react": "^14.0.0",
