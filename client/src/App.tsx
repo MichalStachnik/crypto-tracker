@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { lazy, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { Box } from '@mui/material';
 import { ThemeProvider, createTheme, styled } from '@mui/material/styles';
@@ -9,18 +9,28 @@ import { BlockProvider } from './contexts/BlockContext';
 import { CoinProvider } from './contexts/CoinContext';
 import { UserProvider } from './contexts/UserContext';
 import { WalletProvider } from './contexts/WalletContext';
-import Home from './routes/Home';
-import Bubbles from './routes/Bubbles';
-import Nostr from './routes/Nostr';
-import ExplorerRoute from './routes/ExplorerRoute';
-import PasswordReset from './routes/PasswordReset';
-import Swap from './routes/Swap';
-import WelcomeRoute from './routes/Welcome';
-import TermsRoute from './routes/Terms';
-import PrivacyRoute from './routes/Privacy';
+// import Home from './routes/Home';
+// import Bubbles from './routes/Bubbles';
+// import Nostr from './routes/Nostr';
+// import ExplorerRoute from './routes/ExplorerRoute';
+// import Swap from './routes/Swap';
+// import PasswordReset from './routes/PasswordReset';
+// import WelcomeRoute from './routes/Welcome';
+// import TermsRoute from './routes/Terms';
+// import PrivacyRoute from './routes/Privacy';
 import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import Sidebar from './components/Sidebar';
+
+const Home = lazy(() => import('./routes/Home'));
+const ExplorerRoute = lazy(() => import('./routes/ExplorerRoute'));
+const Swap = lazy(() => import('./routes/Swap'));
+const Nostr = lazy(() => import('./routes/Nostr'));
+const Bubbles = lazy(() => import('./routes/Bubbles'));
+const PasswordReset = lazy(() => import('./routes/PasswordReset'));
+const WelcomeRoute = lazy(() => import('./routes/Welcome'));
+const TermsRoute = lazy(() => import('./routes/Terms'));
+const PrivacyRoute = lazy(() => import('./routes/Privacy'));
 
 // const DynamicLoader = ({ component }: { component: string }) => {
 //   const LazyComponent = useMemo(

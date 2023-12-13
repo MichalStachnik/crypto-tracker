@@ -28,7 +28,6 @@ import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
 import { ViewInAr } from '@mui/icons-material';
-import { connectChains, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
 const drawerWidth = 240;
@@ -235,8 +234,11 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   // };
 
   const handleDisconnect = async () => {
+    const swapkitImport = await import('../utils/swapKit');
     if (isWalletConnected) {
-      connectChains.map((chain) => swapKitClient.disconnectChain(chain));
+      swapkitImport.connectChains.map((chain) =>
+        swapkitImport.swapKitClient.disconnectChain(chain)
+      );
     }
     localStorage.clear();
     userContext.setUser(null);
@@ -301,7 +303,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                 sx={[
                   {
                     background: (theme) => theme.palette.primary.dark,
-                    border: (_theme) => `1px solid white`,
+                    border: () => `1px solid white`,
                     borderRadius: 2,
                     m: 1,
                   },
@@ -335,7 +337,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                   sx={[
                     {
                       background: 'transparent',
-                      border: (_theme) => `1px solid white`,
+                      border: () => `1px solid white`,
                       borderRadius: 2,
                       m: 1,
                     },
@@ -369,7 +371,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                   sx={[
                     {
                       background: (theme) => theme.palette.primary.dark,
-                      border: (_theme) => `1px solid white`,
+                      border: () => `1px solid white`,
                       borderRadius: 2,
                       m: 1,
                     },

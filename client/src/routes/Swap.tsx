@@ -9,7 +9,7 @@ import {
   QuoteRoute,
   AssetValue,
   formatBigIntToSafeValue,
-  SwapKitValueType,
+  // SwapKitValueType,
 } from '@swapkit/sdk';
 import {
   Avatar,
@@ -38,7 +38,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import tokens from '../utils/tokens.json';
-import { client, fetchWalletBalances, swapKitClient } from '../utils/swapKit';
+// import { client, fetchWalletBalances, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
 const BalanceBox = ({
@@ -48,22 +48,50 @@ const BalanceBox = ({
   token: Token;
   userWallets: any;
 }) => {
-  const userBalance = useMemo(() => {
-    const chain = Chain[token.name as keyof typeof Chain];
-    const address = client.getAddress(chain);
-    const wallet = userWallets.find(
-      (wallet: any) => wallet?.address === address
-    );
+  const [userBalance, setUserBalance] = useState<string | null>(null);
 
-    const balance = wallet?.balance?.find(
-      (balance: any) => balance.symbol === token.ticker
-    );
-    if (!balance) return null;
-    return formatBigIntToSafeValue({
-      value: balance.bigIntValue,
-      decimal: balance.decimal,
-    });
-  }, [userWallets, token]);
+  useEffect(() => {
+    const getUserBalance = async () => {
+      const chain = Chain[token.name as keyof typeof Chain];
+      const swapkitImport = await import('../utils/swapKit');
+      const address = swapkitImport.client.getAddress(chain);
+      const wallet = userWallets.find(
+        (wallet: any) => wallet?.address === address
+      );
+
+      const balance = wallet?.balance?.find(
+        (balance: any) => balance.symbol === token.ticker
+      );
+      if (!balance) return null;
+
+      const b = formatBigIntToSafeValue({
+        value: balance.bigIntValue,
+        decimal: balance.decimal,
+      });
+      setUserBalance(b);
+    };
+    getUserBalance();
+  }, [token, userWallets]);
+
+  // const userBalance = useMemo(async () => {
+  //   const chain = Chain[token.name as keyof typeof Chain];
+  //   const swapkitImport = await import('../utils/swapKit');
+  //   // const address = client.getAddress(chain);
+  //   const address = swapkitImport.client.getAddress(chain);
+
+  //   const wallet = userWallets.find(
+  //     (wallet: any) => wallet?.address === address
+  //   );
+
+  //   const balance = wallet?.balance?.find(
+  //     (balance: any) => balance.symbol === token.ticker
+  //   );
+  //   if (!balance) return null;
+  //   return formatBigIntToSafeValue({
+  //     value: balance.bigIntValue,
+  //     decimal: balance.decimal,
+  //   });
+  // }, [userWallets, token]);
 
   if (!userBalance) return null;
 
@@ -240,15 +268,26 @@ const Swap = () => {
 
   const [bestRoute, setBestRoute] = useState<QuoteRoute | null>(null);
 
-  const getWalletAddressForToken = (token: Token): string => {
+  const getWalletAddressForToken = async (token: Token): Promise<string> => {
+    const swapkitImport = await import('../utils/swapKit');
     if (token.chain === 'BTC') {
-      return swapKitClient.getAddress(Chain.Bitcoin);
+      return swapkitImport.swapKitClient.getAddress(Chain.Bitcoin);
     }
     if (token.chain === 'ETH') {
-      return swapKitClient.getAddress(Chain.Ethereum);
+      return swapkitImport.swapKitClient.getAddress(Chain.Ethereum);
     }
     return '';
   };
+
+  // const getWalletAddressForToken = (token: Token): string => {
+  //   if (token.chain === 'BTC') {
+  //     return swapKitClient.getAddress(Chain.Bitcoin);
+  //   }
+  //   if (token.chain === 'ETH') {
+  //     return swapKitClient.getAddress(Chain.Ethereum);
+  //   }
+  //   return '';
+  // };
 
   const isEVMToken = (token: Token) => {
     if (token.chain === 'ETH' && token.address) {
@@ -258,7 +297,7 @@ const Swap = () => {
     }
   };
 
-  const createQuoteParams = () => {
+  const createQuoteParams = async () => {
     const formattedSellAsset = isEVMToken(inputToken)
       ? `${inputToken.chain}.${inputToken.ticker}-${inputToken.address}`
       : `${inputToken.chain}.${inputToken.ticker}`;
@@ -271,35 +310,35 @@ const Swap = () => {
       sellAsset: formattedSellAsset, // must be in the form 'chain.ticker' ex: 'BTC.BTC' | 'ETH.ETH'
       sellAmount: inputAmount.toString(),
       buyAsset: formattedBuyAsset,
-      senderAddress: getWalletAddressForToken(inputToken), // wallet to send sell asset
-      recipientAddress: getWalletAddressForToken(outputToken), // wallet to receive buy asset
+      senderAddress: await getWalletAddressForToken(inputToken), // wallet to send sell asset
+      recipientAddress: await getWalletAddressForToken(outputToken), // wallet to receive buy asset
       slippage: '3',
     };
   };
 
-  const getAssetValue = (token: Token): AssetValue => {
-    const assetValue = new AssetValue({
-      decimal: token.decimals,
-      value: inputAmount as SwapKitValueType,
-      identifier: token.ticker,
-    });
-    return assetValue;
-  };
+  // const getAssetValue = (token: Token): AssetValue => {
+  //   const assetValue = new AssetValue({
+  //     decimal: token.decimals,
+  //     value: inputAmount as SwapKitValueType,
+  //     identifier: token.ticker,
+  //   });
+  //   return assetValue;
+  // };
 
-  const isTokenApproved = async (token: Token) => {
-    const isApproved = await swapKitClient.isAssetValueApproved(
-      getAssetValue(token)
-    );
-    return isApproved;
-  };
+  // const isTokenApproved = async (token: Token) => {
+  //   const isApproved = await swapKitClient.isAssetValueApproved(
+  //     getAssetValue(token)
+  //   );
+  //   return isApproved;
+  // };
 
-  useEffect(() => {
-    isTokenApproved(inputToken);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputToken]);
+  // useEffect(() => {
+  // isTokenApproved(inputToken);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  // }, [inputToken]);
 
   const getBestRoute = async () => {
-    const quoteParams = createQuoteParams();
+    const quoteParams = await createQuoteParams();
     const { routes } = await SwapKitApi.getQuote(quoteParams);
     const bestRoute = routes.find(({ optimal }) => optimal);
     return bestRoute;
@@ -377,7 +416,9 @@ const Swap = () => {
   };
 
   const getWalletBalances = async () => {
-    const wallets = await fetchWalletBalances();
+    // const wallets = await fetchWalletBalances();
+    const swapkitImport = await import('../utils/swapKit');
+    const wallets = await swapkitImport.fetchWalletBalances();
     setUserWallets(wallets);
   };
 
@@ -451,10 +492,12 @@ const Swap = () => {
     if (!bestRoute) return;
     setIsTransactionLoading(true);
 
-    const quoteParams = createQuoteParams();
+    const quoteParams = await createQuoteParams();
+
+    const swapkitImport = await import('../utils/swapKit');
 
     try {
-      const txHash = await swapKitClient.swap({
+      const txHash = await swapkitImport.swapKitClient.swap({
         route: bestRoute,
         recipient: quoteParams.recipientAddress,
         feeOptionKey: FeeOption.Average,
@@ -464,7 +507,10 @@ const Swap = () => {
         // Fastest => 2
       });
       const inputChain = Chain[inputToken.name as keyof typeof Chain];
-      const explorerUrl = swapKitClient.getExplorerTxUrl(inputChain, txHash);
+      const explorerUrl = swapkitImport.swapKitClient.getExplorerTxUrl(
+        inputChain,
+        txHash
+      );
       setTxUrl(explorerUrl);
     } catch (error) {
       console.error('swap error', error);
@@ -603,8 +649,8 @@ const Swap = () => {
               !isWalletConnected ||
               isFetchingQuote ||
               isInsufficientBalance ||
-              isEVMSwap ||
-              !isTokenApproved
+              isEVMSwap
+              // || !isTokenApproved
             }
             fullWidth
             variant="outlined"
