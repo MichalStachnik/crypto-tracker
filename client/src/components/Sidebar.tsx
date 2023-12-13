@@ -27,10 +27,9 @@ import AuthDialog from './AuthDialog';
 import NotificationDialog from './NotificationDialog';
 import { Coin } from '../types/Coin';
 import { CoinContext } from '../contexts/CoinContext';
-import { ViewInAr } from '@mui/icons-material';
+// import { ViewInAr } from '@mui/icons-material';
 import { WalletContext } from '../contexts/WalletContext';
-
-const drawerWidth = 240;
+import { drawerWidth } from '../App';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -127,14 +126,15 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
         handleClick: () => navigate('/nostr'),
         icon: <BoltIcon color="primary" />,
         path: '/nostr',
-      },
-      {
-        name: 'Explorer',
-        handleClick: () => navigate('/explorer'),
-        icon: <ViewInAr color="primary" />,
-        path: '/explorer',
         isBeta: true,
       },
+      // {
+      //   name: 'Explorer',
+      //   handleClick: () => navigate('/explorer'),
+      //   icon: <ViewInAr color="primary" />,
+      //   path: '/explorer',
+      //   isBeta: true,
+      // },
       {
         name: 'Notifications',
         handleClick: () => setIsNotificationDialogOpen(true),
@@ -237,7 +237,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     const swapkitImport = await import('../utils/swapKit');
     if (isWalletConnected) {
       swapkitImport.connectChains.map((chain) =>
-        swapkitImport.swapKitClient.disconnectChain(chain)
+        swapkitImport.client.disconnectChain(chain)
       );
     }
     localStorage.clear();

@@ -271,10 +271,10 @@ const Swap = () => {
   const getWalletAddressForToken = async (token: Token): Promise<string> => {
     const swapkitImport = await import('../utils/swapKit');
     if (token.chain === 'BTC') {
-      return swapkitImport.swapKitClient.getAddress(Chain.Bitcoin);
+      return swapkitImport.client.getAddress(Chain.Bitcoin);
     }
     if (token.chain === 'ETH') {
-      return swapkitImport.swapKitClient.getAddress(Chain.Ethereum);
+      return swapkitImport.client.getAddress(Chain.Ethereum);
     }
     return '';
   };
@@ -497,7 +497,7 @@ const Swap = () => {
     const swapkitImport = await import('../utils/swapKit');
 
     try {
-      const txHash = await swapkitImport.swapKitClient.swap({
+      const txHash = await swapkitImport.client.swap({
         route: bestRoute,
         recipient: quoteParams.recipientAddress,
         feeOptionKey: FeeOption.Average,
@@ -507,7 +507,7 @@ const Swap = () => {
         // Fastest => 2
       });
       const inputChain = Chain[inputToken.name as keyof typeof Chain];
-      const explorerUrl = swapkitImport.swapKitClient.getExplorerTxUrl(
+      const explorerUrl = swapkitImport.client.getExplorerTxUrl(
         inputChain,
         txHash
       );
