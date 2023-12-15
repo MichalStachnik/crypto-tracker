@@ -62,7 +62,10 @@ const BalanceBox = ({
       const balance = wallet?.balance?.find(
         (balance: any) => balance.symbol === token.ticker
       );
-      if (!balance) return null;
+      if (!balance) {
+        setUserBalance('0');
+        return;
+      }
 
       const b = formatBigIntToSafeValue({
         value: balance.bigIntValue,
@@ -367,7 +370,7 @@ const Swap = () => {
       return () => clearTimeout(timeoutId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputAmount]);
+  }, [inputAmount, inputToken, outputToken]);
 
   const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
@@ -425,7 +428,7 @@ const Swap = () => {
   useEffect(() => {
     if (!isWalletConnected) return;
     getWalletBalances();
-  }, [isWalletConnected]);
+  }, [isWalletConnected, inputToken, outputToken]);
 
   // TODO: add 1inch back in
   // const handleSwap = async () => {
