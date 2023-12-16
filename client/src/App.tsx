@@ -14,8 +14,6 @@ import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import Sidebar from './components/Sidebar';
 
-// const Home = lazy(() => import('./routes/Home'));
-
 const DynamicLoader = ({ component }: { component: string }) => {
   const LazyComponent = useMemo(
     () => lazy(() => import(`./routes/${component}.tsx`)),
