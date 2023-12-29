@@ -41,6 +41,15 @@ import tokens from '../utils/tokens.json';
 // import { client, fetchWalletBalances, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
+interface EnumMapper {
+  [key: string]: string;
+}
+
+const enumMapper: EnumMapper = {
+  ETH: 'Ethereum',
+  BTC: ' Bitcoin',
+};
+
 const BalanceBox = ({
   token,
   userWallets,
@@ -52,7 +61,8 @@ const BalanceBox = ({
 
   useEffect(() => {
     const getUserBalance = async () => {
-      const chain = Chain[token.name as keyof typeof Chain];
+      const chainName = enumMapper[token.chain];
+      const chain = Chain[chainName as keyof typeof Chain];
       const swapkitImport = await import('../utils/swapKit');
       const address = swapkitImport.client.getAddress(chain);
       const wallet = userWallets.find(
@@ -60,9 +70,12 @@ const BalanceBox = ({
       );
 
       const balance = wallet?.balance?.find(
-        (balance: any) => balance.symbol === token.ticker
+        (balance: any) => balance.ticker === token.ticker
       );
-      if (!balance) return null;
+      if (!balance) {
+        setUserBalance('0');
+        return;
+      }
 
       const b = formatBigIntToSafeValue({
         value: balance.bigIntValue,
@@ -116,10 +129,11 @@ interface Token {
 export interface TokensDialogProps {
   open: boolean;
   onClose: (token: Token | null) => void;
+  availableTokens: Token[];
 }
 
 function TokensDialog(props: TokensDialogProps) {
-  const { onClose, open } = props;
+  const { onClose, open, availableTokens } = props;
 
   const handleClose = () => {
     onClose(null);
@@ -133,7 +147,7 @@ function TokensDialog(props: TokensDialogProps) {
     <Dialog onClose={handleClose} open={open}>
       <DialogTitle>Choose a token</DialogTitle>
       <List sx={{ pt: 0 }}>
-        {tokens
+        {availableTokens
           .filter((_, index) => index <= 2)
           .map((token) => (
             <ListItem disableGutters key={token.ticker}>
@@ -163,6 +177,12 @@ const StyledOutlinedInput = styled(OutlinedInput)(() => ({
   },
   '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
     display: 'none',
+  },
+}));
+
+export const StyledIconButton = styled(IconButton)(() => ({
+  '&:focus': {
+    outline: 'none',
   },
 }));
 
@@ -243,11 +263,12 @@ const StyledOutlinedInput = styled(OutlinedInput)(() => ({
 // };
 
 const Swap = () => {
-  const { isWalletConnected } = useContext(WalletContext);
+  const { isWalletConnected, connectedChains } = useContext(WalletContext);
   const [inputAmount, setInputAmount] = useState<number | string>('');
   const [outputAmount, setOutputAmount] = useState<number | string>('');
-  const [inputToken, setInputToken] = useState<Token>(tokens[0]);
-  const [outputToken, setOutputToken] = useState<Token>(tokens[1]);
+  const [availableTokens, setAvailableTokens] = useState<Token[]>(tokens);
+  const [inputToken, setInputToken] = useState<Token>(availableTokens[0]);
+  const [outputToken, setOutputToken] = useState<Token>(availableTokens[1]);
   const [prices] = useState<Prices>({
     token1: null,
     token2: null,
@@ -344,14 +365,6 @@ const Swap = () => {
     return bestRoute;
   };
 
-  const isEVMSwap = useMemo(() => {
-    if (inputToken.chain === 'ETH' && outputToken.chain === 'ETH') {
-      return true;
-    } else {
-      return false;
-    }
-  }, [inputToken, outputToken]);
-
   useEffect(() => {
     if (inputAmount) {
       const timeoutId = setTimeout(async () => {
@@ -367,7 +380,7 @@ const Swap = () => {
       return () => clearTimeout(timeoutId);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [inputAmount]);
+  }, [inputAmount, inputToken, outputToken]);
 
   const handleInputAmountChange = (e: ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === '') {
@@ -424,8 +437,18 @@ const Swap = () => {
 
   useEffect(() => {
     if (!isWalletConnected) return;
+    if (!connectedChains?.BTC) {
+      const newTokens = tokens.filter((token) => token.chain !== 'BTC');
+      setAvailableTokens(newTokens);
+      setInputToken(newTokens[0]);
+      setOutputToken(newTokens[1]);
+    }
+  }, [isWalletConnected, connectedChains]);
+
+  useEffect(() => {
+    if (!isWalletConnected) return;
     getWalletBalances();
-  }, [isWalletConnected]);
+  }, [isWalletConnected, inputToken, outputToken]);
 
   // TODO: add 1inch back in
   // const handleSwap = async () => {
@@ -576,14 +599,14 @@ const Swap = () => {
               placeholder="0"
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton
+                  <StyledIconButton
                     aria-label="input token"
                     onClick={handleChangeInputToken}
                     onMouseDown={handleMouseDownTokenOne}
                     edge="end"
                   >
                     <Avatar src={inputToken.img} />
-                  </IconButton>
+                  </StyledIconButton>
                 </InputAdornment>
               }
               label="InputAmount"
@@ -591,9 +614,9 @@ const Swap = () => {
           </FormControl>
           <BalanceBox token={inputToken} userWallets={userWallets} />
           <Box component="div">
-            <IconButton onClick={handleTokenSwitch}>
+            <StyledIconButton onClick={handleTokenSwitch}>
               <ArrowDownwardIcon color="primary" />
-            </IconButton>
+            </StyledIconButton>
           </Box>
           <FormControl sx={{ my: 1, width: '100%' }} variant="outlined">
             <InputLabel htmlFor="OutputAmount" sx={{ color: '#808080' }}>
@@ -607,14 +630,14 @@ const Swap = () => {
               placeholder="0"
               endAdornment={
                 <InputAdornment position="end">
-                  <IconButton
+                  <StyledIconButton
                     aria-label="output token"
                     onClick={handleChangeOutputToken}
                     onMouseDown={handleMouseDownTokenTwo}
                     edge="end"
                   >
                     <Avatar src={outputToken.img} />
-                  </IconButton>
+                  </StyledIconButton>
                 </InputAdornment>
               }
               label="OutputAmount"
@@ -648,8 +671,7 @@ const Swap = () => {
               !outputAmount ||
               !isWalletConnected ||
               isFetchingQuote ||
-              isInsufficientBalance ||
-              isEVMSwap
+              isInsufficientBalance
               // || !isTokenApproved
             }
             fullWidth
@@ -670,6 +692,7 @@ const Swap = () => {
       <TokensDialog
         open={isTokensDialogOpen}
         onClose={handleTokensDialogClose}
+        availableTokens={availableTokens}
       />
     </Box>
   );

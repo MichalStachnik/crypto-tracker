@@ -3,7 +3,6 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import {
   Badge,
   Drawer as MuiDrawer,
-  IconButton,
   List,
   ListItem,
   ListItemButton,
@@ -22,6 +21,7 @@ import TimelineIcon from '@mui/icons-material/Timeline';
 import ListItemText from '@mui/material/ListItemText';
 import PersonAddAlt1Icon from '@mui/icons-material/PersonAddAlt1';
 import LoginIcon from '@mui/icons-material/Login';
+import PowerOffIcon from '@mui/icons-material/PowerOff';
 import { UserContext } from '../contexts/UserContext';
 import AuthDialog from './AuthDialog';
 import NotificationDialog from './NotificationDialog';
@@ -30,6 +30,7 @@ import { CoinContext } from '../contexts/CoinContext';
 // import { ViewInAr } from '@mui/icons-material';
 import { WalletContext } from '../contexts/WalletContext';
 import { drawerWidth } from '../App';
+import { StyledIconButton } from '../routes/Swap';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,
@@ -254,13 +255,13 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
   return (
     <Drawer variant="permanent" open={isOpen}>
       <DrawerHeader>
-        <IconButton onClick={() => setIsOpen(!isOpen)}>
+        <StyledIconButton onClick={() => setIsOpen(!isOpen)}>
           {!isOpen ? (
             <ChevronRightIcon color="primary" />
           ) : (
             <ChevronLeftIcon color="primary" />
           )}
-        </IconButton>
+        </StyledIconButton>
       </DrawerHeader>
       <List>
         {TopMenuItems.map((menuItem) => (
@@ -315,14 +316,19 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
                   },
                 ]}
               >
-                <ListItemText
-                  primary="Disconnect"
-                  sx={{
-                    display: 'flex',
-                    justifyContent: 'center',
-                    color: 'white',
-                  }}
-                />
+                <ListItemIcon>
+                  <PowerOffIcon htmlColor="white" />
+                </ListItemIcon>
+                {isOpen && (
+                  <ListItemText
+                    primary="Disconnect"
+                    sx={{
+                      display: 'flex',
+                      justifyContent: 'center',
+                      color: 'white',
+                    }}
+                  />
+                )}
               </ListItemButton>
             </ListItem>
           </>

@@ -14,24 +14,6 @@ import Header from './components/Header';
 import NewsFeed from './components/NewsFeed';
 import Sidebar from './components/Sidebar';
 
-// const Home = lazy(() => import('./routes/Home'));
-// const ExplorerRoute = lazy(() => import('./routes/ExplorerRoute'));
-// const Swap = lazy(() => import('./routes/Swap'));
-// const Nostr = lazy(() => import('./routes/Nostr'));
-// const Bubbles = lazy(() => import('./routes/Bubbles'));
-// const PasswordReset = lazy(() => import('./routes/PasswordReset'));
-// const WelcomeRoute = lazy(() => import('./routes/Welcome'));
-// const TermsRoute = lazy(() => import('./routes/Terms'));
-// const PrivacyRoute = lazy(() => import('./routes/Privacy'));
-
-// const SwapLoader = () => {
-//   return (
-//     <Suspense fallback={<CircularProgress />}>
-//       <Swap />
-//     </Suspense>
-//   );
-// };
-
 const DynamicLoader = ({ component }: { component: string }) => {
   const LazyComponent = useMemo(
     () => lazy(() => import(`./routes/${component}.tsx`)),

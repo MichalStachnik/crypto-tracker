@@ -1,7 +1,8 @@
 // import { Chain, WalletOption, createSwapKit, SwapKitCore } from '@swapkit/sdk';
 // import { Chain } from '@swapkit/sdk';
-import { Chain, SwapKitCore } from '@swapkit/core';
+import { Chain, SwapKitCore, EVMWalletOptions } from '@swapkit/core';
 import { xdefiWallet } from '@swapkit/wallet-xdefi';
+import { evmWallet } from '@swapkit/wallet-evm-extensions';
 
 // export const swapKitClient = createSwapKit({
 //   config: {
@@ -39,7 +40,7 @@ export const connectEVMChains = [Chain.Ethereum];
 
 export const client = new SwapKitCore();
 client.extend({
-  wallets: [xdefiWallet],
+  wallets: [xdefiWallet, evmWallet],
   config: {
     ethplorerApiKey: import.meta.env.VITE_ETHPLORER_KEY,
     blockchairApiKey: import.meta.env.VITE_BLOCKCHAIR_KEY,
@@ -48,6 +49,16 @@ client.extend({
 
 export const connectXDEFI = async () => {
   const res = await client.connectXDEFI(connectChains);
+  return res;
+};
+
+export const connectEVMWallet = async (wallet: EVMWalletOptions) => {
+  const res = await client.connectEVMWallet(connectEVMChains, wallet);
+  return res;
+};
+
+export const getConnectedChains = () => {
+  const res = client.connectedChains;
   return res;
 };
 

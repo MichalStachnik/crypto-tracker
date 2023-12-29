@@ -52,7 +52,11 @@ export const CoinProvider = ({ children }: CoinProviderProps) => {
   const fetchCMC = () => {
     fetch('/api/cmc')
       .then((res) => res.json())
-      .then((res) => setCoins(res.data))
+      .then((res) => {
+        if (res.data) {
+          setCoins(res.data);
+        }
+      })
       .catch((err) => console.error('Error', err));
   };
 
