@@ -21,8 +21,6 @@ const FIVE_MINUTES = 60 * 5;
 
 app.use(express.json());
 
-// app.use('/api/swap', swap);
-
 let redisClient;
 
 (async () => {
@@ -673,53 +671,60 @@ app.get('/api/news/:query', async (req, res) => {
 // Check notifications
 (() => {
   setInterval(async () => {
-    // Get all notifications
-    const { data: notificationData, error } = await supabase
-      .from('notifications')
-      .select('*');
-    if (error) {
-      console.error('error', error);
-      return;
-    }
-
-    // Check and get cmcData cache value
-    const cacheValue = await redisClient.get('cmcData');
-    let cmcData;
-    if (!cacheValue) {
-      const data = await fetch(
-        `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
-      );
-      cmcData = await data.json();
-      redisClient.setEx('cmcData', FIVE_MINUTES, JSON.stringify(cmcData));
-    } else {
-      cmcData = JSON.parse(cacheValue);
-    }
-
-    // For each notification data check if the corresponding cmcData price is greater
-    notificationData.map(async (notificationItem) => {
-      const cmcItem = cmcData.data.find(
-        (item) => item.name === notificationItem.coin
-      );
-
-      if (cmcItem.quote.USD.price >= notificationItem.price) {
-        const response = await fetch(process.env.SUPABASE_EMAIL_EDGE_FUNCTION, {
-          method: 'POST',
-          headers: {
-            'content-type': 'application/json',
-          },
-          body: JSON.stringify({
-            email: notificationItem.email,
-            message: `hey! ${notificationItem.coin} has reached ${notificationItem.price} - check it out on wenmewn.app`,
-          }),
-        });
-
-        // Remove notification from table
-        await supabase
-          .from('notifications')
-          .delete()
-          .eq('id', notificationItem.id);
+    try {
+      // Get all notifications
+      const { data: notificationData, error } = await supabase
+        .from('notifications')
+        .select('*');
+      if (error) {
+        console.error('error', error);
+        return;
       }
-    });
+
+      // Check and get cmcData cache value
+      const cacheValue = await redisClient.get('cmcData');
+      let cmcData;
+      if (!cacheValue) {
+        const data = await fetch(
+          `${CMC_BASE_URL}/v1/cryptocurrency/listings/latest?CMC_PRO_API_KEY=${process.env.CMC_API_KEY}`
+        );
+        cmcData = await data.json();
+        redisClient.setEx('cmcData', FIVE_MINUTES, JSON.stringify(cmcData));
+      } else {
+        cmcData = JSON.parse(cacheValue);
+      }
+
+      // For each notification data check if the corresponding cmcData price is greater
+      notificationData.map(async (notificationItem) => {
+        const cmcItem = cmcData.data.find(
+          (item) => item.name === notificationItem.coin
+        );
+
+        if (cmcItem.quote.USD.price >= notificationItem.price) {
+          const response = await fetch(
+            process.env.SUPABASE_EMAIL_EDGE_FUNCTION,
+            {
+              method: 'POST',
+              headers: {
+                'content-type': 'application/json',
+              },
+              body: JSON.stringify({
+                email: notificationItem.email,
+                message: `hey! ${notificationItem.coin} has reached ${notificationItem.price} - check it out on wenmewn.app`,
+              }),
+            }
+          );
+
+          // Remove notification from table
+          await supabase
+            .from('notifications')
+            .delete()
+            .eq('id', notificationItem.id);
+        }
+      });
+    } catch (error) {
+      console.error('Error checking notifications');
+    }
   }, 1000 * 60 * 5);
 })();
 
