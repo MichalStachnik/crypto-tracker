@@ -21,8 +21,6 @@ const FIVE_MINUTES = 60 * 5;
 
 app.use(express.json());
 
-// app.use('/api/swap', swap);
-
 let redisClient;
 
 (async () => {
