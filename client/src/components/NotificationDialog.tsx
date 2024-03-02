@@ -48,7 +48,7 @@ function NotificationDialog(props: NotificationDialogProps) {
   };
 
   const handleSubmit = () => {
-    if (!price) return;
+    if (!price || !coin) return;
     onSubmit({ coin, price });
     setCoin('');
     setPrice(0);
@@ -70,8 +70,6 @@ function NotificationDialog(props: NotificationDialogProps) {
   };
 
   const handleNotificationDelete = async (notification: any) => {
-    console.log('deleting', notification);
-
     const response = await fetch('/api/delete-notification', {
       method: 'POST',
       headers: {
