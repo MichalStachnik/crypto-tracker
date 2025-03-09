@@ -163,7 +163,7 @@ export const StyledIconButton = styled(IconButton)(() => ({
   },
 }));
 
-interface UserWallet {
+export interface UserWallet {
   address?: string | undefined;
   balance?: AssetValue[] | undefined;
   walletType?: WalletOption | undefined;
@@ -186,7 +186,7 @@ const Swap = () => {
   const [mode, setMode] = useState<'input' | 'output'>('input');
   const [txUrl, setTxUrl] = useState('');
 
-  const [userWallets, setUserWallets] = useState<(UserWallet | null)[]>([]);
+  const [userWallets, setUserWallets] = useState<UserWallet[]>([]);
 
   const [bestRoute, setBestRoute] = useState<QuoteRoute | null>(null);
 
@@ -299,10 +299,9 @@ const Swap = () => {
   };
 
   const getWalletBalances = async () => {
-    // const wallets = await fetchWalletBalances();
     const swapkitImport = await import('../utils/swapKit');
     const wallets = await swapkitImport.fetchWalletBalances();
-    setUserWallets(wallets);
+    setUserWallets(wallets as UserWallet[]);
   };
 
   useEffect(() => {
@@ -428,10 +427,7 @@ const Swap = () => {
               label="InputAmount"
             />
           </FormControl>
-          <BalanceBox
-            token={inputToken}
-            userWallets={userWallets?.filter((wallet) => wallet !== null)}
-          />
+          <BalanceBox token={inputToken} userWallets={userWallets ?? null} />
           <Box component="div">
             <StyledIconButton onClick={handleTokenSwitch}>
               <ArrowDownwardIcon color="primary" />
@@ -462,10 +458,7 @@ const Swap = () => {
               label="OutputAmount"
             />
           </FormControl>
-          <BalanceBox
-            token={outputToken}
-            userWallets={userWallets?.filter((wallet) => wallet !== null)}
-          />
+          <BalanceBox token={outputToken} userWallets={userWallets ?? null} />
           <Box
             component="div"
             display="flex"
