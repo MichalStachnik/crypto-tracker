@@ -56,7 +56,9 @@ const BTCBlockWrapper = () => {
             height={40}
             component="div"
           >
-            <Typography mr={2}>BTC Latest Blocks</Typography>
+            <Typography mr={2} color="primary">
+              BTC Latest Blocks
+            </Typography>
             {isLoading && <CircularProgress />}
           </Box>
           <Box component="div">

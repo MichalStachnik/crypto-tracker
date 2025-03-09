@@ -1,3 +1,4 @@
+/* eslint-disable no-constant-condition */
 import { useContext, useState } from 'react';
 import { Box, CircularProgress, Skeleton } from '@mui/material';
 import CoinHeader from '../components/CoinHeader';
