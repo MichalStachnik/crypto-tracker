@@ -97,7 +97,9 @@ const BTCTransactionWrapper = () => {
             mt={2}
             component="div"
           >
-            <Typography># of transactions broadcast in last 2s</Typography>
+            <Typography color="primary">
+              # of transactions broadcast in last 2s
+            </Typography>
             <Typography ml={5} color="#fa9e32">
               {transactions.size}
             </Typography>
@@ -111,7 +113,9 @@ const BTCTransactionWrapper = () => {
             alignItems="center"
             component="div"
           >
-            <Typography align="left">average # of transactions</Typography>
+            <Typography align="left" color="primary">
+              average # of transactions
+            </Typography>
             <Typography ml={5} color="#fa9e32">
               {Math.floor(average)}
             </Typography>

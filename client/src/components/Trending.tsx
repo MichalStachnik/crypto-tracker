@@ -27,7 +27,9 @@ const Trending = () => {
     <Box component="div">
       <Box display="flex" justifyContent="center" component="div" mb={1}>
         <WhatshotIcon color="warning" />
-        <Typography ml={1}>Top 10 Trending Coins</Typography>
+        <Typography ml={1} color="primary">
+          Top 10 Trending Coins
+        </Typography>
       </Box>
       <Box display="flex" flexDirection="column" component="div">
         {trendingCoins && trendingCoins.length

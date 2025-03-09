@@ -125,7 +125,7 @@ const CoinHeader = ({
             </ToggleButtonGroup>
           </Box>
         </Box>
-        <Typography mx={2} display="inline">
+        <Typography mx={2} display="inline" color="primary">
           data for
         </Typography>
         &nbsp;

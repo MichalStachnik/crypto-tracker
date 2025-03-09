@@ -1,5 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import {
   Chain,
@@ -9,7 +7,6 @@ import {
   QuoteRoute,
   AssetValue,
   formatBigIntToSafeValue,
-  // SwapKitValueType,
 } from '@swapkit/sdk';
 import {
   Avatar,
@@ -38,7 +35,6 @@ import LoadingButton from '@mui/lab/LoadingButton';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
 
 import tokens from '../utils/tokens.json';
-// import { client, fetchWalletBalances, swapKitClient } from '../utils/swapKit';
 import { WalletContext } from '../contexts/WalletContext';
 
 interface EnumMapper {
@@ -55,22 +51,23 @@ const BalanceBox = ({
   userWallets,
 }: {
   token: Token;
-  userWallets: any;
+  userWallets: UserWallet[] | null;
 }) => {
   const [userBalance, setUserBalance] = useState<string | null>(null);
 
   useEffect(() => {
     const getUserBalance = async () => {
+      if (!userWallets) return;
       const chainName = enumMapper[token.chain];
       const chain = Chain[chainName as keyof typeof Chain];
       const swapkitImport = await import('../utils/swapKit');
       const address = swapkitImport.client.getAddress(chain);
       const wallet = userWallets.find(
-        (wallet: any) => wallet?.address === address
+        (wallet: UserWallet) => wallet?.address === address
       );
 
       const balance = wallet?.balance?.find(
-        (balance: any) => balance.ticker === token.ticker
+        (balance: AssetValue) => balance.ticker === token.ticker
       );
       if (!balance) {
         setUserBalance('0');
@@ -85,26 +82,6 @@ const BalanceBox = ({
     };
     getUserBalance();
   }, [token, userWallets]);
-
-  // const userBalance = useMemo(async () => {
-  //   const chain = Chain[token.name as keyof typeof Chain];
-  //   const swapkitImport = await import('../utils/swapKit');
-  //   // const address = client.getAddress(chain);
-  //   const address = swapkitImport.client.getAddress(chain);
-
-  //   const wallet = userWallets.find(
-  //     (wallet: any) => wallet?.address === address
-  //   );
-
-  //   const balance = wallet?.balance?.find(
-  //     (balance: any) => balance.symbol === token.ticker
-  //   );
-  //   if (!balance) return null;
-  //   return formatBigIntToSafeValue({
-  //     value: balance.bigIntValue,
-  //     decimal: balance.decimal,
-  //   });
-  // }, [userWallets, token]);
 
   if (!userBalance) return null;
 
@@ -186,81 +163,11 @@ export const StyledIconButton = styled(IconButton)(() => ({
   },
 }));
 
-// const getAllowance = async (tokenAddress: string, walletAddress: string) => {
-//   try {
-//     const data = await fetch(
-//       `/api/get-allowance/${tokenAddress}/${walletAddress}`
-//     );
-//     const { allowance } = await data.json();
-//     return Number(allowance);
-//   } catch (error) {
-//     console.error('error', error);
-//   }
-// };
-
-// const chainId = 1;
-
-// const apiBaseUrl = 'https://api.1inch.dev/swap/v5.2/' + chainId;
-// const apiRequestUrl = (methodName: string, queryParams: any) => {
-//   return (
-//     apiBaseUrl + methodName + '?' + new URLSearchParams(queryParams).toString()
-//   );
-// };
-
-// const headers = {
-//   headers: { Authorization: 'Bearer YOUR_API_KEY', accept: 'application/json' },
-// };
-
-// const buildTxForApproveTradeWithRouter = async (
-//   // walletAddress: string,
-//   tokenAddress: string,
-//   amount: string
-// ) => {
-//   const url = apiRequestUrl(
-//     '/approve/transaction',
-//     amount ? { tokenAddress, amount } : { tokenAddress }
-//   );
-
-//   const transaction = await fetch(url, headers).then((res) => res.json());
-
-//   // const gasLimit = await web3.eth.estimateGas({
-//   //   ...transaction,
-//   //   from: walletAddress,
-//   // });
-
-//   return {
-//     ...transaction,
-//     // gas: gasLimit,
-//   };
-// };
-
-// const broadcastApiUrl =
-//   'https://api.1inch.dev/tx-gateway/v1.1/' + chainId + '/broadcast';
-
-// const broadCastRawTransaction = (rawTransaction) => {
-//   return fetch(broadcastApiUrl, {
-//     method: 'post',
-//     body: JSON.stringify({ rawTransaction }),
-//     headers: {
-//       'Content-Type': 'application/json',
-//       Authorization: 'Bearer YOUR-API-KEY',
-//     },
-//   })
-//     .then((res) => res.json())
-//     .then((res) => {
-//       return res.transactionHash;
-//     });
-// };
-
-// // Sign and post a transaction, return its hash
-// const signAndSendTransaction = async (transaction) => {
-//   const { rawTransaction } = await web3.eth.accounts.signTransaction(
-//     transaction,
-//     privateKey
-//   );
-
-//   return await broadCastRawTransaction(rawTransaction);
-// };
+interface UserWallet {
+  address?: string | undefined;
+  balance?: AssetValue[] | undefined;
+  walletType?: WalletOption | undefined;
+}
 
 const Swap = () => {
   const { isWalletConnected, connectedChains } = useContext(WalletContext);
@@ -279,13 +186,7 @@ const Swap = () => {
   const [mode, setMode] = useState<'input' | 'output'>('input');
   const [txUrl, setTxUrl] = useState('');
 
-  const [userWallets, setUserWallets] = useState<
-    ({
-      address?: string | undefined;
-      balance?: AssetValue[] | undefined;
-      walletType?: WalletOption | undefined;
-    } | null)[]
-  >([]);
+  const [userWallets, setUserWallets] = useState<(UserWallet | null)[]>([]);
 
   const [bestRoute, setBestRoute] = useState<QuoteRoute | null>(null);
 
@@ -299,16 +200,6 @@ const Swap = () => {
     }
     return '';
   };
-
-  // const getWalletAddressForToken = (token: Token): string => {
-  //   if (token.chain === 'BTC') {
-  //     return swapKitClient.getAddress(Chain.Bitcoin);
-  //   }
-  //   if (token.chain === 'ETH') {
-  //     return swapKitClient.getAddress(Chain.Ethereum);
-  //   }
-  //   return '';
-  // };
 
   const isEVMToken = (token: Token) => {
     if (token.chain === 'ETH' && token.address) {
@@ -336,27 +227,6 @@ const Swap = () => {
       slippage: '3',
     };
   };
-
-  // const getAssetValue = (token: Token): AssetValue => {
-  //   const assetValue = new AssetValue({
-  //     decimal: token.decimals,
-  //     value: inputAmount as SwapKitValueType,
-  //     identifier: token.ticker,
-  //   });
-  //   return assetValue;
-  // };
-
-  // const isTokenApproved = async (token: Token) => {
-  //   const isApproved = await swapKitClient.isAssetValueApproved(
-  //     getAssetValue(token)
-  //   );
-  //   return isApproved;
-  // };
-
-  // useEffect(() => {
-  // isTokenApproved(inputToken);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [inputToken]);
 
   const getBestRoute = async () => {
     const quoteParams = await createQuoteParams();
@@ -449,60 +319,6 @@ const Swap = () => {
     if (!isWalletConnected) return;
     getWalletBalances();
   }, [isWalletConnected, inputToken, outputToken]);
-
-  // TODO: add 1inch back in
-  // const handleSwap = async () => {
-  //   if (!address || Number(inputAmount) < 0) return;
-  //   // Check is user is allowed to use this token
-  //   const allowance = await getAllowance(inputToken.address, address);
-  //   // Encountering more than 1 RPS error with 1inch
-  //   if (allowance === 0) {
-  //     setTimeout(async () => {
-  //       const data = await fetch(
-  //         `/api/approve-transaction/${
-  //           inputToken.address
-  //         }/${inputAmount.toString()}`
-  //       );
-  //       let transaction = await data.json();
-  //       console.log('transaction', transaction);
-  //       const request = await prepareSendTransaction({
-  //         to: transaction.to,
-  //         value: parseEther(transaction.value),
-  //       });
-
-  //       console.log('prepared request...', request);
-
-  //       transaction = {
-  //         ...transaction,
-  //         gas: request.gas,
-  //       };
-
-  //       const approved = confirm('approve?');
-
-  //       if (approved) {
-  //         // const approveTxHash = await signAndSendTransaction(transactionForSign);
-
-  //         const { hash } = await sendTransaction(request);
-
-  //         console.log('Approve tx hash: ', hash);
-  //         // Sign and send the transaction
-  //       }
-  //     }, 1000);
-  //   }
-  //   // Else we are already allowed to use the token for this wallet
-  // };
-
-  // const fetchPrices = async (address1: string, address2: string) => {
-  //   const res = await fetch(`/api/tokens-price/${address1}/${address2}`);
-  //   const data = await res.json();
-  //   setPrices(data);
-  // };
-
-  // useEffect(() => {
-  //   console.log('fetching');
-  //   // fetchPrices(inputToken.address, outputToken.address);
-  //   getBestRoute();
-  // }, [getBestRoute]);
 
   const handleMouseDownTokenOne = () => {
     console.log(1);
@@ -612,7 +428,10 @@ const Swap = () => {
               label="InputAmount"
             />
           </FormControl>
-          <BalanceBox token={inputToken} userWallets={userWallets} />
+          <BalanceBox
+            token={inputToken}
+            userWallets={userWallets?.filter((wallet) => wallet !== null)}
+          />
           <Box component="div">
             <StyledIconButton onClick={handleTokenSwitch}>
               <ArrowDownwardIcon color="primary" />
@@ -643,7 +462,10 @@ const Swap = () => {
               label="OutputAmount"
             />
           </FormControl>
-          <BalanceBox token={outputToken} userWallets={userWallets} />
+          <BalanceBox
+            token={outputToken}
+            userWallets={userWallets?.filter((wallet) => wallet !== null)}
+          />
           <Box
             component="div"
             display="flex"

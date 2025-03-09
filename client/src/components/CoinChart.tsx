@@ -31,10 +31,10 @@ function ChartTooltip({
         width="200px"
         component="div"
       >
-        <Typography>{`${Number(
+        <Typography color="primary">{`${Number(
           payload[0].value
         ).toLocaleString()} USD`}</Typography>
-        <Typography>{`${label}`}</Typography>
+        <Typography color="primary">{`${label}`}</Typography>
       </Box>
     );
   }

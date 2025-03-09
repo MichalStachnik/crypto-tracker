@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { ChangeEvent, useState, useContext } from 'react';
 import MenuItem from '@mui/material/MenuItem';
 import {

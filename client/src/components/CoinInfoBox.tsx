@@ -236,12 +236,12 @@ const CoinInfoBox = ({ liveCoinWatchData }: CoinInfoBoxProps) => {
         </Box>
       </Box>
       <Box display="flex" justifyContent="space-between" component="div">
-        <Typography># of Markets</Typography>
-        <Typography>{liveCoinWatchData.markets}</Typography>
+        <Typography color="primary"># of Markets</Typography>
+        <Typography color="primary">{liveCoinWatchData.markets}</Typography>
       </Box>
       <Box display="flex" justifyContent="space-between" component="div">
-        <Typography># of Pairs</Typography>
-        <Typography>{liveCoinWatchData.pairs}</Typography>
+        <Typography color="primary"># of Pairs</Typography>
+        <Typography color="primary">{liveCoinWatchData.pairs}</Typography>
       </Box>
       <Tabs value={activeTab} onChange={handleTabChange} centered>
         <Tab
