@@ -4,9 +4,10 @@ import dotenv from 'dotenv';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import redis from 'redis';
-import { createClient } from '@supabase/supabase-js';
 import moralis from 'moralis';
-import * as jose from 'jose';
+import { supabase } from './utils/supabase.js';
+
+import authRouter from './routes/auth.js';
 
 const app = express();
 
@@ -41,16 +42,6 @@ let redisClient;
   }
 })();
 
-const supabase = createClient(
-  process.env.SUPABASE_PROJECT_URL,
-  process.env.SUPABASE_API_KEY,
-  {
-    auth: {
-      persistSession: false,
-    },
-  }
-);
-
 const startMoralis = async () => {
   await moralis.start({
     apiKey: process.env.MORALIS_KEY,
@@ -58,6 +49,8 @@ const startMoralis = async () => {
 };
 
 startMoralis();
+
+app.use('/api/auth', authRouter);
 
 app.get('/api/global', async (req, res) => {
   const cacheValue = await redisClient.get('globalData');
@@ -291,189 +284,6 @@ app.post('/api/btc/get-block', async (req, res) => {
   const blockData = await rawBlockData.json();
   redisClient.setEx(hash, FIVE_MINUTES, JSON.stringify(blockData));
   res.json(blockData);
-});
-
-app.post('/api/signup', async (req, res) => {
-  const { data, error } = await supabase.auth.signUp({
-    email: req.body.email,
-    password: req.body.password,
-  });
-  res.json({ data, error });
-});
-
-app.post('/api/login', async (req, res) => {
-  const signInQuery = await supabase.auth.signInWithPassword({
-    email: req.body.email,
-    password: req.body.password,
-  });
-  if (signInQuery.error) {
-    res.json({ message: 'error', error: signInQuery.error });
-    return;
-  }
-  res.setHeader(
-    'Set-Cookie',
-    `cookie=${signInQuery.data.session.access_token}; HttpOnly`
-  );
-  let data = { user: signInQuery.data };
-  // Get favorites
-  const coinQuery = await supabase
-    .from('coin')
-    .select('name')
-    .eq('email', req.body.email);
-
-  if (!coinQuery.error) {
-    data['favorites'] = coinQuery.data;
-  }
-
-  const notificationQuery = await supabase
-    .from('notifications')
-    .select('*')
-    .eq('email', req.body.email);
-
-  if (!notificationQuery.error) {
-    data['notifications'] = notificationQuery.data;
-  }
-
-  res.json({ message: 'success', data });
-});
-
-app.get('/api/login/google', async (req, res) => {
-  const redirectTo =
-    process.env.NODE_ENV === 'production'
-      ? 'https://wenmewn.app/welcome/'
-      : 'http://localhost:5173/welcome/';
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: {
-      queryParams: {
-        access_type: 'offline',
-        prompt: 'consent',
-      },
-      redirectTo,
-    },
-  });
-
-  if (error) {
-    res.json({ message: 'error', error });
-    return;
-  }
-
-  res.json(data);
-});
-
-app.get('/api/login/twitter', async (req, res) => {
-  const redirectTo =
-    process.env.NODE_ENV === 'production'
-      ? 'https://wenmewn.app/welcome/'
-      : 'https://localhost:5173/welcome/';
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'twitter',
-    options: {
-      redirectTo,
-    },
-  });
-
-  if (error) {
-    res.json({ message: 'error', error });
-    return;
-  }
-
-  res.json(data);
-});
-
-app.get('/api/login/github', async (req, res) => {
-  const redirectTo =
-    process.env.NODE_ENV === 'production'
-      ? 'https://wenmewn.app/welcome/'
-      : 'http://localhost:5173/welcome/';
-
-  const { data, error } = await supabase.auth.signInWithOAuth({
-    provider: 'github',
-    options: {
-      redirectTo,
-    },
-  });
-
-  if (error) {
-    res.json({ message: 'error', error });
-    return;
-  }
-
-  res.json(data);
-});
-
-app.get('/api/login/verify/:token', async (req, res) => {
-  const { token } = req.params;
-
-  const secret = new TextEncoder().encode(process.env.SUPABASE_JWT_SECRET);
-  const { payload } = await jose.jwtVerify(token, secret);
-
-  if (payload.role === 'authenticated') {
-    const data = {
-      token,
-      email: payload.email,
-    };
-    res.json({ message: 'success', data });
-  } else {
-    res.json({ message: 'error' });
-  }
-});
-
-app.get('/api/logout', async (req, res) => {
-  const { error } = await supabase.auth.signOut();
-  if (error) {
-    console.error('error');
-    res.json({ message: 'error', error });
-  } else {
-    res.status(202).json({ message: 'success' });
-  }
-});
-
-app.post('/api/forgot-password', async (req, res) => {
-  const { email } = req.body;
-
-  const redirectTo =
-    process.env.NODE_ENV === 'production'
-      ? 'https://wenmewn.app/password-reset'
-      : 'http://localhost:5173/password-reset';
-  const { data, error } = await supabase.auth.resetPasswordForEmail(email, {
-    redirectTo,
-  });
-
-  if (error) {
-    res.status(500).json({ message: 'error' });
-  } else {
-    res.status(201).json({ message: 'email sent' });
-  }
-});
-
-app.post('/api/update-password', async (req, res) => {
-  const { password, refreshToken } = req.body;
-
-  const refreshSession = await supabase.auth.refreshSession({
-    refresh_token: refreshToken,
-  });
-
-  if (refreshSession.error) {
-    res.status(500).json({ message: 'error' });
-    return;
-  }
-
-  const updateUser = await supabase.auth.updateUser({ password });
-
-  if (updateUser.error) {
-    res.status(500).json({ message: 'error' });
-    return;
-  }
-
-  const redirectTo =
-    process.env.NODE_ENV === 'production'
-      ? 'https://wenmewn.app/'
-      : 'http://localhost:5173/';
-
-  res.json({ message: 'password updated', redirectTo });
 });
 
 app.post('/api/get-favorites', async (req, res) => {
@@ -734,9 +544,9 @@ if (process.env.NODE_ENV === 'production') {
   app.get('*', (req, res) => {
     const __filename = fileURLToPath(import.meta.url);
     const __dirname = path.dirname(__filename);
-    console.log('import.meta.url --->', import.meta.url);
-    console.log('the filename -->', __filename);
-    console.log('the dirname -->', __dirname);
+    // console.log('import.meta.url --->', import.meta.url);
+    // console.log('the filename -->', __filename);
+    // console.log('the dirname -->', __dirname);
     res.sendFile(path.resolve(__dirname, '..', 'client', 'dist', 'index.html'));
   });
 }

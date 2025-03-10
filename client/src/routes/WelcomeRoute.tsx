@@ -14,7 +14,7 @@ const WelcomeRoute = () => {
     const andHash = location.hash.indexOf('&');
     const jwt = location.hash.substring(equalHash + 1, andHash);
 
-    const res = await fetch(`/api/login/verify/${jwt}`);
+    const res = await fetch(`/api/auth/login/verify/${jwt}`);
 
     const { data, message } = await res.json();
 

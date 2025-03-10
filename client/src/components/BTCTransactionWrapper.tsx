@@ -8,9 +8,28 @@ interface Transaction {
     op: string;
     x: {
       hash: string;
-      inputs: any[];
+      inputs: {
+        prev_out: {
+          addr: string;
+          n: number;
+          script: string;
+          spent: boolean;
+          tx_index: number;
+          type: number;
+          value: number;
+        }[];
+        script: string;
+      }[];
       lock_time: number;
-      out: any[];
+      out: {
+        addr: string;
+        n: number;
+        script: string;
+        spent: boolean;
+        tx_index: number;
+        type: number;
+        value: number;
+      }[];
       relayed_by: string;
       size: number;
       time: number;

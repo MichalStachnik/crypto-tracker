@@ -37,7 +37,7 @@ const PasswordReset = () => {
 
   const handleSubmit = async () => {
     if (password0 !== password1) return;
-    const res = await fetch('/api/update-password', {
+    const res = await fetch('/api/auth/update-password', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
