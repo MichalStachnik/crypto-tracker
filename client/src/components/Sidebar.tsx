@@ -163,7 +163,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     email: string;
     password: string;
   }) => {
-    const res = await fetch('/api/login', {
+    const res = await fetch('/api/auth/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -196,7 +196,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     email: string;
     password: string;
   }) => {
-    await fetch('/api/signup', {
+    await fetch('/api/auth/signup', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -243,7 +243,7 @@ const Sidebar = ({ isOpen, setIsOpen }: SidebarProps) => {
     }
     localStorage.clear();
     userContext.setUser(null);
-    await fetch('/api/logout');
+    await fetch('/api/auth/logout');
     setIsWalletConnected(false);
   };
 
