@@ -102,7 +102,6 @@ function App() {
                           path="/"
                           element={<DynamicLoader component="Home" />}
                         />
-                        {/* <Route path="/bubbles" element={<Bubbles />} /> */}
                         <Route
                           path="/nostr"
                           element={<DynamicLoader component="Nostr" />}

@@ -1,4 +1,11 @@
-import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
+import {
+  ChangeEvent,
+  useCallback,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import {
   Chain,
   SwapKitApi,
@@ -31,9 +38,11 @@ import TokensDialog from '../components/TokenDialog';
 import BalanceBox from '../components/BalanceBox';
 import { Prices } from '../types/Prices';
 import { isEVMToken } from '../utils/isEVMToken';
+import WalletDialog from '../components/WalletDialog';
 
 const Swap = () => {
-  const { isWalletConnected, connectedChains } = useContext(WalletContext);
+  const { isWalletConnected, setIsWalletConnected, connectedChains } =
+    useContext(WalletContext);
   const [inputAmount, setInputAmount] = useState<number | string>('');
   const [outputAmount, setOutputAmount] = useState<number | string>('');
   const [availableTokens, setAvailableTokens] = useState<Token[]>(tokens);
@@ -237,6 +246,19 @@ const Swap = () => {
     return 'Swap';
   }, [isWalletConnected, isInsufficientBalance]);
 
+  const [isWalletDialogOpen, setIsWalletDialogOpen] = useState<boolean>(false);
+
+  const swapButtonCallback = useCallback(() => {
+    if (!isWalletConnected) {
+      setIsWalletDialogOpen(true);
+    } else handleSwapkitSwap();
+  }, [isWalletConnected]);
+
+  const handleWalletDialogClose = (isConnected: boolean | null) => {
+    setIsWalletDialogOpen(false);
+    if (isConnected) setIsWalletConnected(isConnected);
+  };
+
   return (
     <Box component="div" mt={6}>
       <Card
@@ -326,11 +348,10 @@ const Swap = () => {
           <LoadingButton
             size="small"
             loading={isTransactionLoading}
-            onClick={handleSwapkitSwap}
+            onClick={swapButtonCallback}
             disabled={
               !inputAmount ||
               !outputAmount ||
-              !isWalletConnected ||
               isFetchingQuote ||
               isInsufficientBalance
               // || !isTokenApproved
@@ -354,6 +375,10 @@ const Swap = () => {
         open={isTokensDialogOpen}
         onClose={handleTokensDialogClose}
         availableTokens={availableTokens}
+      />
+      <WalletDialog
+        open={isWalletDialogOpen}
+        onClose={handleWalletDialogClose}
       />
     </Box>
   );
