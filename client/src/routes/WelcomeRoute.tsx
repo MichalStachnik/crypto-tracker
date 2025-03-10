@@ -16,10 +16,7 @@ const WelcomeRoute = () => {
 
     const res = await fetch(`/api/auth/login/verify/${jwt}`);
 
-    console.log('verifying with', jwt);
     const { data, message } = await res.json();
-
-    console.log('back', data, message);
 
     if (message === 'success') {
       localStorage.setItem('user', data.token);
