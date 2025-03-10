@@ -30,7 +30,7 @@ import { CoinContext } from '../contexts/CoinContext';
 // import { ViewInAr } from '@mui/icons-material';
 import { WalletContext } from '../contexts/WalletContext';
 import { drawerWidth } from '../App';
-import { StyledIconButton } from '../routes/Swap';
+import { StyledIconButton } from './styled/StyledIconButton';
 
 const openedMixin = (theme: Theme): CSSObject => ({
   width: drawerWidth,

@@ -1,11 +1,9 @@
 import { ChangeEvent, useContext, useEffect, useMemo, useState } from 'react';
 import {
   Chain,
-  WalletOption,
   SwapKitApi,
   FeeOption,
   QuoteRoute,
-  AssetValue,
   formatBigIntToSafeValue,
 } from '@swapkit/sdk';
 import {
@@ -15,159 +13,24 @@ import {
   CardActions,
   CardContent,
   CircularProgress,
-  Dialog,
-  DialogTitle,
   FormControl,
-  IconButton,
   InputAdornment,
   InputLabel,
   Link,
-  List,
-  ListItem,
-  ListItemAvatar,
-  ListItemButton,
-  ListItemText,
-  OutlinedInput,
   Typography,
-  styled,
 } from '@mui/material';
 import LoadingButton from '@mui/lab/LoadingButton';
 import ArrowDownwardIcon from '@mui/icons-material/ArrowDownward';
-
 import tokens from '../utils/tokens.json';
 import { WalletContext } from '../contexts/WalletContext';
-
-interface EnumMapper {
-  [key: string]: string;
-}
-
-const enumMapper: EnumMapper = {
-  ETH: 'Ethereum',
-  BTC: ' Bitcoin',
-};
-
-const BalanceBox = ({
-  token,
-  userWallets,
-}: {
-  token: Token;
-  userWallets: UserWallet[] | null;
-}) => {
-  const [userBalance, setUserBalance] = useState<string | null>(null);
-
-  useEffect(() => {
-    const getUserBalance = async () => {
-      if (!userWallets) return;
-      const chainName = enumMapper[token.chain];
-      const chain = Chain[chainName as keyof typeof Chain];
-      const swapkitImport = await import('../utils/swapKit');
-      const address = swapkitImport.client.getAddress(chain);
-      const wallet = userWallets.find(
-        (wallet: UserWallet) => wallet?.address === address
-      );
-
-      const balance = wallet?.balance?.find(
-        (balance: AssetValue) => balance.ticker === token.ticker
-      );
-      if (!balance) {
-        setUserBalance('0');
-        return;
-      }
-
-      const b = formatBigIntToSafeValue({
-        value: balance.bigIntValue,
-        decimal: balance.decimal,
-      });
-      setUserBalance(b);
-    };
-    getUserBalance();
-  }, [token, userWallets]);
-
-  if (!userBalance) return null;
-
-  return (
-    <Box component="div">
-      <Typography align="right" color="primary" fontSize="0.8rem">
-        Balance: {userBalance}
-      </Typography>
-    </Box>
-  );
-};
-
-interface Token {
-  chain: string;
-  ticker: string;
-  img: string;
-  name: string;
-  address?: string;
-  decimals: number;
-}
-
-export interface TokensDialogProps {
-  open: boolean;
-  onClose: (token: Token | null) => void;
-  availableTokens: Token[];
-}
-
-function TokensDialog(props: TokensDialogProps) {
-  const { onClose, open, availableTokens } = props;
-
-  const handleClose = () => {
-    onClose(null);
-  };
-
-  const handleListItemClick = (t: Token) => {
-    onClose(t);
-  };
-
-  return (
-    <Dialog onClose={handleClose} open={open}>
-      <DialogTitle>Choose a token</DialogTitle>
-      <List sx={{ pt: 0 }}>
-        {availableTokens
-          .filter((_, index) => index <= 2)
-          .map((token) => (
-            <ListItem disableGutters key={token.ticker}>
-              <ListItemButton onClick={() => handleListItemClick(token)}>
-                <ListItemAvatar>
-                  <Avatar src={token.img} />
-                </ListItemAvatar>
-                <ListItemText primary={token.name} />
-              </ListItemButton>
-            </ListItem>
-          ))}
-      </List>
-    </Dialog>
-  );
-}
-
-interface Prices {
-  token1: number | null;
-  token2: number | null;
-}
-
-const StyledOutlinedInput = styled(OutlinedInput)(() => ({
-  color: 'white',
-  fontSize: '0.8rem',
-  '& .MuiOutlinedInput-notchedOutline': {
-    borderColor: 'white',
-  },
-  '& input::-webkit-outer-spin-button, & input::-webkit-inner-spin-button': {
-    display: 'none',
-  },
-}));
-
-export const StyledIconButton = styled(IconButton)(() => ({
-  '&:focus': {
-    outline: 'none',
-  },
-}));
-
-export interface UserWallet {
-  address?: string | undefined;
-  balance?: AssetValue[] | undefined;
-  walletType?: WalletOption | undefined;
-}
+import { Token } from '../types/Token';
+import { UserWallet } from '../types/UserWallet';
+import { StyledOutlinedInput } from '../components/styled/StyledOutlineInput';
+import { StyledIconButton } from '../components/styled/StyledIconButton';
+import TokensDialog from '../components/TokenDialog';
+import BalanceBox from '../components/BalanceBox';
+import { Prices } from '../types/Prices';
+import { isEVMToken } from '../utils/isEVMToken';
 
 const Swap = () => {
   const { isWalletConnected, connectedChains } = useContext(WalletContext);
@@ -199,14 +62,6 @@ const Swap = () => {
       return swapkitImport.client.getAddress(Chain.Ethereum);
     }
     return '';
-  };
-
-  const isEVMToken = (token: Token) => {
-    if (token.chain === 'ETH' && token.address) {
-      return true;
-    } else {
-      return false;
-    }
   };
 
   const createQuoteParams = async () => {
@@ -319,13 +174,6 @@ const Swap = () => {
     getWalletBalances();
   }, [isWalletConnected, inputToken, outputToken]);
 
-  const handleMouseDownTokenOne = () => {
-    console.log(1);
-  };
-  const handleMouseDownTokenTwo = () => {
-    console.log(2);
-  };
-
   const handleSwapkitSwap = async () => {
     if (!bestRoute) return;
     setIsTransactionLoading(true);
@@ -417,7 +265,6 @@ const Swap = () => {
                   <StyledIconButton
                     aria-label="input token"
                     onClick={handleChangeInputToken}
-                    onMouseDown={handleMouseDownTokenOne}
                     edge="end"
                   >
                     <Avatar src={inputToken.img} />
@@ -448,7 +295,6 @@ const Swap = () => {
                   <StyledIconButton
                     aria-label="output token"
                     onClick={handleChangeOutputToken}
-                    onMouseDown={handleMouseDownTokenTwo}
                     edge="end"
                   >
                     <Avatar src={outputToken.img} />
